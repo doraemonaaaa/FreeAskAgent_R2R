@@ -1,0 +1,21 @@
+# Generated inference artifacts
+outputs/
+videos/
+
+# Local Python environments and package caches
+.venv/
+.uv_cache/
+
+# Python and test caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local Codex workspace metadata
+.agents/
+.codex/
+
+# Editor and OS files
+.DS_Store
+.idea/
+.vscode/
