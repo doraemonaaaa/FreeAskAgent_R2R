@@ -222,6 +222,91 @@ def _clean_video_frame(rgb):
     return rgb.copy()
 
 
+# Requested amber, executed green: the same pair the legend names.
+_REQUESTED_COLOR = (255, 190, 0)
+_APPLIED_COLOR = (0, 220, 90)
+
+
+def _draw_labels(image, lines, color=(255, 255, 255)):
+    """Write short debug lines over a dark strip so text stays readable."""
+    import cv2
+
+    lines = [line for line in lines if line]
+    if not lines:
+        return
+    scale, thickness, margin = 0.45, 1, 6
+    height = 16
+    box = image[: margin + height * len(lines) + margin, :]
+    # Darken rather than fill, so the scene stays visible behind the text.
+    box[:] = (box * 0.35).astype(image.dtype)
+    for index, line in enumerate(lines):
+        cv2.putText(
+            image, line, (margin, margin + height * (index + 1) - 4),
+            cv2.FONT_HERSHEY_SIMPLEX, scale, color, thickness, cv2.LINE_AA,
+        )
+
+
+def _annotated_video_frame(rgb, decision, steps):
+    """Map the agent's waypoint pixels onto the frame that produced them.
+
+    ``requested_pixel_uv`` is the location the waypoint policy asked for;
+    ``pixel_uv`` is where the depth map allowed that waypoint to land. Drawing
+    both, joined by a line, separates a bad model selection from a good
+    selection that the walkable-pixel snap pulled somewhere else.
+    """
+    import cv2
+
+    image = rgb.copy()
+    height, width = image.shape[:2]
+    debug = decision.get("debug") or {}
+
+    def to_pixel(value):
+        if not value:
+            return None
+        return (
+            int(np.clip(int(value[0]), 0, width - 1)),
+            int(np.clip(int(value[1]), 0, height - 1)),
+        )
+
+    requested = to_pixel(debug.get("requested_pixel_uv"))
+    applied = to_pixel(decision.get("pixel_uv"))
+    if requested is not None and applied is not None and requested != applied:
+        cv2.line(image, requested, applied, (255, 255, 255), 1, cv2.LINE_AA)
+    if requested is not None:
+        cv2.circle(image, requested, 9, _REQUESTED_COLOR, 2, cv2.LINE_AA)
+        cv2.drawMarker(
+            image, requested, _REQUESTED_COLOR, cv2.MARKER_CROSS, 14, 1,
+        )
+    if applied is not None:
+        cv2.circle(image, applied, 6, _APPLIED_COLOR, -1, cv2.LINE_AA)
+        cv2.circle(image, applied, 6, (255, 255, 255), 1, cv2.LINE_AA)
+
+    status = "STOP" if decision.get("stop") else (
+        debug.get("waypoint_applied_intent") or "-"
+    )
+    header = "step={} {}".format(steps, status)
+    depth_m = decision.get("depth_m")
+    if depth_m is not None:
+        header += " depth={:.2f}m".format(depth_m)
+    if requested is not None:
+        header += " req=({},{})".format(*requested)
+    if applied is not None:
+        header += " use=({},{})".format(*applied)
+    subgoal = (debug.get("subgoal_before") or {}).get("subgoal_id")
+    if subgoal is not None:
+        header = "subgoal={} ".format(subgoal) + header
+    guard = debug.get("waypoint_guard_reason")
+    _draw_labels(
+        image,
+        (
+            header,
+            "guard: {}".format(guard[:88]) if guard else "",
+            "circle=requested  dot=executed",
+        ),
+    )
+    return image
+
+
 def _latency_line(episode_id, steps, decision, step_ms, render_ms, env_ms):
     """Attribute one step's wall time to the model, the IPC, and the simulator."""
     timings = decision.get("timings") or {}
@@ -569,6 +654,11 @@ def main():
     )
     parser.add_argument("--record-video", action="store_true", help="Save RGB plus top-down trajectory MP4s.")
     parser.add_argument("--video-dir", type=Path, default=Path("videos"))
+    parser.add_argument(
+        "--clean-video",
+        action="store_true",
+        help="Record unannotated RGB instead of overlaying the agent's waypoint pixels.",
+    )
     args = parser.parse_args()
     if not 0 <= args.rank < args.world_size:
         parser.error("--rank must be in [0, --world-size).")
@@ -682,7 +772,11 @@ def main():
                         rgb, depth, instruction, intrinsics, _camera_to_world(env)
                     )
                     render_started = time.perf_counter()
-                    debug_rgb = _clean_video_frame(rgb)
+                    debug_rgb = (
+                        _clean_video_frame(rgb)
+                        if args.clean_video
+                        else _annotated_video_frame(rgb, decision, steps)
+                    )
                     if frames is not None:
                         if navmesh_map is None:
                             frames.append(debug_rgb)
