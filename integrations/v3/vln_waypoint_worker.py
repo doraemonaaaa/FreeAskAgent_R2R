@@ -176,9 +176,9 @@ def main():
 
     protocol_stdout = sys.stdout
     sys.stdout = sys.stderr
-    from agentflow.agents.vln_agent_3 import Actor
+    from agentflow.agents.vln_agent_4 import VLNAgent
 
-    actor = Actor(
+    actor = VLNAgent(
         args.model_path,
         debug_performance=False,
     )
