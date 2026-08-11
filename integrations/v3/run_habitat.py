@@ -183,23 +183,58 @@ def _build_navmesh_map(env, resolution=1024):
     )
 
 
-def _render_topdown(env, navmesh_map, positions, goal_position, output_height):
-    """Draw the executed trajectory, start, current position, and goal."""
+def _render_topdown(
+    env,
+    navmesh_map,
+    positions,
+    goal_position,
+    output_height,
+    waypoints=(),
+    landmark_marks=(),
+):
+    """Draw the executed trajectory, start, current position, and goal.
+
+    ``waypoints`` are the world-space targets the actor asked for, which show
+    where it intended to go as opposed to where the follower took it.
+    ``landmark_marks`` are ``(position, kind)`` pairs recording where the
+    tracker reported standing at or crossing the active subgoal's landmark.
+    """
     import cv2
     from habitat.utils.visualizations import maps
 
     image = maps.colorize_topdown_map(navmesh_map.copy())
+    rows, columns = navmesh_map.shape[:2]
 
     def to_pixel(position):
         row, col = maps.to_grid(
             position[2], position[0], navmesh_map.shape,
             pathfinder=env.sim.pathfinder,
         )
-        return col, row
+        # A requested waypoint can land off the navmesh, and to_grid does not
+        # clamp; an out-of-bounds point would otherwise be drawn nowhere.
+        return (
+            int(np.clip(col, 0, columns - 1)),
+            int(np.clip(row, 0, rows - 1)),
+        )
 
     path = [to_pixel(position) for position in positions]
     if len(path) > 1:
         cv2.polylines(image, [np.asarray(path, dtype=np.int32)], False, (0, 80, 255), 3)
+    # Drawn under the trajectory endpoints so the executed path stays legible.
+    for waypoint in waypoints:
+        cv2.circle(image, to_pixel(waypoint), 3, _REQUESTED_COLOR, -1, cv2.LINE_AA)
+    if waypoints and path:
+        cv2.line(
+            image, path[-1], to_pixel(waypoints[-1]), _REQUESTED_COLOR, 1,
+            cv2.LINE_AA,
+        )
+    for position, kind in landmark_marks:
+        cv2.drawMarker(
+            image, to_pixel(position),
+            (230, 80, 230) if kind == "PASSED" else _LANDMARK_COLORS["AT"],
+            cv2.MARKER_DIAMOND if kind == "PASSED" else cv2.MARKER_TRIANGLE_UP,
+            14, 2,
+        )
     if path:
         cv2.circle(image, path[0], 7, (0, 180, 0), -1)
         cv2.circle(image, path[-1], 7, (255, 80, 0), -1)
@@ -226,9 +261,141 @@ def _clean_video_frame(rgb):
 _REQUESTED_COLOR = (255, 190, 0)
 _APPLIED_COLOR = (0, 220, 90)
 
+# The landmark tracker reports a proximity class rather than a distance, so the
+# overlay carries it as color: cool when far, warm as the camera closes in.
+_LANDMARK_COLORS = {
+    "FAR": (110, 170, 255),
+    "NEAR": (255, 150, 40),
+    "AT": (60, 235, 140),
+    "UNKNOWN": (170, 170, 170),
+}
 
-def _draw_labels(image, lines, color=(255, 255, 255)):
-    """Write short debug lines over a dark strip so text stays readable."""
+
+def _landmark_state(decision):
+    """Return this step's landmark reading, or None when it never ran."""
+    return (decision.get("debug") or {}).get("landmark")
+
+
+def _landmark_mark_kind(landmark):
+    """Classify a landmark reading for the top-down trajectory markers.
+
+    Only the two states that pin the route to a place are marked: crossing the
+    landmark, and standing at it. FAR/NEAR sightings happen on most steps and
+    would bury the map.
+    """
+    if not landmark:
+        return None
+    if landmark.get("passed"):
+        return "PASSED"
+    if landmark.get("visible") and landmark.get("proximity") == "AT":
+        return "AT"
+    return None
+
+
+def _draw_landmark_point(image, decision):
+    """Plot the landmark the tracker located, colored by its proximity.
+
+    The pixel is optional by design: when the model returns no usable ``u``/``v``
+    there is simply no marker, and the bottom strip reports the state instead.
+    """
+    import cv2
+
+    landmark = _landmark_state(decision)
+    pixel = (decision.get("debug") or {}).get("landmark_pixel_uv")
+    if not landmark or not pixel:
+        return
+    height, width = image.shape[:2]
+    center = (
+        int(np.clip(int(pixel[0]), 0, width - 1)),
+        int(np.clip(int(pixel[1]), 0, height - 1)),
+    )
+    proximity = landmark.get("proximity") or "UNKNOWN"
+    color = _LANDMARK_COLORS.get(proximity, _LANDMARK_COLORS["UNKNOWN"])
+    # A diamond, so the landmark never reads as one of the waypoint circles.
+    cv2.drawMarker(
+        image, center, color, cv2.MARKER_DIAMOND, 22, 2, cv2.LINE_AA,
+    )
+    cv2.circle(image, center, 3, color, -1, cv2.LINE_AA)
+    label = "LM {}{}".format(proximity, " PASSED" if landmark.get("passed") else "")
+    cv2.putText(
+        image, label, (center[0] + 14, center[1] - 10),
+        cv2.FONT_HERSHEY_SIMPLEX, 0.42, color, 1, cv2.LINE_AA,
+    )
+
+
+def _landmark_lines(decision):
+    """Summarize the landmark tracker for the frame's bottom strip."""
+    landmark = _landmark_state(decision)
+    debug = decision.get("debug") or {}
+    error = debug.get("landmark_error")
+    if not landmark:
+        return ("landmark: none{}".format(
+            " error={}".format(str(error)[:60]) if error else ""
+        ),)
+    # The tracker runs against the subgoal active at the start of the step, so
+    # a subgoal that completed during this step leaves the reading describing
+    # the stage the agent has just left rather than the one now being steered.
+    current_id = (debug.get("subgoal_after") or {}).get("subgoal_id")
+    tracked_id = debug.get("landmark_subgoal_id")
+    stale = (
+        tracked_id is not None
+        and current_id is not None
+        and str(tracked_id) != str(current_id)
+    )
+    pixel = debug.get("landmark_pixel_uv")
+    header = (
+        "landmark: visible={} dir={} prox={} passed={} dominant={} "
+        "conf={:.2f} at={}{}".format(
+            int(bool(landmark.get("visible"))),
+            landmark.get("direction"),
+            landmark.get("proximity"),
+            int(bool(landmark.get("passed"))),
+            int(bool(landmark.get("destination_dominant"))),
+            float(landmark.get("confidence") or 0.0),
+            # Distinguishes "tracker saw nothing" from "tracker saw it but
+            # returned no usable pixel", which look identical on the frame.
+            "({},{})".format(*pixel) if pixel else "no-pixel",
+            " STALE(sg={})".format(tracked_id) if stale else "",
+        )
+    )
+    evidence = landmark.get("evidence") or ""
+    return (
+        header,
+        "  why: {}".format(evidence[:82]) if evidence else "",
+        "  landmark_error: {}".format(str(error)[:70]) if error else "",
+    )
+
+
+def _waypoint_lines(decision):
+    """Summarize the waypoint policy for the frame's bottom strip."""
+    debug = decision.get("debug") or {}
+    confidence = debug.get("waypoint_confidence")
+    world = decision.get("world_xyz")
+    line = "waypoint: intent {}->{} conf={}".format(
+        debug.get("waypoint_model_intent") or "-",
+        debug.get("waypoint_applied_intent") or "-",
+        "-" if confidence is None else "{:.2f}".format(float(confidence)),
+    )
+    if world is not None:
+        line += " world=({:.2f},{:.2f},{:.2f})".format(*[
+            float(value) for value in world
+        ])
+    recovery = debug.get("recovery_mode")
+    if recovery:
+        line += " recovery={}".format(recovery)
+    evidence = debug.get("waypoint_evidence") or ""
+    return (
+        line,
+        "  why: {}".format(evidence[:82]) if evidence else "",
+    )
+
+
+def _draw_labels(image, lines, color=(255, 255, 255), anchor="top"):
+    """Write short debug lines over a dark strip so text stays readable.
+
+    ``anchor="bottom"`` puts the strip along the lower edge, which keeps the
+    landmark and waypoint report clear of the step header at the top.
+    """
     import cv2
 
     lines = [line for line in lines if line]
@@ -236,12 +403,14 @@ def _draw_labels(image, lines, color=(255, 255, 255)):
         return
     scale, thickness, margin = 0.45, 1, 6
     height = 16
-    box = image[: margin + height * len(lines) + margin, :]
+    strip = margin + height * len(lines) + margin
+    top = 0 if anchor == "top" else max(0, image.shape[0] - strip)
+    box = image[top : top + strip, :]
     # Darken rather than fill, so the scene stays visible behind the text.
     box[:] = (box * 0.35).astype(image.dtype)
     for index, line in enumerate(lines):
         cv2.putText(
-            image, line, (margin, margin + height * (index + 1) - 4),
+            image, line, (margin, top + margin + height * (index + 1) - 4),
             cv2.FONT_HERSHEY_SIMPLEX, scale, color, thickness, cv2.LINE_AA,
         )
 
@@ -252,7 +421,9 @@ def _annotated_video_frame(rgb, decision, steps):
     ``requested_pixel_uv`` is the location the waypoint policy asked for;
     ``pixel_uv`` is where the depth map allowed that waypoint to land. Drawing
     both, joined by a line, separates a bad model selection from a good
-    selection that the walkable-pixel snap pulled somewhere else.
+    selection that the walkable-pixel snap pulled somewhere else. The landmark
+    the tracker located is drawn on the same frame as a diamond, so where the
+    agent is looking and where it decided to step can be read together.
     """
     import cv2
 
@@ -280,6 +451,7 @@ def _annotated_video_frame(rgb, decision, steps):
     if applied is not None:
         cv2.circle(image, applied, 6, _APPLIED_COLOR, -1, cv2.LINE_AA)
         cv2.circle(image, applied, 6, (255, 255, 255), 1, cv2.LINE_AA)
+    _draw_landmark_point(image, decision)
 
     status = "STOP" if decision.get("stop") else (
         debug.get("waypoint_applied_intent") or "-"
@@ -301,8 +473,13 @@ def _annotated_video_frame(rgb, decision, steps):
         (
             header,
             "guard: {}".format(guard[:88]) if guard else "",
-            "circle=requested  dot=executed",
+            "circle=requested  dot=executed  diamond=landmark",
         ),
+    )
+    _draw_labels(
+        image,
+        _waypoint_lines(decision) + _landmark_lines(decision),
+        anchor="bottom",
     )
     return image
 
@@ -493,7 +670,7 @@ def _navigation_debug_lines(
             (debug.get("behavior_history") or [])[-3:]
         ),
         "  WAYPOINT phase={} heading_lock={} model_intent={} "
-        "applied_intent={} guard={!r} evidence={!r} raw={!r} "
+        "applied_intent={} confidence={} guard={!r} evidence={!r} raw={!r} "
         "normalized={} requested={} validated={} depth={} "
         "world={} error_candidate={} guard={!r} recovery={} "
         "stop_disposition={} stop_reason={}".format(
@@ -501,6 +678,7 @@ def _navigation_debug_lines(
             debug.get("corridor_heading_yaw_deg"),
             debug.get("waypoint_model_intent"),
             debug.get("waypoint_applied_intent"),
+            debug.get("waypoint_confidence"),
             debug.get("waypoint_guard_reason"),
             debug.get("waypoint_evidence"),
             debug.get("waypoint_raw_response"),
@@ -755,6 +933,12 @@ def main():
                         )
                 positions = [env.sim.get_agent_state().position.copy()]
                 goal_position = episode.goals[0].position if episode.goals else None
+                # Requested waypoints and landmark events accumulate over the
+                # episode so the top-down map shows the whole intended route
+                # beside the executed one.
+                waypoint_targets = []
+                landmark_marks = []
+                previous_landmark_mark = None
                 follower = ShortestPathFollower(
                     env.sim, args.waypoint_radius, return_one_hot=False
                 )
@@ -771,6 +955,24 @@ def main():
                     waypoint, decision = actor.act(
                         rgb, depth, instruction, intrinsics, _camera_to_world(env)
                     )
+                    if waypoint is not None:
+                        waypoint_targets.append(
+                            np.asarray(waypoint, dtype=np.float64)
+                        )
+                    landmark_mark = _landmark_mark_kind(
+                        _landmark_state(decision)
+                    )
+                    # Only the transition is marked: the tracker holds AT or
+                    # passed for several consecutive steps, and one marker per
+                    # step would bury the map.
+                    if (
+                        landmark_mark is not None
+                        and landmark_mark != previous_landmark_mark
+                    ):
+                        landmark_marks.append(
+                            (position_before.copy(), landmark_mark)
+                        )
+                    previous_landmark_mark = landmark_mark
                     render_started = time.perf_counter()
                     debug_rgb = (
                         _clean_video_frame(rgb)
@@ -782,7 +984,12 @@ def main():
                             frames.append(debug_rgb)
                         else:
                             frames.append(_topdown_panel(
-                                debug_rgb, _render_topdown(env, navmesh_map, positions, goal_position, rgb.shape[0])
+                                debug_rgb, _render_topdown(
+                                    env, navmesh_map, positions, goal_position,
+                                    rgb.shape[0],
+                                    waypoints=waypoint_targets,
+                                    landmark_marks=landmark_marks,
+                                )
                             ))
                     render_ms = (time.perf_counter() - render_started) * 1000
                     follower_action = None
@@ -859,13 +1066,23 @@ def main():
                         frames.append(rgb.copy())
                     else:
                         frames.append(_topdown_panel(
-                            rgb, _render_topdown(env, navmesh_map, positions, goal_position, rgb.shape[0])
+                            rgb, _render_topdown(
+                                env, navmesh_map, positions, goal_position,
+                                rgb.shape[0],
+                                waypoints=waypoint_targets,
+                                landmark_marks=landmark_marks,
+                            )
                         ))
                     episode_id = str(episode.episode_id).replace("/", "_")
                     images_to_video(frames, str(args.video_dir), episode_id, fps=10)
                     if navmesh_map is not None:
                         Image.fromarray(
-                            _render_topdown(env, navmesh_map, positions, goal_position, rgb.shape[0])
+                            _render_topdown(
+                                env, navmesh_map, positions, goal_position,
+                                rgb.shape[0],
+                                waypoints=waypoint_targets,
+                                landmark_marks=landmark_marks,
+                            )
                         ).save(str(args.video_dir / "topdown" / (episode_id + ".png")))
             _write_rank_summary(args.output_dir, args.rank, len(episodes), totals)
     finally:

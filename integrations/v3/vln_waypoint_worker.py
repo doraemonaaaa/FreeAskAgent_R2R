@@ -133,6 +133,9 @@ def _agent_debug_state(actor, decision):
             "waypoint_evidence": getattr(
                 actor, "last_waypoint_evidence", None
             ),
+            "waypoint_confidence": getattr(
+                actor, "last_waypoint_confidence", None
+            ),
             "error_candidate": getattr(
                 actor, "last_error_candidate", None
             ),
@@ -146,6 +149,17 @@ def _agent_debug_state(actor, decision):
                 landmark.model_dump()
                 if landmark is not None
                 else None
+            ),
+            # The tracker keeps its last state after a subgoal advances, so the
+            # visualization needs this to tell a fresh reading from a stale one.
+            "landmark_subgoal_id": getattr(
+                actor, "_landmark_subgoal_id", None
+            ),
+            "landmark_pixel_uv": getattr(
+                actor, "last_landmark_pixel", None
+            ),
+            "landmark_normalized_uv": getattr(
+                actor, "last_landmark_normalized", None
             ),
             "landmark_raw_response": getattr(
                 actor, "last_landmark_raw_response", None
