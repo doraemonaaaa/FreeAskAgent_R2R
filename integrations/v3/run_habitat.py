@@ -39,9 +39,15 @@ sys.path.insert(0, str(HABITAT_ROOT / "habitat-lab"))
 import habitat  # noqa: E402
 from habitat.tasks.nav.shortest_path_follower import ShortestPathFollower  # noqa: E402
 
+# The actor asks for turns in degrees and this runner executes whole repeats of
+# the simulator's turn primitive, so this value is half of a contract with the
+# actor's TURN_STEP_DEG rather than a private simulator setting. A mismatch
+# would silently round every requested turn down.
+TURN_ANGLE_DEG = 15
+
 R2R_CE_OVERRIDES = [
     "habitat.simulator.forward_step_size=0.25",
-    "habitat.simulator.turn_angle=15",
+    "habitat.simulator.turn_angle={}".format(TURN_ANGLE_DEG),
     "habitat.task.measurements.success.success_distance=3.0",
 ]
 
@@ -125,6 +131,41 @@ class WaypointActorProcess:
         result["roundtrip_ms"] = (time.perf_counter() - roundtrip_started) * 1000
         if result.get("stop"):
             return None, result
+        if "world_xyz" not in result:
+            # A PREVIEW decision carries no waypoint by design: the actor is
+            # asking to inspect the surrounding views before committing. The
+            # caller distinguishes it from STOP by reading "action_mode".
+            return None, result
+        return np.asarray(result["world_xyz"], dtype=np.float32), result
+
+    def act_on_preview(self, views, instruction):
+        """Answer a PREVIEW decision with the headings Habitat just rendered."""
+        encode_started = time.perf_counter()
+        request = {
+            "operation": "act_on_preview",
+            "instruction": instruction,
+            "views": [
+                {
+                    "yaw_deg": view["yaw_deg"],
+                    "rgb": self._png(view["rgb"]),
+                    "depth": self._array(view["depth"]),
+                    "intrinsics": np.asarray(view["intrinsics"]).tolist(),
+                    "camera_to_world": np.asarray(
+                        view["camera_to_world"]
+                    ).tolist(),
+                }
+                for view in views
+            ],
+        }
+        encode_ms = (time.perf_counter() - encode_started) * 1000
+        roundtrip_started = time.perf_counter()
+        result = self._request(request)
+        result["encode_ms"] = encode_ms
+        result["roundtrip_ms"] = (time.perf_counter() - roundtrip_started) * 1000
+        if result.get("stop"):
+            return None, result
+        if "world_xyz" not in result:
+            return None, result
         return np.asarray(result["world_xyz"], dtype=np.float32), result
 
     def close(self):
@@ -136,13 +177,27 @@ class WaypointActorProcess:
                 self.process.kill()
 
 
-def _observation(observation):
-    rgb = np.asarray(observation["rgb"])[..., :3]
-    depth_key = _depth_sensor_key(observation)
-    depth = np.asarray(observation[depth_key])
+def _rgb_depth(sensor_values):
+    """Extract the RGB-D pair from any observation dict.
+
+    ``sim.get_observations_at`` renders the simulator's own sensors only, so the
+    task's instruction sensor is absent from a preview observation; reading it
+    stays at the Env level in ``_observation``.
+    """
+    rgb = np.asarray(sensor_values["rgb"])[..., :3]
+    depth_key = _depth_sensor_key(sensor_values)
+    depth = np.asarray(sensor_values[depth_key])
     if depth.ndim == 3:
         depth = depth[..., 0]
-    return np.ascontiguousarray(rgb, dtype=np.uint8), np.ascontiguousarray(depth), observation["instruction"]["text"]
+    return (
+        np.ascontiguousarray(rgb, dtype=np.uint8),
+        np.ascontiguousarray(depth),
+    )
+
+
+def _observation(observation):
+    rgb, depth = _rgb_depth(observation)
+    return rgb, depth, observation["instruction"]["text"]
 
 
 def _depth_sensor_key(sensor_values):
@@ -172,6 +227,91 @@ def _camera_to_world(env):
     transform[:3, :3] = np.asarray(quat_to_magnum(state.rotation).to_matrix())
     transform[:3, 3] = np.asarray(state.position)
     return transform
+
+
+def _downscale_view(rgb, depth, intrinsics, scale):
+    """Shrink one rendered view and rescale its intrinsics to match.
+
+    Preview payloads cross a pipe as base64 every previewed step, and the VLM
+    resizes them to its own budget anyway. Depth uses nearest-neighbour so a
+    resampled pixel is always a real measured range rather than an interpolated
+    value straddling a depth discontinuity.
+    """
+    if scale >= 1.0:
+        return rgb, depth, intrinsics
+
+    height, width = rgb.shape[:2]
+    new_width = max(int(round(width * scale)), 1)
+    new_height = max(int(round(height * scale)), 1)
+
+    small_rgb = np.asarray(
+        Image.fromarray(rgb).resize((new_width, new_height), Image.BILINEAR)
+    )
+    rows = (np.arange(new_height) * height // new_height).clip(0, height - 1)
+    columns = (np.arange(new_width) * width // new_width).clip(0, width - 1)
+    small_depth = np.ascontiguousarray(depth[np.ix_(rows, columns)])
+
+    # The principal point is expressed in pixels, so every intrinsic scales
+    # with the axis it belongs to.
+    scaled = np.asarray(intrinsics, dtype=np.float64).copy()
+    scaled[0, 0] *= new_width / width
+    scaled[0, 2] *= new_width / width
+    scaled[1, 1] *= new_height / height
+    scaled[1, 2] *= new_height / height
+    return small_rgb, small_depth, scaled
+
+
+def _preview_views(env, yaws_deg, hfov_deg, scale=1.0):
+    """Render extra headings without consuming an episode step.
+
+    ``get_observations_at`` teleports, renders through habitat-lab's sensor
+    suite, and restores the pose. It never goes through ``Env.step``, so the
+    episode's step budget and every measurement stay untouched. Each view keeps
+    its own intrinsics and camera transform, so a waypoint chosen inside it
+    back-projects in its own frame.
+
+    ``yaws_deg`` follows the agent's own sign convention: positive is to the
+    right, negative to the left, matching ``yaw_delta_deg`` everywhere else.
+    The quaternion is built from the negated angle because a right-handed
+    rotation about +y turns the camera the other way.
+    """
+    from habitat_sim.utils.common import quat_from_angle_axis
+
+    saved = env.sim.get_agent_state()
+    views = []
+    try:
+        for yaw_deg in sorted(yaws_deg):
+            rotation = saved.rotation * quat_from_angle_axis(
+                float(np.deg2rad(-yaw_deg)), np.array([0.0, 1.0, 0.0])
+            )
+            observation = env.sim.get_observations_at(
+                position=saved.position,
+                rotation=rotation,
+                # Hold the pose so this heading's own sensor transform can be
+                # read; the finally block restores it.
+                keep_agent_at_new_pose=True,
+            )
+            if observation is None:
+                continue
+            rgb, depth = _rgb_depth(observation)
+            intrinsics = _intrinsics(
+                rgb.shape[1], rgb.shape[0], hfov_deg
+            )
+            rgb, depth, intrinsics = _downscale_view(
+                rgb, depth, intrinsics, scale
+            )
+            views.append({
+                "yaw_deg": float(yaw_deg),
+                "rgb": rgb,
+                "depth": depth,
+                "intrinsics": intrinsics,
+                "camera_to_world": _camera_to_world(env),
+            })
+    finally:
+        env.sim.set_agent_state(
+            saved.position, saved.rotation, reset_sensors=False
+        )
+    return views
 
 
 def _build_navmesh_map(env, resolution=1024):
@@ -415,6 +555,16 @@ def _draw_labels(image, lines, color=(255, 255, 255), anchor="top"):
         )
 
 
+def _previewed_view(decision):
+    """Return the surrounding view a previewed step committed to, if any."""
+    block = decision.get("decision") or {}
+    for key in ("execution", "exploration"):
+        inner = block.get(key) or {}
+        if inner.get("view_index") is not None:
+            return inner
+    return None
+
+
 def _annotated_video_frame(rgb, decision, steps):
     """Map the agent's waypoint pixels onto the frame that produced them.
 
@@ -439,8 +589,14 @@ def _annotated_video_frame(rgb, decision, steps):
             int(np.clip(int(value[1]), 0, height - 1)),
         )
 
-    requested = to_pixel(debug.get("requested_pixel_uv"))
-    applied = to_pixel(decision.get("pixel_uv"))
+    # A previewed step chose its pixel inside a surrounding view, so those
+    # coordinates address a different image than this one; drawing them here
+    # would put markers on unrelated scenery.
+    previewed = _previewed_view(decision)
+    requested = (
+        None if previewed else to_pixel(debug.get("requested_pixel_uv"))
+    )
+    applied = None if previewed else to_pixel(decision.get("pixel_uv"))
     if requested is not None and applied is not None and requested != applied:
         cv2.line(image, requested, applied, (255, 255, 255), 1, cv2.LINE_AA)
     if requested is not None:
@@ -464,6 +620,11 @@ def _annotated_video_frame(rgb, decision, steps):
         header += " req=({},{})".format(*requested)
     if applied is not None:
         header += " use=({},{})".format(*applied)
+    if previewed:
+        header += " previewed view={} yaw={:+.0f}deg".format(
+            previewed.get("view_index"),
+            previewed.get("view_yaw_deg") or 0.0,
+        )
     subgoal = (debug.get("subgoal_before") or {}).get("subgoal_id")
     if subgoal is not None:
         header = "subgoal={} ".format(subgoal) + header
@@ -540,6 +701,27 @@ def _captioner_line(episode_id, steps, decision):
     )
 
 
+def _action_summary(decision, action):
+    """Describe the executed action for one log line.
+
+    Four decisions reach this point and only one of them has coordinates, so
+    the pixel is read last rather than assumed.
+    """
+    if decision.get("stop"):
+        return "STOP"
+    if decision.get("turn_deg"):
+        turn_deg = int(decision["turn_deg"])
+        return "TURN {:+d}deg x{} a={}".format(
+            turn_deg, abs(turn_deg) // TURN_ANGLE_DEG, int(action)
+        )
+    pixel = decision.get("pixel_uv")
+    if pixel is None:
+        return "PREVIEW a={}".format(int(action))
+    return "({},{}) d={:.2f} a={}".format(
+        pixel[0], pixel[1], decision.get("depth_m", 0.0), int(action)
+    )
+
+
 def _step_line(episode_id, steps, decision, step_ms, action):
     """One line per step: where the time went, memory state, and the action.
 
@@ -555,7 +737,6 @@ def _step_line(episode_id, steps, decision, step_ms, action):
     analyzed = debug.get("analyzed_subgoal") or {}
     analyzed_id = analyzed.get("subgoal_id")
     current_id = task.get("current_subgoal_id")
-    pixel = decision.get("pixel_uv")
     line = (
         "ep={} s={} {:.0f}ms [wp={:.0f} sel={:.0f} cap={:.0f} rest={:.0f}] "
         "sg={}->{} mode={} win={} obs={} | cap={} act={}".format(
@@ -567,10 +748,7 @@ def _step_line(episode_id, steps, decision, step_ms, action):
             len(temporal.get("frame_ids") or ()),
             task.get("observation_count"),
             _caption_summary(decision),
-            "STOP" if decision.get("stop") else
-            "({},{}) d={:.2f} a={}".format(
-                pixel[0], pixel[1], decision.get("depth_m", 0.0), int(action)
-            ),
+            _action_summary(decision, action),
         )
     )
     # Surface only the abnormal cases inline; the rest stays behind the flag.
@@ -585,6 +763,59 @@ ACTION_NAMES = {
     2: "TURN_LEFT",
     3: "TURN_RIGHT",
 }
+
+
+def _turn_primitive(turn_deg):
+    """Split a requested turn into one primitive and a repeat count.
+
+    Positive is to the right, matching ``yaw_delta_deg`` everywhere else. The
+    request is rejected rather than rounded when it is not whole repeats of the
+    simulator's turn angle: rounding would execute a smaller turn than the actor
+    asked for and nothing downstream would notice.
+    """
+    turn_deg = int(turn_deg)
+    if turn_deg == 0 or turn_deg % TURN_ANGLE_DEG:
+        raise ValueError(
+            "turn_deg={} is not a non-zero multiple of the simulator's "
+            "turn_angle={}".format(turn_deg, TURN_ANGLE_DEG)
+        )
+    action = 3 if turn_deg > 0 else 2  # turn_right / turn_left
+    return action, abs(turn_deg) // TURN_ANGLE_DEG
+
+
+def _turn_frame(
+    env,
+    observation,
+    decision,
+    steps,
+    args,
+    navmesh_map,
+    positions,
+    goal_position,
+    waypoint_targets,
+    landmark_marks,
+):
+    """Render one intermediate frame of a multi-primitive turn.
+
+    Without these the video would jump the whole turn at once, which reads as a
+    teleport and hides how many steps the turn actually cost.
+    """
+    rgb, _ = _rgb_depth(observation)
+    debug_rgb = (
+        _clean_video_frame(rgb)
+        if args.clean_video
+        else _annotated_video_frame(rgb, decision, steps)
+    )
+    if navmesh_map is None:
+        return debug_rgb
+    return _topdown_panel(
+        debug_rgb,
+        _render_topdown(
+            env, navmesh_map, positions, goal_position, rgb.shape[0],
+            waypoints=waypoint_targets,
+            landmark_marks=landmark_marks,
+        ),
+    )
 
 
 def _fallback_action_for_follower_stop(decision):
@@ -824,6 +1055,25 @@ def main():
     parser.add_argument("--actor-python", type=Path, default=ROOT / ".venv/bin/python")
     parser.add_argument("--waypoint-radius", type=float, default=0.25)
     parser.add_argument("--depth-hfov", type=float, default=90.0)
+    parser.add_argument(
+        "--preview-yaws",
+        type=str,
+        default="-90,-45,0,45,90",
+        help=(
+            "Comma-separated heading offsets in degrees rendered for a "
+            "PREVIEW decision; positive is to the left. The forward view is "
+            "rendered through the same path so all views share one scale."
+        ),
+    )
+    parser.add_argument(
+        "--preview-scale",
+        type=float,
+        default=0.5,
+        help=(
+            "Downscale factor applied to preview views before they cross the "
+            "pipe. The VLM resizes them to its own budget anyway."
+        ),
+    )
     parser.add_argument("--debug-memory", action="store_true", help="Dump both memories and the full latency breakdown under each step.")
     parser.add_argument(
         "--debug-navigation",
@@ -840,6 +1090,18 @@ def main():
     args = parser.parse_args()
     if not 0 <= args.rank < args.world_size:
         parser.error("--rank must be in [0, --world-size).")
+    try:
+        args.preview_yaws = tuple(
+            float(value)
+            for value in args.preview_yaws.split(",")
+            if value.strip()
+        )
+    except ValueError:
+        parser.error("--preview-yaws must be comma-separated numbers.")
+    if not args.preview_yaws:
+        parser.error("--preview-yaws must name at least one heading.")
+    if not 0 < args.preview_scale <= 1.0:
+        parser.error("--preview-scale must be in (0, 1].")
     if args.output_dir is not None:
         # Habitat changes the working directory below, so pin this now.
         args.output_dir = args.output_dir.expanduser().resolve()
@@ -955,6 +1217,31 @@ def main():
                     waypoint, decision = actor.act(
                         rgb, depth, instruction, intrinsics, _camera_to_world(env)
                     )
+                    if decision.get("action_mode") == "PREVIEW":
+                        # The actor asked to look around before committing.
+                        # Rendering is not a simulator step, so this costs the
+                        # episode nothing but one extra model call.
+                        preview_started = time.perf_counter()
+                        views = _preview_views(
+                            env,
+                            args.preview_yaws,
+                            args.depth_hfov,
+                            args.preview_scale,
+                        )
+                        preview_render_ms = (
+                            time.perf_counter() - preview_started
+                        ) * 1000
+                        preview_request = decision
+                        waypoint, decision = actor.act_on_preview(
+                            views, instruction
+                        )
+                        decision["preview"] = {
+                            "render_ms": preview_render_ms,
+                            "yaws_deg": [view["yaw_deg"] for view in views],
+                            "requested_by": preview_request.get(
+                                "decision"
+                            ),
+                        }
                     if waypoint is not None:
                         waypoint_targets.append(
                             np.asarray(waypoint, dtype=np.float64)
@@ -995,7 +1282,20 @@ def main():
                     follower_action = None
                     if decision.get("stop"):
                         action = 0  # HabitatSimActions.stop, chosen by Actor.
+                        repeats = 1
+                    elif decision.get("turn_deg"):
+                        action, repeats = _turn_primitive(
+                            decision["turn_deg"]
+                        )
+                    elif waypoint is None:
+                        # No waypoint, no turn and no stop: the previewed
+                        # heading had no valid depth, or a PREVIEW went
+                        # unanswered. Turning in place keeps the episode alive
+                        # instead of handing the follower a None target.
+                        action = 2  # HabitatSimActions.turn_left
+                        repeats = 1
                     else:
+                        repeats = 1
                         follower_action = follower.get_next_action(waypoint)
                         if follower_action is None or int(follower_action) == 0:
                             # STOP is reserved exclusively for the Actor. A
@@ -1010,7 +1310,31 @@ def main():
                         else:
                             action = follower_action
                     env_started = time.perf_counter()
-                    observation = env.step({"action": action})
+                    # A requested turn is several primitives. Every one of them
+                    # is a real simulator step against the episode budget, so
+                    # they are counted and recorded individually rather than
+                    # collapsed into the single step the actor was consulted on.
+                    executed = 0
+                    for repeat in range(repeats):
+                        # A turn can reach the episode's step limit partway
+                        # through; stop issuing primitives rather than stepping
+                        # an environment that has already finished.
+                        if repeat and env.episode_over:
+                            break
+                        observation = env.step({"action": action})
+                        executed += 1
+                        positions.append(
+                            env.sim.get_agent_state().position.copy()
+                        )
+                        if frames is not None and repeat:
+                            # The frame recorded before the loop already covers
+                            # the first primitive, so this starts at the second
+                            # and the video stays one frame per executed step.
+                            frames.append(_turn_frame(
+                                env, observation, decision, steps + repeat,
+                                args, navmesh_map, positions, goal_position,
+                                waypoint_targets, landmark_marks,
+                            ))
                     env_ms = (time.perf_counter() - env_started) * 1000
                     position_after = (
                         env.sim.get_agent_state().position.copy()
@@ -1054,8 +1378,10 @@ def main():
                         ):
                             print(line, flush=True)
                     step_started = now
-                    steps += 1
-                    positions.append(env.sim.get_agent_state().position.copy())
+                    # Counted from what the loop actually executed: a turn is
+                    # several steps, and an early break makes it fewer than
+                    # were asked for.
+                    steps += executed
                 metrics = env.get_metrics()
                 for name in totals:
                     totals[name] += float(metrics.get(name, 0.0))
