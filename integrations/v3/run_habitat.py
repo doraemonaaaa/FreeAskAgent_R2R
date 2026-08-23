@@ -436,7 +436,8 @@ def _draw_landmark_point(image, decision):
     """Plot the landmark the tracker located, colored by its proximity.
 
     The pixel is optional by design: when the model returns no usable ``u``/``v``
-    there is simply no marker, and the bottom strip reports the state instead.
+    there is simply no marker. The structured state remains available in the
+    terminal debug output.
     """
     import cv2
 
@@ -463,98 +464,6 @@ def _draw_landmark_point(image, decision):
     )
 
 
-def _landmark_lines(decision):
-    """Summarize the landmark tracker for the frame's bottom strip."""
-    landmark = _landmark_state(decision)
-    debug = decision.get("debug") or {}
-    error = debug.get("landmark_error")
-    if not landmark:
-        return ("landmark: none{}".format(
-            " error={}".format(str(error)[:60]) if error else ""
-        ),)
-    # The tracker runs against the subgoal active at the start of the step, so
-    # a subgoal that completed during this step leaves the reading describing
-    # the stage the agent has just left rather than the one now being steered.
-    current_id = (debug.get("subgoal_after") or {}).get("subgoal_id")
-    tracked_id = debug.get("landmark_subgoal_id")
-    stale = (
-        tracked_id is not None
-        and current_id is not None
-        and str(tracked_id) != str(current_id)
-    )
-    pixel = debug.get("landmark_pixel_uv")
-    header = (
-        "landmark: visible={} dir={} prox={} passed={} dominant={} "
-        "conf={:.2f} at={}{}".format(
-            int(bool(landmark.get("visible"))),
-            landmark.get("direction"),
-            landmark.get("proximity"),
-            int(bool(landmark.get("passed"))),
-            int(bool(landmark.get("destination_dominant"))),
-            float(landmark.get("confidence") or 0.0),
-            # Distinguishes "tracker saw nothing" from "tracker saw it but
-            # returned no usable pixel", which look identical on the frame.
-            "({},{})".format(*pixel) if pixel else "no-pixel",
-            " STALE(sg={})".format(tracked_id) if stale else "",
-        )
-    )
-    evidence = landmark.get("evidence") or ""
-    return (
-        header,
-        "  why: {}".format(evidence[:82]) if evidence else "",
-        "  landmark_error: {}".format(str(error)[:70]) if error else "",
-    )
-
-
-def _waypoint_lines(decision):
-    """Summarize the waypoint policy for the frame's bottom strip."""
-    debug = decision.get("debug") or {}
-    confidence = debug.get("waypoint_confidence")
-    world = decision.get("world_xyz")
-    line = "waypoint: intent {}->{} conf={}".format(
-        debug.get("waypoint_model_intent") or "-",
-        debug.get("waypoint_applied_intent") or "-",
-        "-" if confidence is None else "{:.2f}".format(float(confidence)),
-    )
-    if world is not None:
-        line += " world=({:.2f},{:.2f},{:.2f})".format(*[
-            float(value) for value in world
-        ])
-    recovery = debug.get("recovery_mode")
-    if recovery:
-        line += " recovery={}".format(recovery)
-    evidence = debug.get("waypoint_evidence") or ""
-    return (
-        line,
-        "  why: {}".format(evidence[:82]) if evidence else "",
-    )
-
-
-def _draw_labels(image, lines, color=(255, 255, 255), anchor="top"):
-    """Write short debug lines over a dark strip so text stays readable.
-
-    ``anchor="bottom"`` puts the strip along the lower edge, which keeps the
-    landmark and waypoint report clear of the step header at the top.
-    """
-    import cv2
-
-    lines = [line for line in lines if line]
-    if not lines:
-        return
-    scale, thickness, margin = 0.45, 1, 6
-    height = 16
-    strip = margin + height * len(lines) + margin
-    top = 0 if anchor == "top" else max(0, image.shape[0] - strip)
-    box = image[top : top + strip, :]
-    # Darken rather than fill, so the scene stays visible behind the text.
-    box[:] = (box * 0.35).astype(image.dtype)
-    for index, line in enumerate(lines):
-        cv2.putText(
-            image, line, (margin, top + margin + height * (index + 1) - 4),
-            cv2.FONT_HERSHEY_SIMPLEX, scale, color, thickness, cv2.LINE_AA,
-        )
-
-
 def _previewed_view(decision):
     """Return the surrounding view a previewed step committed to, if any."""
     block = decision.get("decision") or {}
@@ -565,21 +474,192 @@ def _previewed_view(decision):
     return None
 
 
-def _annotated_video_frame(rgb, decision, steps):
-    """Map the agent's waypoint pixels onto the frame that produced them.
+def _draw_preview_indicator(image, decision):
+    """Show which surrounding heading a PREVIEW decision selected."""
+    import cv2
+
+    previewed = _previewed_view(decision)
+    if previewed is None:
+        return
+
+    yaw_deg = float(previewed.get("view_yaw_deg") or 0.0)
+    yaw_rad = np.deg2rad(yaw_deg)
+    height, width = image.shape[:2]
+    origin = (width // 2, max(int(height * 0.20), 55))
+    length = max(int(min(width, height) * 0.14), 45)
+    endpoint = (
+        int(np.clip(origin[0] + length * np.sin(yaw_rad), 12, width - 13)),
+        int(np.clip(origin[1] - length * np.cos(yaw_rad), 12, height - 13)),
+    )
+    color = (40, 225, 255)
+    cv2.circle(image, origin, 7, color, 2, cv2.LINE_AA)
+    cv2.arrowedLine(
+        image, origin, endpoint, color, 3, cv2.LINE_AA, tipLength=0.28,
+    )
+    label = "PREVIEW {:+.0f}deg".format(yaw_deg)
+    cv2.putText(
+        image,
+        label,
+        (max(origin[0] - 72, 4), origin[1] + 27),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.50,
+        color,
+        2,
+        cv2.LINE_AA,
+    )
+
+
+def _draw_turn_arrow(image, turn_deg):
+    """Overlay the actor's requested in-place turn on an RGB video frame.
+
+    Positive angles point right and negative angles point left, matching the
+    convention used by ``_turn_primitive``.  A bent arrow is used instead of a
+    straight horizontal arrow so it cannot be confused with an image-space
+    waypoint direction.
+    """
+    import cv2
+
+    if turn_deg is None or int(turn_deg) == 0:
+        return
+
+    turn_deg = int(turn_deg)
+    height, width = image.shape[:2]
+    direction = 1 if turn_deg > 0 else -1
+    center_x = width // 2
+    bend_y = max(int(height * 0.27), 42)
+    stem_y = min(int(height * 0.46), height - 24)
+    tip_x = int(np.clip(
+        center_x + direction * max(int(width * 0.18), 55),
+        24,
+        width - 25,
+    ))
+    thickness = max(3, int(round(min(width, height) / 120.0)))
+    color = (255, 210, 0)
+
+    # A small translucent backing keeps the symbol readable in both bright
+    # rooms and dark corridors without hiding much of the observation.
+    overlay = image.copy()
+    pad = 18
+    left = max(min(center_x, tip_x) - pad, 0)
+    right = min(max(center_x, tip_x) + pad, width - 1)
+    top = max(bend_y - pad - 22, 0)
+    bottom = min(stem_y + pad, height - 1)
+    cv2.rectangle(overlay, (left, top), (right, bottom), (0, 0, 0), -1)
+    cv2.addWeighted(overlay, 0.38, image, 0.62, 0, dst=image)
+
+    cv2.line(
+        image, (center_x, stem_y), (center_x, bend_y),
+        color, thickness, cv2.LINE_AA,
+    )
+    cv2.arrowedLine(
+        image, (center_x, bend_y), (tip_x, bend_y),
+        color, thickness, cv2.LINE_AA, tipLength=0.28,
+    )
+    label = "{} {}deg".format(
+        "RIGHT" if direction > 0 else "LEFT", abs(turn_deg)
+    )
+    (text_width, text_height), _ = cv2.getTextSize(
+        label, cv2.FONT_HERSHEY_SIMPLEX, 0.55, 2,
+    )
+    text_x = int(np.clip(center_x - text_width // 2, 2, width - text_width - 2))
+    text_y = max(top + text_height + 4, text_height + 2)
+    cv2.putText(
+        image, label, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX,
+        0.55, color, 2, cv2.LINE_AA,
+    )
+
+
+def _wrap_overlay_text(cv2, text, max_width, scale, thickness):
+    """Wrap one label by rendered pixel width without dropping source text."""
+    words = str(text or "-").split()
+    if not words:
+        return ["-"]
+    lines = []
+    current = words[0]
+    for word in words[1:]:
+        candidate = current + " " + word
+        width = cv2.getTextSize(
+            candidate, cv2.FONT_HERSHEY_SIMPLEX, scale, thickness
+        )[0][0]
+        if width <= max_width:
+            current = candidate
+        else:
+            lines.append(current)
+            current = word
+    lines.append(current)
+    return lines
+
+
+def _draw_task_context(image, decision):
+    """Show the original instruction and the currently active subgoal."""
+    import cv2
+
+    task = decision.get("task_memory") or {}
+    debug = decision.get("debug") or {}
+    current = debug.get("subgoal_after")
+    instruction = task.get("goal") or "-"
+    if current is None:
+        subgoal_text = (
+            "COMPLETE"
+            if task.get("current_subgoal_id") is None
+            else str(task.get("current_subgoal_id"))
+        )
+    else:
+        subgoal_text = "{}: {}".format(
+            current.get("subgoal_id", "-"),
+            current.get("description") or "-",
+        )
+
+    scale, thickness = 0.44, 1
+    margin, line_height = 8, 18
+    max_width = max(image.shape[1] - 2 * margin, 1)
+    lines = _wrap_overlay_text(
+        cv2, "Instruction: " + instruction, max_width, scale, thickness
+    )
+    lines.extend(_wrap_overlay_text(
+        cv2, "Subgoal: " + subgoal_text, max_width, scale, thickness
+    ))
+    strip_height = margin + line_height * len(lines) + 4
+    overlay = image.copy()
+    cv2.rectangle(
+        overlay,
+        (0, 0),
+        (image.shape[1] - 1, min(strip_height, image.shape[0]) - 1),
+        (0, 0, 0),
+        -1,
+    )
+    cv2.addWeighted(overlay, 0.62, image, 0.38, 0, dst=image)
+    for index, line in enumerate(lines):
+        cv2.putText(
+            image,
+            line,
+            (margin, margin + line_height * (index + 1) - 4),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            scale,
+            (255, 255, 255),
+            thickness,
+            cv2.LINE_AA,
+        )
+
+
+def _annotated_video_frame(rgb, decision, _steps):
+    """Visualize only navigation actions and perception decisions.
 
     ``requested_pixel_uv`` is the location the waypoint policy asked for;
     ``pixel_uv`` is where the depth map allowed that waypoint to land. Drawing
     both, joined by a line, separates a bad model selection from a good
     selection that the walkable-pixel snap pulled somewhere else. The landmark
-    the tracker located is drawn on the same frame as a diamond, so where the
-    agent is looking and where it decided to step can be read together.
+    decision is a diamond, PREVIEW is a cyan heading arrow, and an in-place
+    turn is a yellow bent arrow. The top strip contains only the route
+    instruction and active subgoal; detailed diagnostics remain in terminal
+    logs.
     """
     import cv2
 
     image = rgb.copy()
     height, width = image.shape[:2]
     debug = decision.get("debug") or {}
+    _draw_task_context(image, decision)
 
     def to_pixel(value):
         if not value:
@@ -608,70 +688,79 @@ def _annotated_video_frame(rgb, decision, steps):
         cv2.circle(image, applied, 6, _APPLIED_COLOR, -1, cv2.LINE_AA)
         cv2.circle(image, applied, 6, (255, 255, 255), 1, cv2.LINE_AA)
     _draw_landmark_point(image, decision)
-
-    status = "STOP" if decision.get("stop") else (
-        debug.get("waypoint_applied_intent") or "-"
-    )
-    header = "step={} {}".format(steps, status)
-    depth_m = decision.get("depth_m")
-    if depth_m is not None:
-        header += " depth={:.2f}m".format(depth_m)
-    if requested is not None:
-        header += " req=({},{})".format(*requested)
-    if applied is not None:
-        header += " use=({},{})".format(*applied)
-    if previewed:
-        header += " previewed view={} yaw={:+.0f}deg".format(
-            previewed.get("view_index"),
-            previewed.get("view_yaw_deg") or 0.0,
-        )
-    subgoal = (debug.get("subgoal_before") or {}).get("subgoal_id")
-    if subgoal is not None:
-        header = "subgoal={} ".format(subgoal) + header
-    guard = debug.get("waypoint_guard_reason")
-    _draw_labels(
-        image,
-        (
-            header,
-            "guard: {}".format(guard[:88]) if guard else "",
-            "circle=requested  dot=executed  diamond=landmark",
-        ),
-    )
-    _draw_labels(
-        image,
-        _waypoint_lines(decision) + _landmark_lines(decision),
-        anchor="bottom",
-    )
+    _draw_preview_indicator(image, decision)
+    _draw_turn_arrow(image, decision.get("turn_deg"))
     return image
+
+
+def _combined_step_timings(decision):
+    """Combine the first and second halves of a PREVIEW step.
+
+    ``act_on_preview`` returns its own timing dictionary, so without this merge
+    the initial Captioner and waypoint request disappear from the runner log.
+    """
+    resolved = decision.get("timings") or {}
+    preview = decision.get("preview") or {}
+    initial = preview.get("act_timings") or {}
+
+    def total(key):
+        return float(initial.get(key, 0.0)) + float(
+            resolved.get(key, 0.0)
+        )
+
+    return {
+        "rgb_ms": total("rgb_ms"),
+        "memory_ms": total("memory_ms"),
+        "captioner_ms": total("captioner_ms"),
+        "depth_ms": total("depth_ms"),
+        "select_pixel_ms": total("select_pixel_ms"),
+        "preview_select_ms": total("preview_select_ms"),
+        "waypoint_ms": total("waypoint_ms"),
+        "worker_ms": float(initial.get("total_ms", 0.0)) + float(
+            resolved.get("total_ms", 0.0)
+        ),
+        "encode_ms": float(preview.get("act_encode_ms", 0.0)) + float(
+            decision.get("encode_ms", 0.0)
+        ),
+        "roundtrip_ms": float(
+            preview.get("act_roundtrip_ms", 0.0)
+        ) + float(decision.get("roundtrip_ms", 0.0)),
+        "preview_render_ms": float(preview.get("render_ms", 0.0)),
+    }
 
 
 def _latency_line(episode_id, steps, decision, step_ms, render_ms, env_ms):
     """Attribute one step's wall time to the model, the IPC, and the simulator."""
-    timings = decision.get("timings") or {}
-    roundtrip_ms = decision.get("roundtrip_ms", 0.0)
-    worker_ms = timings.get("total_ms", 0.0)
+    timings = _combined_step_timings(decision)
+    roundtrip_ms = timings["roundtrip_ms"]
+    worker_ms = timings["worker_ms"]
     memory_ms = timings.get("memory_ms", 0.0)
     captioner_ms = timings.get("captioner_ms", 0.0)
     accounted = (
         timings.get("rgb_ms", 0.0) + memory_ms + timings.get("depth_ms", 0.0)
-        + timings.get("select_pixel_ms", 0.0) + timings.get("waypoint_ms", 0.0)
+        + timings.get("select_pixel_ms", 0.0)
+        + timings.get("preview_select_ms", 0.0)
+        + timings.get("waypoint_ms", 0.0)
     )
     return (
         "episode={} step={} LATENCY step={:.0f}ms | encode={:.0f} ipc={:.0f} "
         "worker={:.0f} [rgb={:.0f} memory={:.0f} (captioner={:.0f} rules={:.0f}) "
-        "depth={:.0f} select_pixel={:.0f} waypoint={:.0f} other={:.0f}] "
+        "depth={:.0f} select_pixel={:.0f} preview_select={:.0f} "
+        "waypoint={:.0f} other={:.0f}] preview_render={:.0f} "
         "render={:.0f} env={:.0f}".format(
             episode_id, steps, step_ms,
-            decision.get("encode_ms", 0.0),
+            timings["encode_ms"],
             # Whatever the round trip spent outside the worker's own act() call.
             roundtrip_ms - worker_ms,
             worker_ms,
             timings.get("rgb_ms", 0.0),
             memory_ms, captioner_ms, memory_ms - captioner_ms,
             timings.get("depth_ms", 0.0), timings.get("select_pixel_ms", 0.0),
+            timings.get("preview_select_ms", 0.0),
             timings.get("waypoint_ms", 0.0),
             # Non-zero here means act() spends time outside every named phase.
             worker_ms - accounted,
+            timings["preview_render_ms"],
             render_ms, env_ms,
         )
     )
@@ -727,22 +816,26 @@ def _step_line(episode_id, steps, decision, step_ms, action):
 
     ``--debug-memory`` adds the full per-memory dumps below this line.
     """
-    timings = decision.get("timings") or {}
+    timings = _combined_step_timings(decision)
     task = decision.get("task_memory") or {}
     temporal = decision.get("temporal_memory") or {}
     waypoint_ms = timings.get("waypoint_ms", 0.0)
     select_ms = timings.get("select_pixel_ms", 0.0)
     captioner_ms = timings.get("captioner_ms", 0.0)
+    preview_select_ms = timings.get("preview_select_ms", 0.0)
+    preview_render_ms = timings.get("preview_render_ms", 0.0)
     debug = decision.get("debug") or {}
     analyzed = debug.get("analyzed_subgoal") or {}
     analyzed_id = analyzed.get("subgoal_id")
     current_id = task.get("current_subgoal_id")
     line = (
-        "ep={} s={} {:.0f}ms [wp={:.0f} sel={:.0f} cap={:.0f} rest={:.0f}] "
+        "ep={} s={} {:.0f}ms [wp={:.0f} sel={:.0f} cap={:.0f} "
+        "pre={:.0f} rest={:.0f}] "
         "sg={}->{} mode={} win={} obs={} | cap={} act={}".format(
             episode_id, steps, step_ms,
-            waypoint_ms, select_ms, captioner_ms,
-            step_ms - waypoint_ms - select_ms - captioner_ms,
+            waypoint_ms, select_ms, captioner_ms, preview_select_ms,
+            step_ms - waypoint_ms - select_ms - captioner_ms
+            - preview_select_ms - preview_render_ms,
             analyzed_id, current_id,
             temporal.get("active_error_mode"),
             len(temporal.get("frame_ids") or ()),
@@ -751,6 +844,15 @@ def _step_line(episode_id, steps, decision, step_ms, action):
             _action_summary(decision, action),
         )
     )
+    preview = decision.get("preview") or {}
+    if preview:
+        selected = _previewed_view(decision) or {}
+        line += " | preview=view{}/{} yaw={:+.0f} render={:.0f}ms".format(
+            selected.get("view_index", "-"),
+            len(preview.get("yaws_deg") or ()),
+            float(selected.get("view_yaw_deg") or 0.0),
+            preview_render_ms,
+        )
     # Surface only the abnormal cases inline; the rest stays behind the flag.
     if decision.get("temporal_error"):
         line += " ANALYSIS_ERROR={!r}".format(decision.get("temporal_error"))
@@ -899,6 +1001,15 @@ def _navigation_debug_lines(
         ),
         "  BEHAVIOR recent={}".format(
             (debug.get("behavior_history") or [])[-3:]
+        ),
+        "  PREVIEW requested={} headings={} selected_view={} yaw={} "
+        "selection={} guard={!r}".format(
+            bool(decision.get("preview")),
+            (decision.get("preview") or {}).get("yaws_deg"),
+            debug.get("preview_view_index"),
+            debug.get("preview_yaw_deg"),
+            debug.get("preview_selection"),
+            debug.get("preview_guard_reason"),
         ),
         "  WAYPOINT phase={} heading_lock={} model_intent={} "
         "applied_intent={} confidence={} guard={!r} evidence={!r} raw={!r} "
@@ -1061,7 +1172,8 @@ def main():
         default="-90,-45,0,45,90",
         help=(
             "Comma-separated heading offsets in degrees rendered for a "
-            "PREVIEW decision; positive is to the left. The forward view is "
+            "PREVIEW decision; negative is left and positive is right. The "
+            "forward view is "
             "rendered through the same path so all views share one scale."
         ),
     )
@@ -1238,6 +1350,13 @@ def main():
                         decision["preview"] = {
                             "render_ms": preview_render_ms,
                             "yaws_deg": [view["yaw_deg"] for view in views],
+                            "act_timings": preview_request.get("timings") or {},
+                            "act_encode_ms": preview_request.get(
+                                "encode_ms", 0.0
+                            ),
+                            "act_roundtrip_ms": preview_request.get(
+                                "roundtrip_ms", 0.0
+                            ),
                             "requested_by": preview_request.get(
                                 "decision"
                             ),

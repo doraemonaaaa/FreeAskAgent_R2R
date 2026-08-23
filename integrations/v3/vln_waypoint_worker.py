@@ -5,6 +5,7 @@ import base64
 import io
 import json
 import sys
+from dataclasses import asdict
 
 import numpy as np
 from PIL import Image
@@ -224,6 +225,20 @@ def _agent_debug_state(actor, decision):
             ),
             "waypoint_confidence": getattr(
                 actor, "last_waypoint_confidence", None
+            ),
+            "preview_view_index": getattr(
+                actor, "last_preview_view_index", None
+            ),
+            "preview_yaw_deg": getattr(
+                actor, "last_preview_yaw_deg", None
+            ),
+            "preview_selection": (
+                asdict(actor.last_preview_selection)
+                if getattr(actor, "last_preview_selection", None) is not None
+                else None
+            ),
+            "preview_guard_reason": getattr(
+                actor, "last_preview_guard_reason", None
             ),
             "error_candidate": getattr(
                 actor, "last_error_candidate", None
