@@ -52,18 +52,23 @@ R2R_CE_OVERRIDES = [
 ]
 
 
+# Height of both cameras above the agent's base. The actor needs the same
+# number to tell floor pixels from wall pixels when it snaps a waypoint, so it
+# is defined once and passed through rather than repeated in the worker.
+SENSOR_HEIGHT_M = 1.25
+
 DEPTH_SENSOR_OVERRIDES = [
     # RGB and depth must share pixel coordinates and the same camera frame;
     # vln_agent_2 back-projects the RGB-selected pixel through this depth map.
     "habitat.simulator.agents.main_agent.sim_sensors.rgb_sensor.height=480",
     "habitat.simulator.agents.main_agent.sim_sensors.rgb_sensor.width=640",
     "habitat.simulator.agents.main_agent.sim_sensors.rgb_sensor.hfov=90",
-    "habitat.simulator.agents.main_agent.sim_sensors.rgb_sensor.position=[0,1.25,0]",
+    "habitat.simulator.agents.main_agent.sim_sensors.rgb_sensor.position=[0,{},0]".format(SENSOR_HEIGHT_M),
     "habitat.simulator.agents.main_agent.sim_sensors.depth_sensor.type=HabitatSimDepthSensor",
     "habitat.simulator.agents.main_agent.sim_sensors.depth_sensor.height=480",
     "habitat.simulator.agents.main_agent.sim_sensors.depth_sensor.width=640",
     "habitat.simulator.agents.main_agent.sim_sensors.depth_sensor.hfov=90",
-    "habitat.simulator.agents.main_agent.sim_sensors.depth_sensor.position=[0,1.25,0]",
+    "habitat.simulator.agents.main_agent.sim_sensors.depth_sensor.position=[0,{},0]".format(SENSOR_HEIGHT_M),
     "habitat.simulator.agents.main_agent.sim_sensors.depth_sensor.min_depth=0.0",
     "habitat.simulator.agents.main_agent.sim_sensors.depth_sensor.max_depth=10.0",
     "habitat.simulator.agents.main_agent.sim_sensors.depth_sensor.normalize_depth=false",
@@ -73,8 +78,11 @@ DEPTH_SENSOR_OVERRIDES = [
 class WaypointActorProcess:
     """Keep the Python 3.12 vision model out of Habitat's Python process."""
 
-    def __init__(self, python, worker, model_path, gpu_id, timeout=600):
-        command = [str(python), str(worker), "--model-path", str(model_path)]
+    def __init__(self, python, worker, model_path, gpu_id, timeout=600, camera_height_m=SENSOR_HEIGHT_M):
+        command = [
+            str(python), str(worker), "--model-path", str(model_path),
+            "--camera-height-m", repr(float(camera_height_m)),
+        ]
         environment = os.environ.copy()
         environment["PYTHONPATH"] = str(AGENTFLOW_ROOT) + os.pathsep + environment.get("PYTHONPATH", "")
         environment["CUDA_VISIBLE_DEVICES"] = str(gpu_id)

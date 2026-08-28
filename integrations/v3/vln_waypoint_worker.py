@@ -290,6 +290,11 @@ def _agent_debug_state(actor, decision):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model-path", required=True)
+    parser.add_argument(
+        "--camera-height-m", type=float, default=None,
+        help="Camera height above the agent's base; enables floor-level "
+             "waypoint validation in the actor.",
+    )
     args = parser.parse_args()
 
     protocol_stdout = sys.stdout
@@ -299,6 +304,7 @@ def main():
     actor = VLNAgent(
         args.model_path,
         debug_performance=False,
+        camera_height_m=args.camera_height_m,
     )
     for line in sys.stdin:
         try:
