@@ -283,6 +283,10 @@ def _agent_debug_state(actor, decision):
                 actor, "last_waypoint_raw_response", None
             ),
             "spatial_summary": getattr(actor, "last_spatial_summary", None),
+            "som_choice": getattr(actor, "last_som_choice", None),
+            "som_candidates": getattr(actor, "last_som_candidates", None),
+            "som_error": getattr(actor, "last_som_error", None),
+            "som_raw_response": getattr(actor, "last_som_raw_response", None),
             "spatial_error": getattr(actor, "last_spatial_error", None),
             "waypoint_stop_disposition": getattr(
                 actor, "last_waypoint_stop_disposition", None
@@ -336,6 +340,16 @@ def main():
                     normalized_depth=bool(request.get("normalized_depth", False)),
                     depth_min_m=request.get("depth_min_m"),
                     depth_max_m=request.get("depth_max_m"),
+                    navigable_window=(
+                        {
+                            "origin_xz": tuple(request["navigable"]["origin_xz"]),
+                            "resolution_m": float(request["navigable"]["resolution_m"]),
+                            "mask": _decode_array(request["navigable"]["mask"]),
+                        }
+                        if request.get("navigable")
+                        else None
+                    ),
+                    oracle_goal_xyz=request.get("oracle_goal_xyz"),
                 )
                 response = _act_response(actor, decision)
             elif request.get("operation") == "act_on_preview":

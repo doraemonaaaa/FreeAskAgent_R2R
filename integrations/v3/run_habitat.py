@@ -125,7 +125,7 @@ class WaypointActorProcess:
         """Initialize the worker's task memory before an episode starts."""
         return self._request({"operation": "prepare", "instruction": instruction})
 
-    def act(self, rgb, depth, instruction, intrinsics, camera_to_world):
+    def act(self, rgb, depth, instruction, intrinsics, camera_to_world, navigable=None, oracle_goal=None):
         encode_started = time.perf_counter()
         request = {
             "operation": "act",
@@ -133,6 +133,21 @@ class WaypointActorProcess:
             "instruction": instruction, "intrinsics": np.asarray(intrinsics).tolist(),
             "camera_to_world": np.asarray(camera_to_world).tolist(),
         }
+        if oracle_goal is not None:
+            # Diagnostic only (--som-oracle): the goal position lets the
+            # worker pick the best set-of-mark candidate without the model,
+            # which bounds what perfect choices could achieve.
+            request["oracle_goal_xyz"] = [float(v) for v in oracle_goal]
+        if navigable is not None:
+            # The controller's own traversability around the agent: what the
+            # follower can reach. Floor seen through glass or past a railing
+            # looks walkable in depth but is not, and a target there only
+            # makes the follower turn in place.
+            request["navigable"] = {
+                "origin_xz": list(navigable["origin_xz"]),
+                "resolution_m": navigable["resolution_m"],
+                "mask": self._array(navigable["mask"]),
+            }
         encode_ms = (time.perf_counter() - encode_started) * 1000
         roundtrip_started = time.perf_counter()
         result = self._request(request)
@@ -323,6 +338,22 @@ def _preview_views(env, yaws_deg, hfov_deg, scale=1.0):
             saved.position, saved.rotation, reset_sensors=False
         )
     return views
+
+
+def _navigable_window(env, radius_m=6.0, resolution_m=0.25):
+    """Navmesh traversability on a grid around the agent, at its floor level."""
+    state = env.sim.get_agent_state()
+    pathfinder = env.sim.pathfinder
+    x0, y0, z0 = (float(v) for v in state.position)
+    cells = int(round(2 * radius_m / resolution_m))
+    origin = (x0 - radius_m, z0 - radius_m)
+    mask = np.zeros((cells, cells), dtype=np.bool_)
+    for row in range(cells):
+        z = origin[1] + (row + 0.5) * resolution_m
+        for col in range(cells):
+            x = origin[0] + (col + 0.5) * resolution_m
+            mask[row, col] = pathfinder.is_navigable([x, y0, z], 0.5)
+    return {"origin_xz": origin, "resolution_m": resolution_m, "mask": mask}
 
 
 def _build_navmesh_map(env, resolution=1024):
@@ -867,6 +898,10 @@ def _step_line(episode_id, steps, decision, step_ms, action):
     spatial = debug.get("spatial_summary")
     if spatial and spatial != "sp=-":
         line += " | " + spatial
+    if debug.get("som_choice") is not None:
+        line += " som={}/{}".format(
+            debug.get("som_choice"), len(debug.get("som_candidates") or ())
+        )
     # Surface only the abnormal cases inline; the rest stays behind the flag.
     if decision.get("temporal_error"):
         line += " ANALYSIS_ERROR={!r}".format(decision.get("temporal_error"))
@@ -1051,6 +1086,15 @@ def _navigation_debug_lines(
             debug.get("waypoint_stop_disposition"),
             debug.get("stop_reason"),
         ),
+        "  SPATIAL {} target={} som_choice={} candidates={}".format(
+            debug.get("spatial_summary"),
+            ((decision.get("spatial_memory") or {}).get("target") or {}).get("world_xyz"),
+            debug.get("som_choice"),
+            [
+                (c.get("label"), c.get("kind"), c.get("distance_m"), c.get("bearing_deg"), c.get("world_xyz"))
+                for c in (debug.get("som_candidates") or ())
+            ],
+        ),
         "  CONTROL follower={} forced_forward={} habitat_action={}".format(
             (
                 "NONE"
@@ -1128,6 +1172,19 @@ def _write_rank_summary(output_dir, rank, count, totals):
         json.dump(result, handle, sort_keys=True)
 
 
+def _parse_episode_ids(spec):
+    """``"1,2,3"`` or ``"@file"`` -> list of id strings, in order."""
+    if not spec:
+        return None
+    if spec.startswith("@"):
+        lines = Path(spec[1:]).read_text().splitlines()
+        items = [line.split("#", 1)[0].strip() for line in lines]
+        items = [item.split(",", 1)[0].strip() for item in items if item]
+    else:
+        items = [item.strip() for item in spec.split(",") if item.strip()]
+    return items or None
+
+
 def _select_episodes(
     available,
     *,
@@ -1135,10 +1192,25 @@ def _select_episodes(
     episode_count,
     rank,
     world_size,
+    episode_ids=None,
 ):
-    """Select one exact episode or the requested evaluation prefix."""
+    """Select one exact episode, an explicit id list, or the eval prefix.
+
+    ``episode_ids`` keeps the list's own order so a stratified evaluation
+    set is sharded evenly across ranks category by category.
+    """
     available = list(available)
-    if episode_id is not None:
+    if episode_ids:
+        by_id = {str(episode.episode_id): episode for episode in available}
+        missing = [item for item in episode_ids if item not in by_id]
+        if missing:
+            raise ValueError(
+                "episode ids not present in this split/scene: {}".format(
+                    ", ".join(missing)
+                )
+            )
+        selected = [by_id[item] for item in episode_ids]
+    elif episode_id is not None:
         selected = [
             episode
             for episode in available
@@ -1167,6 +1239,12 @@ def main():
     parser.add_argument(
         "--episode-id",
         help="Run exactly one episode ID; overrides --episodes.",
+    )
+    parser.add_argument(
+        "--episode-ids",
+        help="Comma-separated episode IDs, or @path to a file with one ID per "
+        "line (an optional ',category' suffix and # comments are ignored); "
+        "overrides --episodes and --episode-id.",
     )
     parser.add_argument("--max-steps", type=int, default=500)
     parser.add_argument("--gpu-id", type=int, default=None)
@@ -1202,6 +1280,7 @@ def main():
             "pipe. The VLM resizes them to its own budget anyway."
         ),
     )
+    parser.add_argument("--som-oracle", action="store_true", help="DIAGNOSTIC: give the worker the goal position so set-of-mark picks the geometrically best marker instead of asking the model.")
     parser.add_argument("--debug-memory", action="store_true", help="Dump both memories and the full latency breakdown under each step.")
     parser.add_argument(
         "--debug-navigation",
@@ -1216,6 +1295,9 @@ def main():
         help="Record unannotated RGB instead of overlaying the agent's waypoint pixels.",
     )
     args = parser.parse_args()
+    # Resolve the id list now: the evaluator chdirs into the Habitat root
+    # before the episodes are selected, which breaks a relative @file path.
+    episode_ids = _parse_episode_ids(args.episode_ids)
     if not 0 <= args.rank < args.world_size:
         parser.error("--rank must be in [0, --world-size).")
     try:
@@ -1261,6 +1343,7 @@ def main():
                 episode_count=args.episodes,
                 rank=args.rank,
                 world_size=args.world_size,
+                episode_ids=episode_ids,
             )
             env.episodes = episodes
             if not episodes:
@@ -1343,7 +1426,9 @@ def main():
                     rgb, depth, instruction = _observation(observation)
                     intrinsics = _intrinsics(rgb.shape[1], rgb.shape[0], args.depth_hfov)
                     waypoint, decision = actor.act(
-                        rgb, depth, instruction, intrinsics, _camera_to_world(env)
+                        rgb, depth, instruction, intrinsics, _camera_to_world(env),
+                        navigable=_navigable_window(env),
+                        oracle_goal=(goal_position if args.som_oracle else None),
                     )
                     if decision.get("action_mode") == "PREVIEW":
                         # The actor asked to look around before committing.
@@ -1480,7 +1565,8 @@ def main():
                     now = time.perf_counter()
                     step_ms = (now - step_started) * 1000
                     print(
-                        _step_line(episode.episode_id, steps, decision, step_ms, action),
+                        _step_line(episode.episode_id, steps, decision, step_ms, action)
+                        + " dtg={:.2f}".format(distance_after),
                         flush=True,
                     )
                     if args.debug_memory:
