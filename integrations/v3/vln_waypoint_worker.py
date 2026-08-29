@@ -70,6 +70,9 @@ def _memory_state(actor):
         temporal = memory.diagnostics()
         temporal["pending_events"] = len(temporal["pending_events"])
         state["temporal_memory"] = temporal
+    spatial = getattr(actor, "spatial_memory", None)
+    if spatial is not None:
+        state["spatial_memory"] = spatial.diagnostics()
     return state
 
 
@@ -279,6 +282,8 @@ def _agent_debug_state(actor, decision):
             "waypoint_raw_response": getattr(
                 actor, "last_waypoint_raw_response", None
             ),
+            "spatial_summary": getattr(actor, "last_spatial_summary", None),
+            "spatial_error": getattr(actor, "last_spatial_error", None),
             "waypoint_stop_disposition": getattr(
                 actor, "last_waypoint_stop_disposition", None
             ),

@@ -78,14 +78,17 @@ DEPTH_SENSOR_OVERRIDES = [
 class WaypointActorProcess:
     """Keep the Python 3.12 vision model out of Habitat's Python process."""
 
-    def __init__(self, python, worker, model_path, gpu_id, timeout=600, camera_height_m=SENSOR_HEIGHT_M):
+    def __init__(self, python, worker, model_path, gpu_id=None, timeout=600, camera_height_m=SENSOR_HEIGHT_M):
         command = [
             str(python), str(worker), "--model-path", str(model_path),
             "--camera-height-m", repr(float(camera_height_m)),
         ]
         environment = os.environ.copy()
         environment["PYTHONPATH"] = str(AGENTFLOW_ROOT) + os.pathsep + environment.get("PYTHONPATH", "")
-        environment["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
+        # Only pin the worker when --gpu-id is given; otherwise inherit the
+        # caller's CUDA_VISIBLE_DEVICES so the shell setting is not silently lost.
+        if gpu_id is not None:
+            environment["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
         self.process = subprocess.Popen(
             command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None,
             env=environment, text=True, bufsize=1,
@@ -861,9 +864,14 @@ def _step_line(episode_id, steps, decision, step_ms, action):
             float(selected.get("view_yaw_deg") or 0.0),
             preview_render_ms,
         )
+    spatial = debug.get("spatial_summary")
+    if spatial and spatial != "sp=-":
+        line += " | " + spatial
     # Surface only the abnormal cases inline; the rest stays behind the flag.
     if decision.get("temporal_error"):
         line += " ANALYSIS_ERROR={!r}".format(decision.get("temporal_error"))
+    if debug.get("spatial_error"):
+        line += " SPATIAL_ERROR={!r}".format(debug.get("spatial_error"))
     return line
 
 
@@ -1161,7 +1169,7 @@ def main():
         help="Run exactly one episode ID; overrides --episodes.",
     )
     parser.add_argument("--max-steps", type=int, default=500)
-    parser.add_argument("--gpu-id", type=int, default=0)
+    parser.add_argument("--gpu-id", type=int, default=None)
     parser.add_argument("--rank", type=int, default=0, help="This process's shard index.")
     parser.add_argument("--world-size", type=int, default=1, help="Number of evaluation processes.")
     parser.add_argument("--output-dir", type=Path, help="Write this rank's totals for later aggregation.")

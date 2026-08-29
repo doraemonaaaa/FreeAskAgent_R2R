@@ -58,6 +58,10 @@ for rank in $(seq 0 $((world_size - 1))); do
     echo "rank=${rank} physical_gpu=${rank}"
     # Habitat sees one GPU as logical 0. The actor worker receives the
     # physical rank explicitly because the v3 runner creates a fresh process.
+    # MODEL_PATH=vllm-<served-name> makes the worker talk to a vLLM server
+    # (integrations/v3/serve_vllm.sh) instead of loading the checkpoint: one
+    # server per GPU at VLLM_PORT_BASE+rank unless VLLM_BASE_URL is given.
+    VLLM_BASE_URL="${VLLM_BASE_URL:-http://127.0.0.1:$(( ${VLLM_PORT_BASE:-8100} + rank ))/v1}" \
     CUDA_DEVICE_ORDER=PCI_BUS_ID \
     CUDA_VISIBLE_DEVICES="${rank}" \
     TRANSFORMERS_OFFLINE="${TRANSFORMERS_OFFLINE:-1}" \
