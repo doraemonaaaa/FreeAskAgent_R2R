@@ -88,7 +88,29 @@ def _subgoal_debug(actor, subgoal_id):
     return None
 
 
-def _act_response(actor, decision):
+def _encode_png(rgb):
+    buffer = io.BytesIO()
+    Image.fromarray(np.asarray(rgb, dtype=np.uint8)).save(buffer, format="PNG")
+    return base64.b64encode(buffer.getvalue()).decode("ascii")
+
+
+def _visuals(actor):
+    """What the agent believes, for the video: its map and the marker frame."""
+    out = {}
+    spatial = getattr(actor, "spatial_memory", None)
+    if spatial is not None and getattr(actor, "use_spatial_memory", False):
+        try:
+            points = [c["world_xyz"] for c in (getattr(actor, "last_som_candidates", None) or ()) if c.get("world_xyz")]
+            out["map_png"] = _encode_png(spatial.visual_map(extra_points=points))
+        except Exception as exc:  # a broken picture must not break the step
+            out["map_error"] = f"{type(exc).__name__}: {exc}"
+    som = getattr(actor, "last_som_image", None)
+    if som is not None:
+        out["som_png"] = _encode_png(som)
+    return out
+
+
+def _act_response(actor, decision, want_visuals=False):
     """Build the response shared by ``act`` and ``act_on_preview``."""
     response = {
         # The one nested object the runner should read: the mode decision with
@@ -108,6 +130,8 @@ def _act_response(actor, decision):
     response.update(_temporal_report(actor))
     response.update(_memory_state(actor))
     response.update(_agent_debug_state(actor, decision))
+    if want_visuals:
+        response["visuals"] = _visuals(actor)
     if decision.point is not None:
         response.update({
             "pixel_uv": decision.point.pixel_uv,
@@ -351,7 +375,7 @@ def main():
                     ),
                     oracle_goal_xyz=request.get("oracle_goal_xyz"),
                 )
-                response = _act_response(actor, decision)
+                response = _act_response(actor, decision, want_visuals=bool(request.get("want_visuals")))
             elif request.get("operation") == "act_on_preview":
                 # The second half of a previewed step: the runner rendered the
                 # headings the actor asked for, and the actor commits to one.
@@ -379,7 +403,7 @@ def main():
                     depth_min_m=request.get("depth_min_m"),
                     depth_max_m=request.get("depth_max_m"),
                 )
-                response = _act_response(actor, decision)
+                response = _act_response(actor, decision, want_visuals=bool(request.get("want_visuals")))
             else:
                 raise ValueError("Unsupported operation: {!r}".format(request["operation"]))
         except Exception as exc:

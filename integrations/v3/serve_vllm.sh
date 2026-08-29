@@ -22,6 +22,9 @@ gpu_util="${GPU_UTIL:-0.30}"
 max_len="${MAX_MODEL_LEN:-8192}"
 max_images="${MAX_IMAGES:-16}"
 max_seqs="${MAX_NUM_SEQS:-16}"
+# Tensor parallel size: GPU may be a comma list (e.g. GPU=2,3 TP=2) for a
+# checkpoint that does not fit one card, such as Qwen3-VL-32B-Instruct-FP8.
+tp="${TP:-1}"
 
 CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES="${gpu}" \
 TRANSFORMERS_OFFLINE=1 HF_HUB_OFFLINE=1 \
@@ -29,6 +32,7 @@ exec "${vllm_bin}" serve "${model_path}" \
   --served-model-name "${served_name}" \
   --host 127.0.0.1 --port "${port}" \
   --dtype bfloat16 \
+  --tensor-parallel-size "${tp}" \
   --max-model-len "${max_len}" \
   --max-num-seqs "${max_seqs}" \
   --limit-mm-per-prompt "{\"image\": ${max_images}}" \

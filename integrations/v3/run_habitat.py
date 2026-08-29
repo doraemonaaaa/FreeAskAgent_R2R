@@ -132,6 +132,9 @@ class WaypointActorProcess:
             "rgb": self._png(rgb), "depth": self._array(depth),
             "instruction": instruction, "intrinsics": np.asarray(intrinsics).tolist(),
             "camera_to_world": np.asarray(camera_to_world).tolist(),
+            # Ask for the agent's own map and marker frame only when a video
+            # is being recorded: they cost a PNG encode per step.
+            "want_visuals": bool(getattr(self, "want_visuals", False)),
         }
         if oracle_goal is not None:
             # Diagnostic only (--som-oracle): the goal position lets the
@@ -170,6 +173,7 @@ class WaypointActorProcess:
         request = {
             "operation": "act_on_preview",
             "instruction": instruction,
+            "want_visuals": bool(getattr(self, "want_visuals", False)),
             "views": [
                 {
                     "yaw_deg": view["yaw_deg"],
@@ -429,9 +433,40 @@ def _render_topdown(
     )
 
 
-def _topdown_panel(rgb, topdown):
-    """Place the first-person RGB image beside the current top-down map."""
-    return np.concatenate((rgb, topdown), axis=1)
+def _topdown_panel(rgb, topdown, agent_map=None):
+    """First-person view | the agent's own map (when given) | true top-down.
+
+    The middle panel is what Spatial Memory believes: unknown grey, free
+    white, occupied black, trail blue, landmarks green, committed target red,
+    set-of-mark candidates yellow, the agent orange. Comparing it with the
+    ground-truth map on the right shows where the belief went wrong.
+    """
+    panels = [rgb]
+    if agent_map is not None:
+        height = rgb.shape[0]
+        if agent_map.shape[0] != height:
+            agent_map = np.asarray(
+                Image.fromarray(agent_map).resize((height, height), Image.Resampling.NEAREST)
+            )
+        panels.append(agent_map)
+    panels.append(topdown)
+    return np.concatenate(panels, axis=1)
+
+
+def _decode_visuals(decision):
+    """(agent_map, marker_frame) from a worker response, either may be None."""
+    visuals = (decision or {}).get("visuals") or {}
+
+    def _png(key):
+        encoded = visuals.get(key)
+        if not encoded:
+            return None
+        try:
+            return np.asarray(Image.open(io.BytesIO(base64.b64decode(encoded))).convert("RGB"))
+        except Exception:
+            return None
+
+    return _png("map_png"), _png("som_png")
 
 
 def _clean_video_frame(rgb):
@@ -954,6 +989,7 @@ def _turn_frame(
     teleport and hides how many steps the turn actually cost.
     """
     rgb, _ = _rgb_depth(observation)
+    agent_map, _ = _decode_visuals(decision)
     debug_rgb = (
         _clean_video_frame(rgb)
         if args.clean_video
@@ -968,6 +1004,7 @@ def _turn_frame(
             waypoints=waypoint_targets,
             landmark_marks=landmark_marks,
         ),
+        agent_map=agent_map,
     )
 
 
@@ -1326,6 +1363,7 @@ def main():
         overrides.append("habitat.dataset.content_scenes=[{}]".format(args.scene_id))
     config = habitat.get_config("benchmark/nav/vln_r2r.yaml", overrides=overrides)
     actor = WaypointActorProcess(args.actor_python, ROOT / "integrations/v3/vln_waypoint_worker.py", args.model_path, args.gpu_id)
+    actor.want_visuals = bool(args.record_video)
     if args.record_video:
         # Habitat changes the working directory below; keep media paths pinned
         # to the directory from which this runner was launched.
@@ -1406,6 +1444,7 @@ def main():
                         )
                 positions = [env.sim.get_agent_state().position.copy()]
                 goal_position = episode.goals[0].position if episode.goals else None
+                last_agent_map = None
                 # Requested waypoints and landmark events accumulate over the
                 # episode so the top-down map shows the whole intended route
                 # beside the executed one.
@@ -1481,10 +1520,19 @@ def main():
                         )
                     previous_landmark_mark = landmark_mark
                     render_started = time.perf_counter()
+                    agent_map, marker_frame = _decode_visuals(decision)
+                    last_agent_map = agent_map if agent_map is not None else last_agent_map
+                    # The frame the model chose from, markers included, when
+                    # this step asked the set-of-mark question.
+                    shown_rgb = (
+                        marker_frame
+                        if marker_frame is not None and marker_frame.shape == rgb.shape
+                        else rgb
+                    )
                     debug_rgb = (
-                        _clean_video_frame(rgb)
+                        _clean_video_frame(shown_rgb)
                         if args.clean_video
-                        else _annotated_video_frame(rgb, decision, steps)
+                        else _annotated_video_frame(shown_rgb, decision, steps)
                     )
                     if frames is not None:
                         if navmesh_map is None:
@@ -1496,7 +1544,8 @@ def main():
                                     rgb.shape[0],
                                     waypoints=waypoint_targets,
                                     landmark_marks=landmark_marks,
-                                )
+                                ),
+                                agent_map=last_agent_map,
                             ))
                     render_ms = (time.perf_counter() - render_started) * 1000
                     follower_action = None
@@ -1618,7 +1667,8 @@ def main():
                                 rgb.shape[0],
                                 waypoints=waypoint_targets,
                                 landmark_marks=landmark_marks,
-                            )
+                            ),
+                            agent_map=last_agent_map,
                         ))
                     episode_id = str(episode.episode_id).replace("/", "_")
                     images_to_video(frames, str(args.video_dir), episode_id, fps=10)
