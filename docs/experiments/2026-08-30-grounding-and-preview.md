@@ -112,6 +112,9 @@ SAM3 在 43% 的点有检测（"走向 X"类阶段 59%），每视角 ~90 ms。�
 
 结论：五个开源 VLM（4B–32B、三个系列）在同一架构下 SR 全在 0.00–0.12，差异不超过 40 集的噪声（±0.05）；换模型不是解法。旧的（无效）第一轮结果 `cur_q25`（0.03，25% 错误）与 `cur_ivl`（90% 请求 500）不计入。
 
+
+修复后代码复测 Qwen3-VL-4B（`fix_4b`，带视频）：SR 0.10 / SPL 0.06 / 进度 −0.13 / 到达最后子目标 0.45，1.11 s/步；失败：卡门 10、超时远 8、卡地标 7、错停 5。与 4B 修复前 0.12、8B 0.07、32B 0.10 一起看，三者仍在噪声内。全部 40 集视频 `outputs/videos/fix_4b/<id>.mp4`，按失败类型挑选的 7 集在 `outputs/videos/fix_4b_picks/`。
+
 ## 6. "Turn around" 阶段修复（`_phase_for_subgoal` 只认 turn left/right → 现按 180° 目标测量完成，方向不限）
 40 集里含该阶段的 4 集，修复前后（同模型、150 步）：
 | ep | 模型 | 修复前 | 修复后 |
@@ -131,3 +134,25 @@ SAM3 在 43% 的点有检测（"走向 X"类阶段 59%），每视角 ~90 ms。�
 | 32B 修复前 → 后 | 0.07 → **0.10** | 0.05 → 0.07 | −0.07 → **−0.01** | 0.30 → 0.35 | 0.17 → 0.23 | 5 → 1 |
 
 转向类停滞基本消失；SR 各 +1 集（在噪声内但方向一致）。修复后失败结构：8B 错停 10、卡走廊 8、卡门 6；32B 卡走廊 7、卡地标 7、卡门 7、错停 5。下一个最大的可修类是 corridor（"walk straight / down the hallway" 没有可测终点）和 doorway。
+
+## 7. 参照：AwareVLN 训练权重（`/data/pengyh/workspace/Reproductions/AwareVLN`，已有的 8 卡 FP16 评测结果，2026-08-19；4-bit 运行时量化另跑一遍）
+NaVILA 式 VILA（Llama-3 8B + SigLIP，8 帧历史，直接输出 forward/left/right/stop），用 R2R/RxR/follow/human 混合数据 SFT；无规划器、无 captioner、无空间记忆。
+| 集合 | SR | SPL | OS | NE |
+|---|---|---|---|---|
+| val_unseen 全集 1839（FP16） | **0.647** | 0.563 | 0.744 | 4.10 m |
+| val_unseen 全集 1839（4-bit） | 0.652 | 0.569 | – | – |
+| 本文 40 集（FP16，按 id 抽取） | **0.650** | 0.542 | 0.750 | 3.67 m |
+| ├ doorway / walk / stairs / abstract_stop | 0.70 / 0.50 / 0.70 / 0.70 | | | |
+| 对照：本仓库 zero-shot 最好（Qwen3-VL-4B / 32B） | 0.12 / 0.10 | 0.09 / 0.07 | | |
+
+40 集上 0.65 与全集 0.647 一致，说明这 40 集对训练模型没有偏难/偏易。结论：同样 8B 量级，SFT 过的单一策略比 zero-shot 多模块流水线高 5–6 倍，与 §2/§5 "瓶颈是零样本空间决策、换模型无用"一致；下一步应把训练引入 actor（§6 之后的建议）。
+
+### 7.1 AwareVLN 权重接进本仓库 runner（`--actor awarevln`，`integrations/v3/serve_awarevln.py` + `awarevln_actor.py`）
+先验证它能否直接替换我们的 VLM：对我们的 captioner/actor JSON prompt，它一律回复 `<BEGIN_OF_ACTION> The next action is move forward 25 cm.`——它是 SFT 成纯导航策略的模型，不按 schema 答题，**不能当通用 VLM 换进去**。改为按其原生协议（8 帧历史 + 指令 → forward/turn/stop，含推理回合）驱动我们的 Habitat 循环，512×512 输入、500 步上限、复用我们的评测与视频。
+| | SR | SPL | dtg | 步数 |
+|---|---|---|---|---|
+| AwareVLN 官方评测（同 40 集，habitat-sim 0.1.7 / VLN-CE） | 0.650 | 0.542 | 3.67 | 120 |
+| AwareVLN 在本仓库 runner（habitat 0.3） | **0.575** | 0.523 | 4.54 | 97 |
+| 分类 doorway / walk / stairs / abstract_stop | 0.40 / 0.70 / 0.60 / 0.60（官方 0.70 / 0.50 / 0.70 / 0.70） | | | |
+
+逐集成功一致 29/40（我们独赢 4 集、官方独赢 7 集），差 3 集在噪声内；剩余差异来自模拟器版本（渲染/碰撞）而非接入错误。服务端 ~1 s/决策、单卡 FP16 17 GB。原始结果 `outputs/experiments/ab/aw_40/`。

@@ -880,6 +880,8 @@ def _action_summary(decision, action):
         return "TURN {:+d}deg x{} a={}".format(
             turn_deg, abs(turn_deg) // TURN_ANGLE_DEG, int(action)
         )
+    if decision.get("forward_steps"):
+        return "FWD x{} a={}".format(int(decision["forward_steps"]), int(action))
     pixel = decision.get("pixel_uv")
     if pixel is None:
         return "PREVIEW a={}".format(int(action))
@@ -1295,6 +1297,13 @@ def main():
         ),
     )
     parser.add_argument("--actor-python", type=Path, default=ROOT / ".venv/bin/python")
+    parser.add_argument(
+        "--actor", choices=("waypoint", "awarevln"), default="waypoint",
+        help="awarevln: drive Habitat with the AwareVLN policy served by integrations/v3/serve_awarevln.py "
+        "(native forward/turn/stop protocol, 512x512 RGB like its reference evaluation).",
+    )
+    parser.add_argument("--awarevln-url", default="http://127.0.0.1:8600/v1")
+    parser.add_argument("--awarevln-model", default="awarevln")
     parser.add_argument("--waypoint-radius", type=float, default=0.25)
     parser.add_argument("--depth-hfov", type=float, default=90.0)
     parser.add_argument(
@@ -1361,8 +1370,19 @@ def main():
     ]
     if args.scene_id != "all":
         overrides.append("habitat.dataset.content_scenes=[{}]".format(args.scene_id))
+    if args.actor == "awarevln":
+        # AwareVLN was evaluated on square 512x512 frames; keep depth aligned.
+        overrides += [
+            "habitat.simulator.agents.main_agent.sim_sensors.{}_sensor.{}=512".format(sensor, side)
+            for sensor in ("rgb", "depth") for side in ("height", "width")
+        ]
     config = habitat.get_config("benchmark/nav/vln_r2r.yaml", overrides=overrides)
-    actor = WaypointActorProcess(args.actor_python, ROOT / "integrations/v3/vln_waypoint_worker.py", args.model_path, args.gpu_id)
+    if args.actor == "awarevln":
+        from awarevln_actor import AwareVLNActor
+
+        actor = AwareVLNActor(args.awarevln_url, args.awarevln_model)
+    else:
+        actor = WaypointActorProcess(args.actor_python, ROOT / "integrations/v3/vln_waypoint_worker.py", args.model_path, args.gpu_id)
     actor.want_visuals = bool(args.record_video)
     if args.record_video:
         # Habitat changes the working directory below; keep media paths pinned
@@ -1556,6 +1576,10 @@ def main():
                         action, repeats = _turn_primitive(
                             decision["turn_deg"]
                         )
+                    elif decision.get("forward_steps"):
+                        # A discrete policy (AwareVLN) asked for N x 25 cm.
+                        action = 1  # HabitatSimActions.move_forward
+                        repeats = max(1, int(decision["forward_steps"]))
                     elif waypoint is None:
                         # No waypoint, no turn and no stop: the previewed
                         # heading had no valid depth, or a PREVIEW went
@@ -1595,6 +1619,10 @@ def main():
                         positions.append(
                             env.sim.get_agent_state().position.copy()
                         )
+                        if repeat < repeats - 1 and hasattr(actor, "observe"):
+                            # Queued primitives are steps the policy was not
+                            # asked about; it still sees their frames.
+                            actor.observe(_observation(observation)[0])
                         if frames is not None and repeat:
                             # The frame recorded before the loop already covers
                             # the first primitive, so this starts at the second
