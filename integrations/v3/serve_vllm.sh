@@ -25,6 +25,12 @@ max_seqs="${MAX_NUM_SEQS:-16}"
 # Tensor parallel size: GPU may be a comma list (e.g. GPU=2,3 TP=2) for a
 # checkpoint that does not fit one card, such as Qwen3-VL-32B-Instruct-FP8.
 tp="${TP:-1}"
+# Some checkpoints (InternVL) ship their own modelling code.
+trust_remote="${TRUST_REMOTE_CODE:-0}"
+extra_args=()
+if [[ "${trust_remote}" == "1" ]]; then extra_args+=(--trust-remote-code); fi
+# VLLM_EXTRA_ARGS: extra CLI flags, e.g. --mm-processor-kwargs '{"max_dynamic_patch": 1}' for InternVL
+if [[ -n "${VLLM_EXTRA_ARGS:-}" ]]; then eval "extra_args+=(${VLLM_EXTRA_ARGS})"; fi
 
 CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES="${gpu}" \
 TRANSFORMERS_OFFLINE=1 HF_HUB_OFFLINE=1 \
@@ -38,4 +44,5 @@ exec "${vllm_bin}" serve "${model_path}" \
   --limit-mm-per-prompt "{\"image\": ${max_images}}" \
   --gpu-memory-utilization "${gpu_util}" \
   --enable-prefix-caching \
-  --no-enable-log-requests
+  --no-enable-log-requests \
+  "${extra_args[@]}"
