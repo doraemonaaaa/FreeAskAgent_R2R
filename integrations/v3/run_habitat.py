@@ -247,6 +247,44 @@ def _intrinsics(width, height, hfov_degrees):
     return np.array(((focal, 0, (width - 1) / 2), (0, focal, (height - 1) / 2), (0, 0, 1)), dtype=np.float64)
 
 
+def _semantic_region_id(env, cache={}):
+    """MP3D semantic region (room) the agent stands in, or None.
+
+    Ground truth for diagnosing the map's doorway-crossing events: a change
+    of region id between steps is a real room transition. Uses the region
+    AABBs with a generous y pad (region boxes hug the floor slab).
+    """
+    try:
+        scene_id = env.current_episode.scene_id
+        boxes = cache.get(scene_id)
+        if boxes is None:
+            import numpy as _np
+
+            boxes = []
+            for region in env.sim.semantic_scene.regions:
+                low = _np.asarray(region.aabb.min, dtype=float)
+                high = _np.asarray(region.aabb.max, dtype=float)
+                boxes.append((region.id, low, high))
+            cache.clear()
+            cache[scene_id] = boxes
+        position = env.sim.get_agent_state().position
+        best = None
+        for region_id, low, high in boxes:
+            if (
+                low[0] <= position[0] <= high[0]
+                and low[2] <= position[2] <= high[2]
+                and low[1] - 1.2 <= position[1] <= high[1] + 1.2
+            ):
+                # Prefer the smallest box that contains the point: nested
+                # region boxes (hallway spanning the floor) otherwise win.
+                area = (high[0] - low[0]) * (high[2] - low[2])
+                if best is None or area < best[1]:
+                    best = (region_id, area)
+        return best[0] if best else None
+    except Exception:
+        return None
+
+
 def _camera_to_world(env):
     """Build a Habitat camera-to-world matrix from the depth sensor state."""
     from habitat_sim.utils.common import quat_to_magnum
@@ -1270,8 +1308,49 @@ def _select_episodes(
     return selected[rank::world_size]
 
 
+def _load_config(path):
+    """YAML -> (argparse defaults, agent environment). CLI and preset env win."""
+    import yaml
+
+    with open(path) as handle:
+        config = yaml.safe_load(handle) or {}
+    model = config.get("model") or {}
+    agent = config.get("agent") or {}
+    runner = config.get("runner") or {}
+    defaults = {}
+    if model.get("path"):
+        defaults["model_path"] = str(model["path"])
+    for key in ("camera_pitch_deg", "max_steps", "waypoint_radius", "depth_hfov", "actor", "record_video"):
+        if runner.get(key) is not None:
+            defaults[key] = runner[key]
+    env = {}
+    if model.get("base_url"):
+        env["VLLM_BASE_URL"] = str(model["base_url"])
+    for env_key, cfg_key, as_int in (
+        ("VLN_SPATIAL_MEMORY", "spatial_memory", True),
+        ("VLN_SOM", "som", True),
+        ("VLN_CAPTIONER_MAX_TOKENS", "captioner_max_tokens", True),
+        ("VLN_STRUCTURED_VLM_MAX_TOKENS", "structured_vlm_max_tokens", True),
+        ("VLN_CAPTIONER_INTERVAL_STEPS", "captioner_interval_steps", True),
+        ("VLN_COMPLETION_EVIDENCE_FRAMES", "completion_evidence_frames", True),
+        ("VLN_TEMPORAL_MAX_IMAGE_EDGE", "temporal_max_image_edge", True),
+        ("VLN_IMAGE_MAX_PIXELS", "vlm_image_max_pixels", True),
+    ):
+        value = agent.get(cfg_key)
+        if value is not None:
+            env[env_key] = str(int(value)) if as_int else str(value)
+    return defaults, env
+
+
 def main():
     parser = argparse.ArgumentParser(description="Run RGB-D waypoint Actor on Habitat R2R-CE")
+    parser.add_argument(
+        "--config", type=Path,
+        default=(ROOT / "integrations/v3/config.yaml"),
+        help="YAML with model/agent/runner defaults; CLI flags and preset env vars override it. "
+        "Pass --no-config-file to ignore it.",
+    )
+    parser.add_argument("--no-config-file", action="store_true")
     parser.add_argument("--split", default="val_unseen")
     parser.add_argument("--scene-id", default="all", help="Restrict evaluation to one MP3D scene.")
     parser.add_argument("--episodes", type=int, default=1, help="0 = all episodes in the split.")
@@ -1345,6 +1424,16 @@ def main():
         action="store_true",
         help="Record unannotated RGB instead of overlaying the agent's waypoint pixels.",
     )
+    pre, _ = parser.parse_known_args()
+    if not pre.no_config_file and pre.config and Path(pre.config).exists():
+        defaults, agent_env = _load_config(pre.config)
+        parser.set_defaults(**defaults)
+        for key, value in agent_env.items():
+            # A variable exported by the caller (e.g. an A/B script) wins.
+            os.environ.setdefault(key, value)
+        print("config: {} (defaults: {}; env: {})".format(
+            pre.config, ", ".join(sorted(defaults)) or "-",
+            ", ".join(sorted(agent_env)) or "-"), flush=True)
     args = parser.parse_args()
     # Resolve the id list now: the evaluator chdirs into the Habitat root
     # before the episodes are selected, which breaks a relative @file path.
@@ -1654,7 +1743,8 @@ def main():
                     step_ms = (now - step_started) * 1000
                     print(
                         _step_line(episode.episode_id, steps, decision, step_ms, action)
-                        + " dtg={:.2f}".format(distance_after),
+                        + " dtg={:.2f}".format(distance_after)
+                        + " region={}".format(_semantic_region_id(env)),
                         flush=True,
                     )
                     if args.debug_memory:

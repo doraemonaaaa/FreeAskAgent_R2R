@@ -1,0 +1,44 @@
+# Single source of run configuration for the v3 VLN stack.
+# Load order: this file fills the defaults; CLI flags and already-set
+# environment variables always win. Run with:
+#   python integrations/v3/run_habitat.py --config integrations/v3/config.yaml ...
+# (run_habitat.py picks this file up automatically when it exists.)
+
+model:
+  # ``vllm-<served-name>`` talks to the OpenAI-compatible server at base_url;
+  # a plain path loads the checkpoint in-process. One engine drives the
+  # planner, the captioner/judge and the waypoint selection.
+  path: vllm-qwen3-vl-4b
+  base_url: http://127.0.0.1:8300/v1        # -> env VLLM_BASE_URL
+  # Serving defaults consumed by integrations/v3/serve_vllm.sh (env of the
+  # same names, upper-cased): GPU, PORT, GPU_UTIL, MAX_MODEL_LEN, MAX_IMAGES.
+  serve:
+    gpu: 2
+    port: 8300
+    gpu_util: 0.30
+    max_model_len: 8192
+    max_images: 16
+    model_dir: /data/pengyh/workspace/FreeAskAgent/models/Qwen3-VL-4B-Instruct
+    served_name: qwen3-vl-4b
+
+agent:
+  spatial_memory: true        # -> env VLN_SPATIAL_MEMORY (occupancy map, committed targets, doorway events)
+  som: true                   # -> env VLN_SOM (set-of-mark candidate selection; needs spatial_memory)
+  captioner_max_tokens: 512           # -> env VLN_CAPTIONER_MAX_TOKENS
+  structured_vlm_max_tokens: 192      # -> env VLN_STRUCTURED_VLM_MAX_TOKENS
+  captioner_interval_steps: 2         # -> env VLN_CAPTIONER_INTERVAL_STEPS
+  completion_evidence_frames: 8       # -> env VLN_COMPLETION_EVIDENCE_FRAMES
+  temporal_max_image_edge: 320        # -> env VLN_TEMPORAL_MAX_IMAGE_EDGE
+  vlm_image_max_pixels: 200704        # -> env VLN_IMAGE_MAX_PIXELS (448*448)
+
+runner:
+  camera_pitch_deg: -15   # -15 measured best on the 40-set (docs/experiments 2026-08-30 §8)
+  max_steps: 150
+  waypoint_radius: 0.25
+  depth_hfov: 90.0
+  actor: waypoint         # waypoint | awarevln (AwareVLN policy via serve_awarevln.py)
+  record_video: false
+
+eval:
+  episode_set: integrations/v3/eval_sets/val_unseen_40.txt
+  world_size: 8
