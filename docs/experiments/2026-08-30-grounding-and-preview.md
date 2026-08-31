@@ -216,3 +216,8 @@ NaVILA 式 VILA（Llama-3 8B + SigLIP，8 帧历史，直接输出 forward/left/
 | OFF（sp_off2） | 0.075 | 0.058 | 8.9 | −0.03 | 50 |
 
 强制环视 ~34 次/40 集（preview 47→81）。配对 vs OFF：独赢 4 / 独负 2，dtg 大负尾从 3 个 >20 m 降到 1 个（67 仍失控：环视后同一 VLM 再次选错——止损带而非纠错器）。SR/SPL/dtg/进度四指标同向小幅改善，单项仍在噪声内；调用节省保持。此后 spatial memory 的默认 = ON + 止损。
+
+## 13. 阶段类型审计与统一分类器（2026-08-31）
+400 阶段抽样、4B 语义判定为参照：旧 doorway 正则（captioner 版）precision 0.90 / recall 0.71（漏 "Go through the door"/entryway/entrance；且 captioner、judge、agent 三处正则互不一致）；turn 正则 precision 0.67、stairs 0.62、corridor 相位仅 0.31。语义分布 doorway 36% / landmark 30% / turn 13% / stairs 9% / corridor 8% / stop 4%。
+改造：`protocol.stage_is_doorway()` 统一三处（扩词 + turn 优先），同一样本 precision 0.85 / recall **0.89**；captioner 门类契约从"必须报 door 字段"软化为"看到才报，绝不虚构"。
+40 集 A/B（vs sp_fix）：SR 持平 0.12，SPL 0.09→0.10，**错停 12→7**（软化契约的预期效果——不再虚构门导致的假 CROSSED），卡地标 23→28（原本错停的集改为存活但未完成），穿门接受 14→18（recall 提升）。结论：保留；SR 中性但失败模式更安全、泛化性更好。planner 输出类型标签（第 2 步）暂缓——统一正则后分类质量已够，标签主要收益在多语言/换措辞场景。
