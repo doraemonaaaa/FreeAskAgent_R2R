@@ -221,3 +221,11 @@ NaVILA 式 VILA（Llama-3 8B + SigLIP，8 帧历史，直接输出 forward/left/
 400 阶段抽样、4B 语义判定为参照：旧 doorway 正则（captioner 版）precision 0.90 / recall 0.71（漏 "Go through the door"/entryway/entrance；且 captioner、judge、agent 三处正则互不一致）；turn 正则 precision 0.67、stairs 0.62、corridor 相位仅 0.31。语义分布 doorway 36% / landmark 30% / turn 13% / stairs 9% / corridor 8% / stop 4%。
 改造：`protocol.stage_is_doorway()` 统一三处（扩词 + turn 优先），同一样本 precision 0.85 / recall **0.89**；captioner 门类契约从"必须报 door 字段"软化为"看到才报，绝不虚构"。
 40 集 A/B（vs sp_fix）：SR 持平 0.12，SPL 0.09→0.10，**错停 12→7**（软化契约的预期效果——不再虚构门导致的假 CROSSED），卡地标 23→28（原本错停的集改为存活但未完成），穿门接受 14→18（recall 提升）。结论：保留；SR 中性但失败模式更安全、泛化性更好。planner 输出类型标签（第 2 步）暂缓——统一正则后分类质量已够，标签主要收益在多语言/换措辞场景。
+
+## 14. Judge 规则层消融（`VLN_JUDGE_GUARDS=0`：completed 逐字采信，无测量判定/否决/streak/阶段跳转；2026-08-31）
+| 40 集 | SR | SPL | 到达最后子目标 | 主动停止率 | 失败结构 |
+|---|---|---|---|---|---|
+| 有规则层（types_4b） | 0.12 | 0.10 | 0.53 | 0.33 | 卡地标 28 / 错停 7 / 成功 5 |
+| 无规则层（noguard_4b） | **0.00** | 0.00 | **0.03** | **0.00** | 40/40 全部卡死 150 步 |
+
+预注册预期是"错停爆炸"，实际相反：**模型自己的 completed 几乎从不为真**（尤其转向/楼梯类阶段单帧根本看不出完成），阶段推进和最终停止此前几乎全部由测量判定（净 yaw、高度、穿门、landmark 到达、AT streak）驱动。规则层不是"矫正模型的判断"，而是**在承担判断本身**；zero-shot 模型自己拥有判定权时系统完全不能工作。这为"判定必须测量化（现在）或训练化（将来）"给出了最强的直接证据。
