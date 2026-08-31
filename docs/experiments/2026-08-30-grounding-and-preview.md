@@ -183,3 +183,36 @@ NaVILA 式 VILA（Llama-3 8B + SigLIP，8 帧历史，直接输出 forward/left/
 | 参照 | AwareVLN（训练 8B）同全集 0.647；40 集分层集上本配置 0.20 |
 
 40 集上的 0.20 有小样本运气成分：全集在同样 4–14 m 区间的 SR ≈ 0.08–0.10。zero-shot 流水线的真实水平就是 ~0.09，与"不训练上限 ~0.15"一致。产物：`outputs/full_val_unseen_pitch15_4b/{videos(1839 mp4, 3.4 GB), logs, rank_json}`；脚本 `integrations/v3/bench/run_full_val_unseen.sh`。
+
+## 10. 地图测量的穿门事件（`spatial_memory/events.py` + completion_judge 接线，2026-08-31）
+穿门 = 轨迹通过 <1.2 m 收口（两侧 0.9 m 内有障碍）、前后各走 ≥0.45 m 方向一致、封住收口后前后属于两个 ≥3 m² 自由区域；门类子目标测到穿门且本阶段已走 ≥1 m 直接判完成（committed target 仍在前方 >0.5 m 时不接受）。另外每次判定给 captioner 一行测量事实（walked/net-yaw/crossings，~40 token）。单测 8 个全过（双房间穿门触发一次；房内走动/壁橱/门口徘徊不触发）。
+| 40 集（均含 −15° 俯视） | SR | SPL | dtg | 进度 | 备注 |
+|---|---|---|---|---|---|
+| pitch15_4b | 0.20 | 0.16 | 7.9 | +0.13 | |
+| evt_4b | 0.12 | 0.12 | 7.8 | +0.10 | 12 次接受 / 11 集 |
+
+逐集归因：4 个退步集里 3 个（610/903/1584）没有任何事件接受——纯运行间噪声（事实行改变了每次 captioner 输出，轨迹整体发散）；956 的接受本身是对的（"Exit the kitchen" 走 4.7 m 后真实穿门），失败发生在后续阶段。1252/1452 上机制按设计生效（VLM 说没看见门时地图判定穿门）。结论：**n=40 分不出 SR 净效应**（±0.05 噪声 > 机制影响面），机制无确认的伤害、有确认的帮助、零额外调用，保留为默认；真正的判别要靠更大评测集或阶段级指标（doorway 阶段完成率）。
+
+## 11. 统一配置文件（2026-08-31）
+`integrations/v3/config.yaml` 现在是运行配置的唯一入口：model（`vllm-*` 路径、`base_url`、serve_vllm 的 GPU/端口/显存参数）、agent（spatial memory / SoM 开关、captioner 令牌与间隔、图像预算——经 `VLN_*` 环境变量传给 FreeAskAgent 的 `protocol.py`，后者改为 `_env_int` 读取）、runner（俯视角、步数上限、actor 类型）、eval。`run_habitat.py` 自动加载（`--config` 可换、`--no-config-file` 可关）；优先级 CLI > 已导出的环境变量 > config.yaml > 代码默认值。`DEFAULT_MODEL_PATH` 也可用 `VLN_MODEL_PATH` 覆盖（JoyAI 旧默认仅作无配置时的兜底）。
+
+## 12. Spatial memory 配对 ON/OFF（同 40 集、同代码（含事件）、4B、−15°，2026-08-31）
+| | SR | SPL | dtg | 进度 | wp 调用/集 | 每步 |
+|---|---|---|---|---|---|---|
+| ON（sp_on2） | 0.100 | 0.084 | 9.1 | −0.04 | **17** | 1.55 s* |
+| OFF（sp_off2） | 0.075 | 0.058 | 8.9 | −0.03 | **50** | 1.85 s* |
+| ON 复测参照（evt2_4b） | 0.10 | 0.08 | 9.7 | −0.12 | 17 | 1.17 s |
+
+*两批同时共享一个 4B 服务，绝对耗时偏大，相对差有效。配对逐集：ON 独赢 3（617/903/1232）、OFF 独赢 2（365/1469）；dtg 大幅摆动两个方向都有——ON 更好的极端 561（−18.7 m）/617/956，ON 更差的极端 **67（+28.7 m）/365（+24.6 m）**：committed target（som/landmark）锁错目标后一路走远（67 全程 som:active，dtg 12.7→32.6 单调恶化，无 release）。机制占用：committed target 覆盖 ~74% 步（landmark 1577 / som 1748 / frontier 222 步），SoM 决策 2051 步，穿门事件 40 集仅 18 次。
+
+结论：spatial memory 的**确定收益是效率**（waypoint VLM 调用 −66%，50→17 次/集），**结果指标中性**（SR +0.025 在噪声内，dtg/进度持平）；它有一个明确的伤害模式——**错误 commit 无法自我纠正**（stagnant/release 条件只看"停滞"，不看"离目标越走越远"），两个极端拖尾各 25–29 m。可修点：committed target 增加"dtg 恶化 release"（对目标距离下降但整体在偏航时重审），以及 som 目标的定期再验证。
+
+### 12.1 走偏止损（stage-overrun watchdog + 单目标步行预算，2026-08-31）
+一个子目标累计走 >10 m 未完成 → 释放所有持有目标（含 doorway 锁）并强制一次 PREVIEW 环视重选（每 10 m 可再触发；`sp=` 日志段 `ovr=N`）；单个 committed target 步行预算 max(4 m, 2×初始距离)，超预算即 overrun 释放。排查中修了两处真 bug：watchdog 初版放在 doorway 锁之后到不了、阶段重置插错缩进。
+| 40 集 | SR | SPL | dtg | 进度 | wp 调用/集 |
+|---|---|---|---|---|---|
+| ON+止损（sp_fix） | **0.12** | **0.09** | **7.9** | **+0.07** | 18 |
+| ON（sp_on2） | 0.10 | 0.08 | 9.1 | −0.04 | 17 |
+| OFF（sp_off2） | 0.075 | 0.058 | 8.9 | −0.03 | 50 |
+
+强制环视 ~34 次/40 集（preview 47→81）。配对 vs OFF：独赢 4 / 独负 2，dtg 大负尾从 3 个 >20 m 降到 1 个（67 仍失控：环视后同一 VLM 再次选错——止损带而非纠错器）。SR/SPL/dtg/进度四指标同向小幅改善，单项仍在噪声内；调用节省保持。此后 spatial memory 的默认 = ON + 止损。
