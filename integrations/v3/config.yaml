@@ -24,6 +24,7 @@ model:
 agent:
   spatial_memory: true        # -> env VLN_SPATIAL_MEMORY (occupancy map, committed targets, doorway events)
   som: true                   # -> env VLN_SOM (set-of-mark candidate selection; needs spatial_memory)
+  # som_model: som-v1        # -> env VLN_SOM_MODEL: LoRA adapter (served via --lora-modules) used only for the SoM choice
   captioner_max_tokens: 512           # -> env VLN_CAPTIONER_MAX_TOKENS
   structured_vlm_max_tokens: 192      # -> env VLN_STRUCTURED_VLM_MAX_TOKENS
   captioner_interval_steps: 2         # -> env VLN_CAPTIONER_INTERVAL_STEPS
