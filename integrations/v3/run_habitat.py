@@ -1305,6 +1305,11 @@ def main():
     parser.add_argument("--awarevln-url", default="http://127.0.0.1:8600/v1")
     parser.add_argument("--awarevln-model", default="awarevln")
     parser.add_argument("--waypoint-radius", type=float, default=0.25)
+    parser.add_argument(
+        "--camera-pitch-deg", type=float, default=0.0,
+        help="Tilt both cameras about their x axis; negative looks down so more floor is visible. "
+        "Back-projection, the floor mask, spatial memory and previews all read the live sensor pose, so no other setting changes.",
+    )
     parser.add_argument("--depth-hfov", type=float, default=90.0)
     parser.add_argument(
         "--preview-yaws",
@@ -1370,6 +1375,12 @@ def main():
     ]
     if args.scene_id != "all":
         overrides.append("habitat.dataset.content_scenes=[{}]".format(args.scene_id))
+    if args.camera_pitch_deg:
+        pitch = float(np.deg2rad(args.camera_pitch_deg))
+        overrides += [
+            "habitat.simulator.agents.main_agent.sim_sensors.{}_sensor.orientation=[{},0,0]".format(sensor, pitch)
+            for sensor in ("rgb", "depth")
+        ]
     if args.actor == "awarevln":
         # AwareVLN was evaluated on square 512x512 frames; keep depth aligned.
         overrides += [
