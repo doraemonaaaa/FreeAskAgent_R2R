@@ -73,12 +73,13 @@ def _png_data_url(image):
 
 class PanoHopActor:
     def __init__(self, base_url, model, device="cuda", max_candidates=5,
-                 timeout=300, mode="always"):
+                 timeout=300, mode="always", stop_verify=False):
         self.base_url = base_url.rstrip("/")
         self.model = model
         self.timeout = timeout
         self.max_candidates = max_candidates
         self.mode = mode
+        self.stop_verify = stop_verify
         self.want_visuals = False
         self.env = None
         self._predictor = None
@@ -224,11 +225,11 @@ class PanoHopActor:
             choice = max(candidates, key=lambda c: c["score"])
             self.hop_history.append(
                 "hop {}: STOP suppressed (has not moved yet)".format(self.decision_count))
-        if choice is None:
-            # A STOP vote is checked by an independently-framed verification
-            # call (a same-prompt repeat at temperature 0 just repeats itself).
-            # A persistently repeated vote overrides the verifier: after 3
-            # consecutive votes the model is not going anywhere else anyway.
+        if choice is None and self.stop_verify:
+            # Ablation-gated (default OFF: 200d SR 0.065 / 200e SR 0.109 both
+            # lost to the bare-STOP 0.150 — rejections convert early stops
+            # into wandering). A STOP vote is checked by an independently-
+            # framed verification call; 3 consecutive votes override it.
             self.stop_votes += 1
             ok, evidence = self._verify_stop(strip)
             print("PANOHOP stop-verify dec={} ok={} votes={} ev={!r}".format(
@@ -569,12 +570,7 @@ class PanoHopActor:
             "model": self.model, "temperature": 0.0, "max_tokens": 400,
             "messages": [{"role": "user", "content": prompt}],
         }).encode("utf-8")
-        request = urllib.request.Request(
-            self.base_url + "/chat/completions", data=body,
-            headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(request, timeout=self.timeout) as response:
-            payload = json.load(response)
-        return payload["choices"][0]["message"]["content"] or ""
+        return self._post(body)
 
     def _query(self, strip, prompt, extras=None):
         import urllib.request
@@ -591,12 +587,25 @@ class PanoHopActor:
             "max_tokens": 220,
             "messages": [{"role": "user", "content": content}],
         }).encode("utf-8")
-        request = urllib.request.Request(
-            self.base_url + "/chat/completions", data=body,
-            headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(request, timeout=self.timeout) as response:
-            payload = json.load(response)
-        return payload["choices"][0]["message"]["content"] or ""
+        return self._post(body)
+
+    def _post(self, body, attempts=4):
+        """One transient 502 from the server must not kill a whole eval shard
+        (measured: panohop200e rank_3 died at episode 24/25)."""
+        import urllib.request
+
+        for attempt in range(attempts):
+            try:
+                request = urllib.request.Request(
+                    self.base_url + "/chat/completions", data=body,
+                    headers={"Content-Type": "application/json"})
+                with urllib.request.urlopen(request, timeout=self.timeout) as r:
+                    payload = json.load(r)
+                return payload["choices"][0]["message"]["content"] or ""
+            except Exception:
+                if attempt == attempts - 1:
+                    raise
+                time.sleep(2 ** attempt)
 
     @staticmethod
     def _encode_png(image):

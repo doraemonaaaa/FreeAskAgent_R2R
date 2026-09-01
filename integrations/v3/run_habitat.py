@@ -1388,6 +1388,9 @@ def main():
     parser.add_argument("--awarevln-model", default="awarevln")
     parser.add_argument("--panohop-url", default="http://127.0.0.1:8100/v1")
     parser.add_argument("--panohop-model", default="qwen3-vl-8b")
+    parser.add_argument("--panohop-stop-verify", type=int, default=0,
+                        help="1: route STOP votes through the verification call "
+                        "(measured worse zero-shot; kept for ablations).")
     parser.add_argument(
         "--panohop-mode", choices=("always", "selective"), default="always",
         help="always: look around at every decision point (upper bound). "
@@ -1526,7 +1529,8 @@ def main():
         from panohop_actor import PanoHopActor
 
         actor = PanoHopActor(args.panohop_url, args.panohop_model,
-                             mode=args.panohop_mode)
+                             mode=args.panohop_mode,
+                             stop_verify=bool(args.panohop_stop_verify))
     else:
         actor = WaypointActorProcess(args.actor_python, ROOT / "integrations/v3/vln_waypoint_worker.py", args.model_path, args.gpu_id)
     actor.want_visuals = bool(args.record_video)
