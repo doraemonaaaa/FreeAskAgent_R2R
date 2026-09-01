@@ -374,6 +374,7 @@ def main():
                         else None
                     ),
                     oracle_goal_xyz=request.get("oracle_goal_xyz"),
+                    cwp_candidates=request.get("cwp_candidates"),
                 )
                 response = _act_response(actor, decision, want_visuals=bool(request.get("want_visuals")))
             elif request.get("operation") == "act_on_preview":

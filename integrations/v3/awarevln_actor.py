@@ -104,7 +104,7 @@ class AwareVLNActor:
         self.history.append(Image.fromarray(np.asarray(rgb, dtype=np.uint8)).convert("RGB"))
         self.step_index += 1
 
-    def act(self, rgb, depth, instruction, intrinsics, camera_to_world, navigable=None, oracle_goal=None):
+    def act(self, rgb, depth, instruction, intrinsics, camera_to_world, navigable=None, oracle_goal=None, cwp_candidates=None):
         current = Image.fromarray(np.asarray(rgb, dtype=np.uint8)).convert("RGB")
         frames = sample_and_pad_images(self.history + [current], self.num_frames, current.size)
         started = time.perf_counter()

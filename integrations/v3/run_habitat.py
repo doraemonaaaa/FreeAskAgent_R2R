@@ -125,7 +125,7 @@ class WaypointActorProcess:
         """Initialize the worker's task memory before an episode starts."""
         return self._request({"operation": "prepare", "instruction": instruction})
 
-    def act(self, rgb, depth, instruction, intrinsics, camera_to_world, navigable=None, oracle_goal=None):
+    def act(self, rgb, depth, instruction, intrinsics, camera_to_world, navigable=None, oracle_goal=None, cwp_candidates=None):
         encode_started = time.perf_counter()
         request = {
             "operation": "act",
@@ -136,6 +136,10 @@ class WaypointActorProcess:
             # is being recorded: they cost a PNG encode per step.
             "want_visuals": bool(getattr(self, "want_visuals", False)),
         }
+        if cwp_candidates is not None:
+            # Externally supplied (runner-side CWP) waypoint candidates; the
+            # worker substitutes them for its floor-openings generator.
+            request["cwp_candidates"] = cwp_candidates
         if oracle_goal is not None:
             # Diagnostic only (--som-oracle): the goal position lets the
             # worker pick the best set-of-mark candidate without the model,
@@ -167,7 +171,7 @@ class WaypointActorProcess:
             return None, result
         return np.asarray(result["world_xyz"], dtype=np.float32), result
 
-    def act_on_preview(self, views, instruction):
+    def act_on_preview(self, views, instruction, cwp_candidates=None):
         """Answer a PREVIEW decision with the headings Habitat just rendered."""
         encode_started = time.perf_counter()
         request = {
@@ -187,6 +191,8 @@ class WaypointActorProcess:
                 for view in views
             ],
         }
+        if cwp_candidates is not None:
+            request["cwp_candidates"] = cwp_candidates
         encode_ms = (time.perf_counter() - encode_started) * 1000
         roundtrip_started = time.perf_counter()
         result = self._request(request)
@@ -1320,7 +1326,7 @@ def _load_config(path):
     defaults = {}
     if model.get("path"):
         defaults["model_path"] = str(model["path"])
-    for key in ("camera_pitch_deg", "max_steps", "waypoint_radius", "depth_hfov", "actor", "record_video"):
+    for key in ("camera_pitch_deg", "max_steps", "waypoint_radius", "depth_hfov", "actor", "record_video", "cwp_candidates"):
         if runner.get(key) is not None:
             defaults[key] = runner[key]
     env = {}
@@ -1391,6 +1397,12 @@ def main():
     parser.add_argument("--panohop-stop-verify", type=int, default=0,
                         help="1: route STOP votes through the verification call "
                         "(measured worse zero-shot; kept for ablations).")
+    parser.add_argument(
+        "--cwp-candidates", type=int, default=0,
+        help="1: supply runner-side CWP waypoint candidates to the waypoint "
+        "actor (replaces the worker's floor-openings generator; forward "
+        "sector on normal steps, full ring on PREVIEW).",
+    )
     parser.add_argument(
         "--panohop-mode", choices=("always", "selective"), default="always",
         help="always: look around at every decision point (upper bound). "
@@ -1491,7 +1503,7 @@ def main():
             for sensor in ("rgb", "depth") for side in ("height", "width")
         ]
     config = habitat.get_config("benchmark/nav/vln_r2r.yaml", overrides=overrides)
-    if args.actor == "panohop":
+    if args.actor == "panohop" or args.cwp_candidates:
         # CWP was trained on level 224 RGB / 256 depth-in-meters views; give it
         # dedicated sensors so the ring never depends on the nav camera pitch.
         import dataclasses as _dc
@@ -1547,6 +1559,11 @@ def main():
         with habitat.Env(config=config) as env:
             if hasattr(actor, "attach_env"):
                 actor.attach_env(env)
+            cwp_feed = None
+            if args.cwp_candidates and args.actor == "waypoint":
+                from cwp_feed import CwpCandidateFeed
+
+                cwp_feed = CwpCandidateFeed(env)
             episodes = _select_episodes(
                 env.episodes,
                 episode_id=args.episode_id,
@@ -1566,6 +1583,8 @@ def main():
                 # Habitat owns episode ordering; trust the environment over the
                 # list index so logged IDs and goals match the active episode.
                 episode = env.current_episode
+                if cwp_feed is not None:
+                    cwp_feed.reset()
                 steps = 0
                 _, _, instruction = _observation(observation)
                 print(
@@ -1636,10 +1655,19 @@ def main():
                     )
                     rgb, depth, instruction = _observation(observation)
                     intrinsics = _intrinsics(rgb.shape[1], rgb.shape[0], args.depth_hfov)
+                    camera_to_world = _camera_to_world(env)
+                    step_cands = (
+                        cwp_feed.step(intrinsics, camera_to_world)
+                        if cwp_feed is not None else None
+                    )
+                    if step_cands is not None and steps == 0:
+                        print("cwp_feed: {} forward candidates at step 0".format(
+                            len(step_cands)), flush=True)
                     waypoint, decision = actor.act(
-                        rgb, depth, instruction, intrinsics, _camera_to_world(env),
+                        rgb, depth, instruction, intrinsics, camera_to_world,
                         navigable=_navigable_window(env),
                         oracle_goal=(goal_position if args.som_oracle else None),
+                        cwp_candidates=step_cands,
                     )
                     if decision.get("action_mode") == "PREVIEW":
                         # The actor asked to look around before committing.
@@ -1656,8 +1684,12 @@ def main():
                             time.perf_counter() - preview_started
                         ) * 1000
                         preview_request = decision
+                        ring_cands = (
+                            cwp_feed.ring(intrinsics, camera_to_world)
+                            if cwp_feed is not None else None
+                        )
                         waypoint, decision = actor.act_on_preview(
-                            views, instruction
+                            views, instruction, cwp_candidates=ring_cands
                         )
                         decision["preview"] = {
                             "render_ms": preview_render_ms,
