@@ -469,3 +469,19 @@ abstract_stop 0.06。
 组合上限 ≈ oracle 0.365 × 转化率 0.60 ≈ 0.22(追平 SmartWay)。
 下一步:在 cwp200 架构上换停止通道(judge 到达候选区降门槛,或嫁接 pano-hop
 的裸 STOP 询问 + 1m 守卫)。
+
+### §23.2 STOP 通道嫁接实验(负结果,证据链完整)
+把 pano-hop 的裸 STOP 票嫁接进 SoM 选择(S 选项 + schema 收录 + 位移≥1m 守卫),
+在 cwp200 的 timeout_near 集 ep146 上逐层排查:
+1. S 选项只写在候选列表 → 不投(SOM_PROMPT schema 未收录 S,模型守约);
+2. schema 收录 S + 规则说明 → 仍不投;
+3. 撤掉"第 k/共 n"计数去偏 → 仍不投;
+4. VLN_SOM_TRACE 抓原始回答 → **真凶**:stage 追踪器卡在子目标 1(captioner
+   "挂钟不可见"永不判完成),整集每次新决策的 evidence 都在复述第 1 阶段文本
+   ("沿沙发背面走向挂钟",conf 0.95),包括站在终点 0.09m 处;第 125 步还被
+   过期子目标的 landmark 拉离终点(6.7m 目标)。
+**结论:旧架构的 STOP 转化率 30% 是结构性的——stage 追踪器停摆时,过期子目标
+文本支配模型注意力,同时误导选路和 landmark 目标;提示层无法绕过。**
+这就是 base200 时代 66% stalled_landmark 病的机理级复现。
+三条出路:①stage 强制推进看门狗(超程/长期不完成 → 推进阶段,量测规则,
+零样本内最后的大杠杆)②训练(Phase 3)③保持 pano-hop 为主线。
