@@ -1326,7 +1326,9 @@ def _load_config(path):
     defaults = {}
     if model.get("path"):
         defaults["model_path"] = str(model["path"])
-    for key in ("camera_pitch_deg", "max_steps", "waypoint_radius", "depth_hfov", "actor", "record_video", "cwp_candidates"):
+    for key in ("camera_pitch_deg", "max_steps", "waypoint_radius", "depth_hfov",
+                "actor", "record_video", "cwp_candidates", "panohop_mode",
+                "panohop_url", "panohop_model"):
         if runner.get(key) is not None:
             defaults[key] = runner[key]
     env = {}

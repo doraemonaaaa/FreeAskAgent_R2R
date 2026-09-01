@@ -37,9 +37,14 @@ runner:
   max_steps: 150
   waypoint_radius: 0.25
   depth_hfov: 90.0
-  actor: waypoint         # waypoint | awarevln (AwareVLN policy via serve_awarevln.py)
+  actor: waypoint         # waypoint | awarevln (serve_awarevln.py) | panohop (CWP look-around hops, panohop_actor.py)
   record_video: false
+  # cwp_candidates: 1     # -> --cwp-candidates: runner-side CWP candidates replace the
+  #                       #    waypoint actor's floor-openings (cwp200: oracle 0.365, docs §23)
+  # panohop_mode: always  # -> --panohop-mode: always | selective (rule-triggered look-arounds)
 
 eval:
-  episode_set: integrations/v3/eval_sets/val_unseen_40.txt
+  # The 200-episode stratified set is the decision standard (50/category);
+  # the 40-set is retained only for quick smoke passes.
+  episode_set: integrations/v3/eval_sets/val_unseen_200.txt
   world_size: 8
