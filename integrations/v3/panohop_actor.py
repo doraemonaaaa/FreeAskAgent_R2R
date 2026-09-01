@@ -111,13 +111,18 @@ class PanoHopActor:
         self.last_ring = None           # (rgbs, deps, yaw_rad) of last look-around
         self.lookaround_count = 0
         self.force_look = True          # first decision always looks around
-        self.last_remaining = ""        # model's own "what is left" answer
+        self.last_remaining = ""        # (legacy, unused by the step scheme)
         self.mono_streak = 0            # mono decisions since the last look
+        self.subgoals = []              # numbered steps from prepare()
+        self.subgoal_idx = 0            # monotonic pointer, advances <= 1/decision
 
     # -- protocol ------------------------------------------------------------
     def prepare(self, instruction):
         self._reset_episode_state()
-        return {"subgoals": []}
+        self.subgoals = self._split_subgoals(instruction)
+        return {"subgoals": [
+            {"subgoal_id": i + 1, "description": s, "completion_criteria": ""}
+            for i, s in enumerate(self.subgoals)]}
 
     def close(self):
         pass
@@ -162,9 +167,11 @@ class PanoHopActor:
         # ---- decision point ------------------------------------------------
         yaw = _agent_yaw(state.rotation)
         self.decision_count += 1
+        cur_sub = (self.subgoals[self.subgoal_idx]
+                   if self.subgoal_idx < len(self.subgoals) else "")
         full_look = (self.mode == "always" or self.force_look
                      or self.last_ring is None
-                     or self._wants_turn(self.last_remaining)
+                     or self._wants_turn(cur_sub)
                      or self.mono_streak >= 4)
         started = time.perf_counter()
         candidates, strip, allow_look = self._propose(pos, yaw, full_look)
@@ -380,24 +387,25 @@ class PanoHopActor:
             "direction, the 7th view faces behind you.\n" if panorama else
             "The image shows your forward 90° arc: three views (30° left, ahead, "
             "30° right). You can NOT see what is beside or behind you.\n")
+        steps = "\n".join("  {}{} {}".format(
+            i + 1, "*" if i == self.subgoal_idx else ".", s)
+            for i, s in enumerate(self.subgoals))
         prompt = (
-            "You are a robot navigating a building. Follow this instruction:\n"
-            '"{}"\n\n'
+            "You are a robot navigating a building. Your instruction, split into "
+            "ordered steps (* marks the step you are on now):\n{}\n\n"
             "Moves so far: {}.\n"
             "{}"
             "{}"
             "Red numbered markers are reachable waypoints:\n{}\n\n"
-            "Pick the waypoint that best continues the instruction given the moves "
-            "already made. Only answer STOP if the whole instruction is complete and "
-            "you are standing at the final described location.\n"
-            'Answer with JSON only: {{"progress": "<short clause: what part of the '
-            'instruction is already done>", "remaining": "<what is still left to do, '
-            'or \\"none\\">", "choice": <marker number{}>}}'
-        ).format(instruction.strip(),
+            "Pick the waypoint that best continues the CURRENT step; when the "
+            "current step is visibly finished, move on to the next one.\n"
+            "STOP is allowed only on the last step, standing at the final "
+            "described location.\n"
+            'Answer with JSON only: {{"step": <number of the step you are working '
+            'on after this move>, "choice": <marker number{}>}}'
+        ).format(steps,
                  history,
-                 ("Progress so far: {}.\n".format(self.last_progress)
-                  if self.last_progress else "")
-                 + (self.abandoned_note + "\n" if self.abandoned_note else "")
+                 (self.abandoned_note + "\n" if self.abandoned_note else "")
                  + ("You proposed STOP at the previous decision. Answer STOP again "
                     "ONLY if the instruction is fully complete; otherwise pick a "
                     "waypoint.\n" if self.stop_pending else ""),
@@ -424,19 +432,26 @@ class PanoHopActor:
 
     def _parse(self, raw, candidates, allow_look=False):
         by_label = {c["label"]: c for c in candidates}
+        progress = ""
         match = re.search(r"\{.*\}", raw or "", re.DOTALL)
         if match:
             try:
                 data = json.loads(match.group(0))
-                progress = str(data.get("progress", "")).strip()[:200]
-                remaining = str(data.get("remaining", "")).strip().lower()
-                self.last_remaining = remaining
+                step = str(data.get("step", "")).strip()
+                if step.isdigit():
+                    answered = int(step) - 1
+                    # monotonic pointer, advancing at most one step per decision
+                    self.subgoal_idx = min(
+                        max(self.subgoal_idx, min(answered, self.subgoal_idx + 1)),
+                        max(0, len(self.subgoals) - 1))
+                progress = "step {}/{}".format(self.subgoal_idx + 1,
+                                               len(self.subgoals))
                 choice = str(data.get("choice", "")).strip().upper()
                 if allow_look and choice == "LOOK":
                     return "LOOK", progress
                 if choice == "STOP":
-                    if remaining not in ("", "none", "nothing", "n/a", "-", "done"):
-                        # The model itself says work remains: not a real STOP.
+                    if self.subgoal_idx < len(self.subgoals) - 1 and candidates:
+                        # steps remain by its own account: not a real STOP
                         return max(candidates, key=lambda c: c["score"]), progress
                     return None, progress
                 if choice in by_label:
@@ -444,14 +459,50 @@ class PanoHopActor:
             except (ValueError, TypeError):
                 pass
         if allow_look and re.search(r"\bLOOK\b", raw or ""):
-            return "LOOK", ""
+            return "LOOK", progress
         if re.search(r"\bSTOP\b", raw or ""):
-            return None, ""
+            return None, progress
+        found = re.search(r'choice[\"\s:]*([0-9]+)', raw or "")
+        if found and found.group(1) in by_label:
+            return by_label[found.group(1)], progress
         for token in re.findall(r"\d+", raw or ""):
             if token in by_label:
-                return by_label[token], ""
+                return by_label[token], progress
         # unparseable: take the highest-scoring candidate rather than dying
-        return max(candidates, key=lambda c: c["score"]), ""
+        return max(candidates, key=lambda c: c["score"]), progress
+
+    def _split_subgoals(self, instruction):
+        prompt = (
+            "Split this navigation instruction into an ordered list of short "
+            "atomic steps (one motion or one 'stop at X' each). Answer with a "
+            "JSON array of strings only.\n\nInstruction: {!r}".format(
+                instruction.strip()))
+        try:
+            raw = self._query_text(prompt)
+            found = re.search(r"\[.*\]", raw or "", re.DOTALL)
+            steps = [str(s).strip() for s in json.loads(found.group(0))
+                     if str(s).strip()]
+            if steps:
+                return steps[:12]
+        except Exception:
+            pass
+        parts = [p.strip() for p in re.split(r"[.;\n]|\bthen\b", instruction)
+                 if p.strip()]
+        return parts[:12] or [instruction.strip()]
+
+    def _query_text(self, prompt):
+        import urllib.request
+
+        body = json.dumps({
+            "model": self.model, "temperature": 0.0, "max_tokens": 400,
+            "messages": [{"role": "user", "content": prompt}],
+        }).encode("utf-8")
+        request = urllib.request.Request(
+            self.base_url + "/chat/completions", data=body,
+            headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(request, timeout=self.timeout) as response:
+            payload = json.load(response)
+        return payload["choices"][0]["message"]["content"] or ""
 
     def _query(self, strip, prompt):
         import urllib.request
