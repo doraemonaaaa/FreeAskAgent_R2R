@@ -1,23 +1,38 @@
 """Pano-hop actor: CWP look-around candidates + VLM chooser + cached hop target.
 
-Drop-in for ``WaypointActorProcess`` (prepare / act / close, in-process like
-AwareVLNActor).  At each decision point it obtains waypoint candidates from
-the ported SmartWay CWP predictor (waypoint_cwp/), projects them into an
-annotated image, and asks a VLM to pick a marker or STOP.  The chosen
-waypoint is cached: while the hop is in progress ``act`` returns the same
-world point without consulting the VLM, so the runner's existing follower
-loop drives it one primitive at a time (zero changes to execution).
+Drop-in for ``WaypointActorProcess`` (prepare / act / close), in-process like
+AwareVLNActor.  At each decision point it obtains waypoint candidates from the
+ported SmartWay CWP predictor (waypoint_cwp/), grounds them on the navmesh,
+draws them as numbered markers on a view strip, and asks a VLM to pick a
+marker or STOP.  The chosen world point is cached: while the hop is in
+progress ``act`` returns the same point without consulting the VLM, so the
+runner's follower loop drives it one primitive at a time (execution loop
+unchanged).  Measured on the 200-set: SR 0.150 / SPL 0.134 / oracle 0.250
+(always mode, qwen3-vl-8b) vs the 0.095 primitive-step baseline.
 
-Two modes (--panohop-mode):
-  always     look around (12-view ring render) at every decision point —
-             the SmartWay-style upper bound.
-  selective  monocular by default: only the forward 90° arc is freshly
-             rendered (stale ring fills the other slots for CWP) and only
-             forward candidates are offered, plus a LOOK option — the VLM
-             itself decides when spinning in place is worth the cost.
-             Look-around is forced on the first decision and after a failed
-             hop.  ``lookarounds`` is logged per episode for the SR-vs-budget
-             curve.
+Modes (--panohop-mode):
+  always     look around (12-view ring render) at every decision point.
+             The upper-bound reference; the headline configuration.
+  selective  monocular by default: fresh forward 3 slots + the realigned
+             stale ring feed CWP, only forward +-45 deg candidates offered.
+             A ring fires on: first decision, failed hop, no forward
+             candidate, turn word in the first instruction step, 4 mono
+             decisions in a row.  Measured: SR 0.125 at 7.0 look-arounds/ep
+             (always: 10.5) - navigation reach intact (oracle 0.245).
+
+Ablation switches, all default OFF (measured worse; kept reproducible):
+  --panohop-stop-verify   STOP votes go through a verification call with a
+                          3-consecutive-vote override (200d SR 0.065 / 200e
+                          0.109 vs bare STOP 0.150).
+  (backtrack)             B-options after a failed hop; chosen 0/2101 times
+                          zero-shot (200bt2, SR-neutral).  Left active since
+                          it is never taken; part of the training action
+                          space later.
+
+The load-bearing prompt line is the model's own "progress" clause fed back
+at every decision - dropping it collapsed oracle 0.250 -> 0.095 (docs
+2026-08-30 §21.1).  VLN_PANOHOP_STRIP_DIR=<dir> dumps each decision's
+annotated strip.
 """
 from __future__ import annotations
 
@@ -25,6 +40,7 @@ import base64
 import io
 import json
 import math
+import os
 import re
 import time
 
@@ -40,6 +56,7 @@ STUCK_MIN_PROGRESS_M = 0.1
 MIN_SCORE_FRAC = 0.15  # keep candidates scoring >= frac * best score
 MIN_TRAVEL_BEFORE_STOP_M = 1.0  # R2R goals are >= 4 m away; a spawn STOP is never right
 MONO_ARC_DEG = 45.0  # candidates offered on a monocular decision
+MONO_STREAK_LIMIT = 4  # forced ring after this many mono decisions
 
 
 def _wrap180(deg):
@@ -81,7 +98,6 @@ class PanoHopActor:
         self.mode = mode
         self.stop_verify = stop_verify
         self.want_visuals = False
-        import os
         self.strip_dir = os.environ.get("VLN_PANOHOP_STRIP_DIR") or None
         self.episode_counter = 0
         self.env = None
@@ -106,24 +122,21 @@ class PanoHopActor:
         self.hop_step_count = 0
         self.hop_budget = 0
         self.hop_dists = []             # recent distances to target (stuck check)
-        self.start_pos = None           # spawn position (STOP suppression)
+        self.start_pos = None           # spawn position (STOP travel guard)
         self.hop_history = []           # text lines for the prompt
-        self.last_progress = ""
+        self.last_progress = ""         # model's own progress clause, fed back
         self.decision_count = 0
         self.abandoned_note = ""
-        self.stop_pending = False       # (legacy)
         self.stop_votes = 0             # consecutive STOP votes (verifier cap)
         self.last_ring = None           # (rgbs, deps, yaw_rad) of last look-around
         self.lookaround_count = 0
         self.force_look = True          # first decision always looks around
-        self.nodes = []                 # visited look-around nodes (topological)
-        self.offer_backtrack = False    # only after a failed hop (200bt: offering
-                                        # B-options every decision collapsed choice
-                                        # quality, oracle 0.250 -> 0.095, 8/1788 used)
-        self.last_remaining = ""        # (legacy, unused by the step scheme)
-        self.mono_streak = 0            # mono decisions since the last look
-        self.subgoals = []              # numbered steps from prepare()
-        self.subgoal_idx = 0            # monotonic pointer, advances <= 1/decision
+        self.nodes = []                 # visited look-around nodes (backtrack)
+        self.offer_backtrack = False    # only after a failed hop (offering
+                                        # B-options every decision collapsed
+                                        # choice quality: oracle 0.250 -> 0.095)
+        self.mono_streak = 0            # mono decisions since the last ring
+        self.subgoals = []              # instruction steps (selective trigger)
 
     # -- protocol ------------------------------------------------------------
     def prepare(self, instruction):
@@ -179,20 +192,20 @@ class PanoHopActor:
         # ---- decision point ------------------------------------------------
         yaw = _agent_yaw(state.rotation)
         self.decision_count += 1
-        cur_sub = (self.subgoals[self.subgoal_idx]
-                   if self.subgoal_idx < len(self.subgoals) else "")
+        first_step = self.subgoals[0] if self.subgoals else ""
         full_look = (self.mode == "always" or self.force_look
                      or self.last_ring is None
-                     or self._wants_turn(cur_sub)
-                     or self.mono_streak >= 4)
+                     or self._wants_turn(first_step)
+                     or self.mono_streak >= MONO_STREAK_LIMIT)
         started = time.perf_counter()
-        candidates, strip, allow_look = self._propose(pos, yaw, full_look)
+        candidates, strip = self._propose(pos, yaw, full_look)
         render_ms = (time.perf_counter() - started) * 1000
 
         if not candidates:
             if not full_look:
                 # nothing ahead: looking around is the measured answer
-                candidates, strip, allow_look = self._propose(pos, yaw, True)
+                full_look = True
+                candidates, strip = self._propose(pos, yaw, True)
             if not candidates:
                 return None, {"stop": False, "action_mode": "PANO_HOP",
                               "debug": {"hop": "no candidates"}}
@@ -201,30 +214,17 @@ class PanoHopActor:
                 if (full_look and self.offer_backtrack) else [])
         self.offer_backtrack = False
         choice, progress, raw, vlm_ms = self._choose(
-            strip, candidates + back, instruction, panorama=not allow_look,
-            allow_look=allow_look)
-        used_look = False
-        if choice == "LOOK":
-            used_look = True
-            candidates, strip, _ = self._propose(pos, yaw, True)
-            if not candidates:
-                return None, {"stop": False, "action_mode": "PANO_HOP",
-                              "debug": {"hop": "no candidates after LOOK"}}
-            choice, progress, raw, vlm2 = self._choose(
-                strip, candidates, instruction, panorama=True, allow_look=False)
-            vlm_ms += vlm2
+            strip, candidates + back, panorama=full_look)
         self.abandoned_note = ""
         if progress:
             self.last_progress = progress
-        label = (choice["label"] if isinstance(choice, dict) else "STOP")
         print("PANOHOP dec={} {} cands={} choice={} la={} prog={!r}".format(
-            self.decision_count,
-            ("ring" if full_look else ("mono+LOOK" if used_look else "mono")),
-            len(candidates), label, self.lookaround_count,
-            (progress or "")[:60]), flush=True)
+            self.decision_count, "ring" if full_look else "mono",
+            len(candidates),
+            choice["label"] if isinstance(choice, dict) else "STOP",
+            self.lookaround_count, (progress or "")[:60]), flush=True)
 
         if self.strip_dir:
-            import os
             os.makedirs(self.strip_dir, exist_ok=True)
             strip.save(os.path.join(self.strip_dir, "ep{:03d}_dec{:02d}_{}.png".format(
                 self.episode_counter, self.decision_count,
@@ -242,10 +242,10 @@ class PanoHopActor:
             self.hop_history.append(
                 "hop {}: STOP suppressed (has not moved yet)".format(self.decision_count))
         if choice is None and self.stop_verify:
-            # Ablation-gated (default OFF: 200d SR 0.065 / 200e SR 0.109 both
-            # lost to the bare-STOP 0.150 — rejections convert early stops
-            # into wandering). A STOP vote is checked by an independently-
-            # framed verification call; 3 consecutive votes override it.
+            # ABLATION (--panohop-stop-verify, default OFF: 200d SR 0.065 /
+            # 200e 0.109 both lost to bare STOP 0.150). A STOP vote is checked
+            # by an independently-framed verification call; 3 consecutive
+            # votes override the verifier.
             self.stop_votes += 1
             ok, evidence = self._verify_stop(strip)
             print("PANOHOP stop-verify dec={} ok={} votes={} ev={!r}".format(
@@ -261,8 +261,7 @@ class PanoHopActor:
                     "yet ({}). Continue following the instruction.".format(
                         evidence[:140]))
                 choice2, progress2, raw2, vlm2 = self._choose(
-                    strip, candidates, instruction, panorama=True,
-                    allow_look=False)
+                    strip, candidates, panorama=True)
                 vlm_ms += vlm2
                 raw += " || redirect: " + raw2
                 if isinstance(choice2, dict):
@@ -274,7 +273,7 @@ class PanoHopActor:
                 self.abandoned_note = ""
         else:
             self.stop_votes = 0
-        if choice is None:  # verified STOP
+        if choice is None:  # STOP
             self.hop_history.append("hop {}: STOP".format(self.decision_count))
             return None, {"stop": True, "action_mode": "PANO_HOP",
                           "raw_model_response": raw, "timings": timings,
@@ -283,7 +282,6 @@ class PanoHopActor:
                                     "lookarounds": self.lookaround_count}}
 
         cand = choice
-        self.stop_pending = False
         self.hop_target = np.asarray(cand["world_xyz"], dtype=np.float64)
         self.hop_step_count = 0
         self.hop_dists = []
@@ -312,7 +310,7 @@ class PanoHopActor:
 
     # -- candidate proposal ---------------------------------------------------
     def _propose(self, pos, yaw, full_look):
-        """Returns (candidates, annotated strip, allow_look)."""
+        """Returns (candidates, annotated strip) for a ring or mono decision."""
         if full_look:
             rgbs, deps = self._render_ring(pos, yaw)
             self.last_ring = ([r.copy() for r in rgbs],
@@ -323,8 +321,7 @@ class PanoHopActor:
             self._remember_node(pos, rgbs[0])
             out = self._predictor_lazy().predict(rgbs, deps)
             candidates = self._ground_candidates(out["waypoints"], pos, yaw)
-            strip = self._annotate(rgbs, candidates, slots=range(NUM_SLOTS))
-            return candidates, strip, False
+            return candidates, self._annotate(rgbs, candidates, slots=range(NUM_SLOTS))
         # monocular: fresh forward arc (slots 11,0,1), stale ring elsewhere
         p_rgbs, p_deps, p_yaw = self.last_ring
         shift = int(round(_wrap180(math.degrees(p_yaw - yaw)) / SLOT_DEG)) % NUM_SLOTS
@@ -338,12 +335,9 @@ class PanoHopActor:
         candidates = [c for c in candidates if abs(c["rel_deg"]) <= MONO_ARC_DEG]
         for i, c in enumerate(candidates, start=1):
             c["label"] = str(i)
-        strip = self._annotate([rgbs[11], rgbs[0], rgbs[1]], candidates,
-                               slots=(11, 0, 1))
         self.mono_streak += 1
-        # v2: no LOOK option — the VLM does not self-ration (measured: it
-        # chose LOOK on 13/16 decisions); rules trigger look-arounds instead.
-        return candidates, strip, False
+        return candidates, self._annotate(
+            [rgbs[11], rgbs[0], rgbs[1]], candidates, slots=(11, 0, 1))
 
     def _remember_node(self, pos, fwd_tile):
         for node in self.nodes:
@@ -361,11 +355,9 @@ class PanoHopActor:
             d = float(np.linalg.norm((np.asarray(node["pos"]) - pos)[[0, 2]]))
             if d < min_dist:
                 continue
-            look = np.asarray(node["pos"]) - pos
-            rel = 0.0  # bearing is meaningless for a remembered place; follower routes
             opts.append({"label": "B{}".format(len(opts) + 1),
                          "world_xyz": np.asarray(node["pos"]).tolist(),
-                         "rel_deg": rel, "distance_m": d, "score": 0.0,
+                         "rel_deg": 0.0, "distance_m": d, "score": 0.0,
                          "kind": "backtrack", "tile": node["tile"],
                          "idx": node["idx"]})
             if len(opts) >= max_back:
@@ -407,9 +399,8 @@ class PanoHopActor:
             if float(np.linalg.norm((snapped - pos)[[0, 2]])) < 0.3:
                 continue
             rel_deg = -math.degrees(w["heading_rad"])  # CCW+ -> right+
-            dup = next((c for c in out if np.linalg.norm(
-                (np.asarray(c["world_xyz"]) - snapped)[[0, 2]]) < 0.5), None)
-            if dup is not None:
+            if any(np.linalg.norm((np.asarray(c["world_xyz"]) - snapped)[[0, 2]]) < 0.5
+                   for c in out):
                 continue
             out.append({"world_xyz": snapped.tolist(), "rel_deg": rel_deg,
                         "distance_m": w["distance_m"], "score": w["score"]})
@@ -448,7 +439,7 @@ class PanoHopActor:
         return strip
 
     # -- chooser --------------------------------------------------------------
-    def _choose(self, strip, candidates, instruction, panorama, allow_look):
+    def _choose(self, strip, candidates, panorama):
         lines, extras = [], []
         for c in candidates:
             if c.get("kind") == "backtrack":
@@ -461,10 +452,6 @@ class PanoHopActor:
                 lines.append("  {}: {}".format(
                     c["label"], _describe(c["rel_deg"], c["distance_m"])))
         options = "\n".join(lines)
-        if allow_look:
-            options += ("\n  LOOK: turn in place to see all directions "
-                        "(use when the instruction may require going somewhere "
-                        "not visible ahead)")
         history = "; ".join(self.hop_history[-8:]) or "just started"
         image_desc = (
             "The image is a full 360° look-around: 12 views left-to-right, each "
@@ -483,37 +470,33 @@ class PanoHopActor:
             "already made. Only answer STOP if the whole instruction is complete and "
             "you are standing at the final described location.\n"
             'Answer with JSON only: {{"progress": "<short clause: what part of the '
-            'instruction is already done>", "choice": <marker number{}>}}'
+            'instruction is already done>", "choice": <marker number or "STOP">}}'
         ).format(self.instruction_text,
                  history,
                  ("Progress so far: {}.\n".format(self.last_progress)
                   if self.last_progress else "")
-                 + (self.abandoned_note + "\n" if self.abandoned_note else "")
-                 + ("You proposed STOP at the previous decision. Answer STOP again "
-                    "ONLY if the instruction is fully complete; otherwise pick a "
-                    "waypoint.\n" if self.stop_pending else ""),
+                 + (self.abandoned_note + "\n" if self.abandoned_note else ""),
                  image_desc,
-                 options,
-                 ', "STOP" or "LOOK"' if allow_look else ' or "STOP"')
+                 options)
         started = time.perf_counter()
         raw = self._query(strip, prompt, extras=extras)
         vlm_ms = (time.perf_counter() - started) * 1000
-        choice, progress = self._parse(raw, candidates, allow_look)
+        choice, progress = self._parse(raw, candidates)
         return choice, progress, raw, vlm_ms
 
     _TURN_WORDS = re.compile(
         r"\b(turn|left|right|around|exit|enter|door|doorway|stairs|stairway|"
         r"upstairs|downstairs|behind|corner|hallway|out of)\b", re.I)
 
-    def _wants_turn(self, remaining):
+    def _wants_turn(self, step_text):
         # Only the NEXT action matters: match the first clause, not the whole
         # tail (turn-heavy instructions otherwise force a ring every time).
-        if not remaining:
+        if not step_text:
             return False
-        first = re.split(r"[,.;]| then | and ", remaining, maxsplit=1)[0]
+        first = re.split(r"[,.;]| then | and ", step_text, maxsplit=1)[0]
         return bool(self._TURN_WORDS.search(first))
 
-    def _parse(self, raw, candidates, allow_look=False):
+    def _parse(self, raw, candidates):
         by_label = {c["label"]: c for c in candidates}
         progress = ""
         match = re.search(r"\{.*\}", raw or "", re.DOTALL)
@@ -522,16 +505,12 @@ class PanoHopActor:
                 data = json.loads(match.group(0))
                 progress = str(data.get("progress", "")).strip()[:200]
                 choice = str(data.get("choice", "")).strip().upper()
-                if allow_look and choice == "LOOK":
-                    return "LOOK", progress
                 if choice == "STOP":
                     return None, progress
                 if choice in by_label:
                     return by_label[choice], progress
             except (ValueError, TypeError):
                 pass
-        if allow_look and re.search(r"\bLOOK\b", raw or ""):
-            return "LOOK", progress
         if re.search(r"\bSTOP\b", raw or ""):
             return None, progress
         found = re.search(r'choice[\"\s:]*([B]?[0-9]+)', raw or "")
@@ -581,9 +560,8 @@ class PanoHopActor:
                  if p.strip()]
         return parts[:12] or [instruction.strip()]
 
+    # -- transport ------------------------------------------------------------
     def _query_text(self, prompt):
-        import urllib.request
-
         body = json.dumps({
             "model": self.model, "temperature": 0.0, "max_tokens": 400,
             "messages": [{"role": "user", "content": prompt}],
@@ -591,8 +569,6 @@ class PanoHopActor:
         return self._post(body)
 
     def _query(self, strip, prompt, extras=None):
-        import urllib.request
-
         content = [{"type": "image_url",
                     "image_url": {"url": _png_data_url(strip)}}]
         for tile in (extras or []):
