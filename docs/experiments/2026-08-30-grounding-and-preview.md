@@ -270,3 +270,60 @@ Judge 的到达规则原本只接 doorway 锁的距离；spatial memory 定位�
 | **som-v1** | 0.085 | 0.070 | **8.16** | 123 | 0.06 / 0.08 / 0.06 / 0.14 |
 
 **判定：40 集的 3× 是小样本噪声（配对 200 集独赢 11:13）；SR 无净变化，但 dtg 改善 ~1 m 与机制一致（方向选对了但阶段链后段吃掉了转化）。** 这与 oracle 实验定量吻合：方向全对上限也只有 ~0.15，而 som-v1 转向准确率仅 0.274，远未到 oracle；且判定/停止是同量级的另一半损失。结论：方向头训练路线有效但单独不够——需要 (a) 转向准确率继续拉（更多转向数据/epoch/更大 rank），(b) 判定/停止头的同型训练（GT 进度标签同样免费），两者乘起来才可能兑现 SR。40 集 A/B 从此退役，只用于冒烟。
+
+## §19 Phase 0:CWP waypoint predictor 移植 + 候选覆盖率基准(2026-09-01)
+
+### §19.1 设计决定:全景是动作,不是传感器
+SmartWay 的"全景相机"在仿真里就是同位置渲染 12 个朝向,物理上等价于原地转一圈
+——真机可行(CoW/VLMaps 均如此)。因此我们不照抄"每步全景"(SmartWay 模式),
+而是把**环视作为有成本的动作**:默认单目前视,由触发策略决定何时转圈环视。
+差异化定位 = 代价感知的主动感知(cost-aware active perception)。
+
+相关工作定位:Active VLN (ECCV'20) 唯一正面做 when/where-to-explore,但是离散
+R2R + RL 小模型;MonoDream (2025) 单目但从不环视(latent panoramic dreaming);
+AdaNav (2025) 用 action entropy 触发的是推理深度而非观测;Ask When It Pays
+(2026) 的成本加权 SR 指标框架可以直接搬。"物理环视作为付费动作 + VLM agent 决策
++ 预测器熵触发"在 VLN-CE 未见先例。
+
+### §19.2 移植细节(integrations/v3/waypoint_cwp/)
+- 权重:SmartWay `final-camera-ready`(334MB,增强版 CWP);RGB 编码 DINOv2
+  ViT-S/14-reg(冻结,384 维);depth 编码 DDPPO ResNet50 gibson-2plus。
+  全部本机缓存,load strict(missing=0/unexpected=0)。
+- 输入:12 槽顺时针环(槽 i = 右转 30i°),RGB 224² pitch0 + depth 256²
+  归一化 [0,1]@10m;输出 120 角×12 距热力图 → NMS(σ=7,5) → ≤5 waypoint
+  (0.25–3.0m)。warm 56ms/次(A100)。
+- 兼容:dinov2 hub 仓库 vendor 进 repo 并打 `from __future__ import
+  annotations` 补丁(py3.9);BertConfig 用 vendored modeling_bert 重导出;
+  file_utils 的 boto3/requests import 改为可选;跑在 runner 侧 habitat env
+  (torch 2.8+cu128),与渲染同进程。
+- 行为自检:随机噪声输入 → 角度熵 4.787 ≈ ln(120) 理论最大(不确定性信号
+  正确);真实场景(ep31)5/5 waypoint 落 navmesh(snap 误差 0.00m)。
+
+### §19.3 覆盖率基准协议
+沿 200 集 reference path 以 2m 间距取决策点,agent 朝向=来路方向(不泄漏
+GT 转向)。GT=指向下一个 densified 路径点。四路候选源:
+① ring:当前位姿全环 CWP(环视上界)② fo:现部署 floor-openings(单目
+pitch−15)③ stale:上一决策点旧环对齐当前朝向+新前视槽 0 ④ front45:GT 方向
+在前 ±45° 内的比例(一切单目方法的天花板)。命中=±30° 内有候选。
+按直行/转向分桶,同时记录 CWP 角度熵与 top-1(环视触发信号验证)。
+
+### §19.4 结果(587 决策点 / 200 集,±30° 命中率)
+| 源 | 全部 | 直行(52%) | 转向(48%) | 转向>60° | 背后>120° |
+|---|---|---|---|---|---|
+| ring 全环 CWP | 96% | 98% | 95% | 93% | 93% |
+| stale 旧环+新前视 | 80% | 92% | 52% | 44% | – |
+| fo 现部署单目 | 62% | 93% | 28% | 7% | 0% |
+| front45 单目天花板 | 58% | 100% | 13% | 0% | 0% |
+
+中位角度误差:ring 4.7° / fo 9.8°(转向点 54.4°)。分类别 ring 均 ≥93%。
+
+### §19.5 结论与决定
+1. CWP 移植成功且质量极高,作为环视候选源定案。
+2. 87% 转向点 GT 方向不在前扇区 → 环视在转向时刻是必需品;任何单目方法
+   (含蒸馏单目头)无法覆盖 → **不训单目候选头**。直行点现有 fo 已 93%≈ring,
+   单目步保留现有候选即可。
+3. **负结果:CWP 热力图熵不能做环视触发**(转向 4.456 vs 直行 4.447,无分离;
+   top1 均值 0.059,近均匀)。原因:CWP 预测几何可走性,转向是指令语义事件。
+   触发信号改用指令/进度侧:turn-stage、子目标切换、前方无匹配候选、看门狗。
+4. Phase 1:pano-hop agent,决策点四条件任一命中即环视(否则单目 fo 候选),
+   对照上界=每步环视、下界=从不环视。
