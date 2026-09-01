@@ -107,7 +107,8 @@ class PanoHopActor:
         self.last_progress = ""
         self.decision_count = 0
         self.abandoned_note = ""
-        self.stop_pending = False       # first STOP vote awaiting confirmation
+        self.stop_pending = False       # (legacy)
+        self.stop_votes = 0             # consecutive STOP votes (verifier cap)
         self.last_ring = None           # (rgbs, deps, yaw_rad) of last look-around
         self.lookaround_count = 0
         self.force_look = True          # first decision always looks around
@@ -119,6 +120,7 @@ class PanoHopActor:
     # -- protocol ------------------------------------------------------------
     def prepare(self, instruction):
         self._reset_episode_state()
+        self.instruction_text = instruction.strip()
         self.subgoals = self._split_subgoals(instruction)
         return {"subgoals": [
             {"subgoal_id": i + 1, "description": s, "completion_criteria": ""}
@@ -220,17 +222,22 @@ class PanoHopActor:
             choice = max(candidates, key=lambda c: c["score"])
             self.hop_history.append(
                 "hop {}: STOP suppressed (has not moved yet)".format(self.decision_count))
-        if choice is None and not self.stop_pending:
-            # First STOP vote: require a second consecutive confirmation (the
-            # runner's keep-alive turn nudges the view before the re-decision).
-            self.stop_pending = True
-            self.hop_history.append(
-                "hop {}: proposed STOP (awaiting confirmation)".format(self.decision_count))
-            return None, {"stop": False, "action_mode": "PANO_HOP",
-                          "raw_model_response": raw, "timings": timings,
-                          **({"visuals": visuals} if visuals else {}),
-                          "debug": {"hop": "STOP pending confirmation"}}
-        if choice is None:  # confirmed STOP
+        if choice is None:
+            # A STOP vote is checked by an independently-framed verification
+            # call (a same-prompt repeat at temperature 0 just repeats itself).
+            # A persistently repeated vote overrides the verifier: after 3
+            # consecutive votes the model is not going anywhere else anyway.
+            self.stop_votes += 1
+            ok, evidence = self._verify_stop(strip)
+            print("PANOHOP stop-verify dec={} ok={} votes={} ev={!r}".format(
+                self.decision_count, ok, self.stop_votes, evidence[:80]), flush=True)
+            if not ok and self.stop_votes < 3 and candidates:
+                self.hop_history.append(
+                    "hop {}: STOP rejected by verification".format(self.decision_count))
+                choice = max(candidates, key=lambda c: c["score"])
+        else:
+            self.stop_votes = 0
+        if choice is None:  # verified STOP
             self.hop_history.append("hop {}: STOP".format(self.decision_count))
             return None, {"stop": True, "action_mode": "PANO_HOP",
                           "raw_model_response": raw, "timings": timings,
@@ -387,23 +394,19 @@ class PanoHopActor:
             "direction, the 7th view faces behind you.\n" if panorama else
             "The image shows your forward 90° arc: three views (30° left, ahead, "
             "30° right). You can NOT see what is beside or behind you.\n")
-        steps = "\n".join("  {}{} {}".format(
-            i + 1, "*" if i == self.subgoal_idx else ".", s)
-            for i, s in enumerate(self.subgoals))
         prompt = (
-            "You are a robot navigating a building. Your instruction, split into "
-            "ordered steps (* marks the step you are on now):\n{}\n\n"
+            "You are a robot navigating a building. Follow this instruction:\n"
+            '"{}"\n\n'
             "Moves so far: {}.\n"
             "{}"
             "{}"
             "Red numbered markers are reachable waypoints:\n{}\n\n"
-            "Pick the waypoint that best continues the CURRENT step; when the "
-            "current step is visibly finished, move on to the next one.\n"
-            "STOP is allowed only on the last step, standing at the final "
-            "described location.\n"
-            'Answer with JSON only: {{"step": <number of the step you are working '
-            'on after this move>, "choice": <marker number{}>}}'
-        ).format(steps,
+            "Pick the waypoint that best continues the instruction given the moves "
+            "already made. Only answer STOP if the whole instruction is complete and "
+            "you are standing at the final described location.\n"
+            'Answer with JSON only: {{"progress": "<short clause: what part of the '
+            'instruction is already done>", "choice": <marker number{}>}}'
+        ).format(self.instruction_text,
                  history,
                  (self.abandoned_note + "\n" if self.abandoned_note else "")
                  + ("You proposed STOP at the previous decision. Answer STOP again "
@@ -437,22 +440,11 @@ class PanoHopActor:
         if match:
             try:
                 data = json.loads(match.group(0))
-                step = str(data.get("step", "")).strip()
-                if step.isdigit():
-                    answered = int(step) - 1
-                    # monotonic pointer, advancing at most one step per decision
-                    self.subgoal_idx = min(
-                        max(self.subgoal_idx, min(answered, self.subgoal_idx + 1)),
-                        max(0, len(self.subgoals) - 1))
-                progress = "step {}/{}".format(self.subgoal_idx + 1,
-                                               len(self.subgoals))
+                progress = str(data.get("progress", "")).strip()[:200]
                 choice = str(data.get("choice", "")).strip().upper()
                 if allow_look and choice == "LOOK":
                     return "LOOK", progress
                 if choice == "STOP":
-                    if self.subgoal_idx < len(self.subgoals) - 1 and candidates:
-                        # steps remain by its own account: not a real STOP
-                        return max(candidates, key=lambda c: c["score"]), progress
                     return None, progress
                 if choice in by_label:
                     return by_label[choice], progress
@@ -470,6 +462,25 @@ class PanoHopActor:
                 return by_label[token], progress
         # unparseable: take the highest-scoring candidate rather than dying
         return max(candidates, key=lambda c: c["score"]), progress
+
+    def _verify_stop(self, strip):
+        prompt = (
+            "You are a robot that was following this instruction:\n"
+            '"{}"\n\n'
+            "You believe you have finished. The image shows your surroundings "
+            "from your current position.\n"
+            "Verify strictly: are you standing AT the final location the "
+            "instruction describes (not merely seeing it in the distance)?\n"
+            'Answer with JSON only: {{"at_final_location": true or false, '
+            '"evidence": "<what in the view proves or disproves it>"}}'
+        ).format(self.instruction_text)
+        try:
+            raw = self._query(strip, prompt)
+            found = re.search(r"\{.*\}", raw or "", re.DOTALL)
+            data = json.loads(found.group(0))
+            return bool(data.get("at_final_location")), str(data.get("evidence", ""))
+        except Exception as exc:
+            return True, "verifier error: {}".format(exc)  # fail open: allow STOP
 
     def _split_subgoals(self, instruction):
         prompt = (
