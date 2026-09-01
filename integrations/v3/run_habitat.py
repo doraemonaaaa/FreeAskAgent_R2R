@@ -1378,12 +1378,16 @@ def main():
     )
     parser.add_argument("--actor-python", type=Path, default=ROOT / ".venv/bin/python")
     parser.add_argument(
-        "--actor", choices=("waypoint", "awarevln"), default="waypoint",
+        "--actor", choices=("waypoint", "awarevln", "panohop"), default="waypoint",
         help="awarevln: drive Habitat with the AwareVLN policy served by integrations/v3/serve_awarevln.py "
-        "(native forward/turn/stop protocol, 512x512 RGB like its reference evaluation).",
+        "(native forward/turn/stop protocol, 512x512 RGB like its reference evaluation). "
+        "panohop: CWP 12-view look-around candidates + VLM chooser + follower hops "
+        "(integrations/v3/panohop_actor.py; runs in this process).",
     )
     parser.add_argument("--awarevln-url", default="http://127.0.0.1:8600/v1")
     parser.add_argument("--awarevln-model", default="awarevln")
+    parser.add_argument("--panohop-url", default="http://127.0.0.1:8100/v1")
+    parser.add_argument("--panohop-model", default="qwen3-vl-8b")
     parser.add_argument("--waypoint-radius", type=float, default=0.25)
     parser.add_argument(
         "--camera-pitch-deg", type=float, default=0.0,
@@ -1478,10 +1482,44 @@ def main():
             for sensor in ("rgb", "depth") for side in ("height", "width")
         ]
     config = habitat.get_config("benchmark/nav/vln_r2r.yaml", overrides=overrides)
+    if args.actor == "panohop":
+        # CWP was trained on level 224 RGB / 256 depth-in-meters views; give it
+        # dedicated sensors so the ring never depends on the nav camera pitch.
+        import dataclasses as _dc
+
+        from habitat.config.default_structured_configs import (
+            HabitatSimDepthSensorConfig,
+            HabitatSimRGBSensorConfig,
+        )
+
+        # A second sensor of the same type needs its own uuid; the base
+        # configs have none (it defaults to "rgb"/"depth"), so add the field
+        # exactly the way HeadRGBSensorConfig does upstream.
+        @_dc.dataclass
+        class _CwpRGBSensorConfig(HabitatSimRGBSensorConfig):
+            uuid: str = "cwp_rgb"
+
+        @_dc.dataclass
+        class _CwpDepthSensorConfig(HabitatSimDepthSensorConfig):
+            uuid: str = "cwp_depth"
+
+        with habitat.config.read_write(config):
+            sensors = config.habitat.simulator.agents.main_agent.sim_sensors
+            sensors["cwp_rgb"] = _CwpRGBSensorConfig(
+                height=224, width=224, hfov=90,
+                position=[0.0, SENSOR_HEIGHT_M, 0.0], orientation=[0.0, 0.0, 0.0])
+            sensors["cwp_depth"] = _CwpDepthSensorConfig(
+                height=256, width=256, hfov=90,
+                position=[0.0, SENSOR_HEIGHT_M, 0.0], orientation=[0.0, 0.0, 0.0],
+                min_depth=0.0, max_depth=10.0, normalize_depth=False)
     if args.actor == "awarevln":
         from awarevln_actor import AwareVLNActor
 
         actor = AwareVLNActor(args.awarevln_url, args.awarevln_model)
+    elif args.actor == "panohop":
+        from panohop_actor import PanoHopActor
+
+        actor = PanoHopActor(args.panohop_url, args.panohop_model)
     else:
         actor = WaypointActorProcess(args.actor_python, ROOT / "integrations/v3/vln_waypoint_worker.py", args.model_path, args.gpu_id)
     actor.want_visuals = bool(args.record_video)
@@ -1496,6 +1534,8 @@ def main():
     try:
         os.chdir(HABITAT_ROOT)
         with habitat.Env(config=config) as env:
+            if hasattr(actor, "attach_env"):
+                actor.attach_env(env)
             episodes = _select_episodes(
                 env.episodes,
                 episode_id=args.episode_id,
