@@ -81,6 +81,9 @@ class PanoHopActor:
         self.mode = mode
         self.stop_verify = stop_verify
         self.want_visuals = False
+        import os
+        self.strip_dir = os.environ.get("VLN_PANOHOP_STRIP_DIR") or None
+        self.episode_counter = 0
         self.env = None
         self._predictor = None
         self._device = device
@@ -125,6 +128,7 @@ class PanoHopActor:
     # -- protocol ------------------------------------------------------------
     def prepare(self, instruction):
         self._reset_episode_state()
+        self.episode_counter += 1
         self.instruction_text = instruction.strip()
         self.subgoals = self._split_subgoals(instruction)
         return {"subgoals": [
@@ -219,6 +223,12 @@ class PanoHopActor:
             len(candidates), label, self.lookaround_count,
             (progress or "")[:60]), flush=True)
 
+        if self.strip_dir:
+            import os
+            os.makedirs(self.strip_dir, exist_ok=True)
+            strip.save(os.path.join(self.strip_dir, "ep{:03d}_dec{:02d}_{}.png".format(
+                self.episode_counter, self.decision_count,
+                choice["label"] if isinstance(choice, dict) else "STOP")))
         timings = {"panohop_render_ms": render_ms, "panohop_vlm_ms": vlm_ms,
                    "panohop_decision": self.decision_count,
                    "panohop_lookarounds": self.lookaround_count}
