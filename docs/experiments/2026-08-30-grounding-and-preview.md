@@ -440,3 +440,15 @@ SR–环视预算曲线首两点:(10.5, 0.150) / (7.0, 0.125);下界(0 环视)�
 ③零样本 VLM 五个"不会":节制感知、维护进度、推进子目标、核查 STOP、使用回溯
 ——每个都有 200 集证据;④唯一有效的零样本进度机制 = 模型自身 progress 短语回灌。
 STOP(111/170 失败)与上述"不会"共同构成训练(Phase 3)的目标函数。
+
+## §23 CWP 注入旧管线(Phase A,2026-09-02)
+按"不丢弃原 agent"的方向:CWP 候选喂给原 actor+captioner+judge 架构
+(commits R2R 8d1a323 + FreeAskAgent a604adf)。
+- runner 侧 `cwp_feed.py`:每步新渲染前方 3 槽 + 旧环补满 12 槽 → CWP →
+  navmesh 落地 → 前 ±45° 候选(直行覆盖实测 92-93%),PREVIEW 时刷新全环;
+  pixel_uv 投影进 agent 前视相机;经管道字段 `cwp_candidates` 传给 worker。
+- agent 侧单一 swap 点:`_som_decision` 里外部候选替换 generate_candidates
+  输出,navmesh 过滤/relabel/SoM 画标/提示/commit_target 全部复用;
+  L/R/B 转向选项保留;无外部候选时回退 floor-openings。143 单测通过。
+- 对照:旧管线 0.095 / pano-hop 0.150 / cwp200(跑中)。判定问题:旧的进度
+  机器(captioner+judge)+ 高质量候选 是否 > 一句话进度 + 同样候选。
