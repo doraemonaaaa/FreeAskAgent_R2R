@@ -114,6 +114,9 @@ class PanoHopActor:
         self.lookaround_count = 0
         self.force_look = True          # first decision always looks around
         self.nodes = []                 # visited look-around nodes (topological)
+        self.offer_backtrack = False    # only after a failed hop (200bt: offering
+                                        # B-options every decision collapsed choice
+                                        # quality, oracle 0.250 -> 0.095, 8/1788 used)
         self.last_remaining = ""        # (legacy, unused by the step scheme)
         self.mono_streak = 0            # mono decisions since the last look
         self.subgoals = []              # numbered steps from prepare()
@@ -166,6 +169,7 @@ class PanoHopActor:
                 self.abandoned_note = (
                     "Note: the previous waypoint was unreachable; pick a different one.")
                 self.force_look = True  # a failed hop means the plan was wrong
+                self.offer_backtrack = True
             self.hop_target = None
 
         # ---- decision point ------------------------------------------------
@@ -189,7 +193,9 @@ class PanoHopActor:
                 return None, {"stop": False, "action_mode": "PANO_HOP",
                               "debug": {"hop": "no candidates"}}
 
-        back = self._backtrack_options(pos) if full_look else []
+        back = (self._backtrack_options(pos)
+                if (full_look and self.offer_backtrack) else [])
+        self.offer_backtrack = False
         choice, progress, raw, vlm_ms = self._choose(
             strip, candidates + back, instruction, panorama=not allow_look,
             allow_look=allow_look)
@@ -470,7 +476,9 @@ class PanoHopActor:
             'instruction is already done>", "choice": <marker number{}>}}'
         ).format(self.instruction_text,
                  history,
-                 (self.abandoned_note + "\n" if self.abandoned_note else "")
+                 ("Progress so far: {}.\n".format(self.last_progress)
+                  if self.last_progress else "")
+                 + (self.abandoned_note + "\n" if self.abandoned_note else "")
                  + ("You proposed STOP at the previous decision. Answer STOP again "
                     "ONLY if the instruction is fully complete; otherwise pick a "
                     "waypoint.\n" if self.stop_pending else ""),
