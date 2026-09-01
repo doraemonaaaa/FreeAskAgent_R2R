@@ -485,3 +485,17 @@ abstract_stop 0.06。
 这就是 base200 时代 66% stalled_landmark 病的机理级复现。
 三条出路:①stage 强制推进看门狗(超程/长期不完成 → 推进阶段,量测规则,
 零样本内最后的大杠杆)②训练(Phase 3)③保持 pano-hop 为主线。
+
+## §24 代码整理(2026-09-02)
+- **FreeAskAgent**(c2549e2/bc52451):SOM_PROMPT 回滚原文(som-v1 训练一致);
+  S 停止票降级为 VLN_SOM_STOP_CHANNEL 消融开关(默认关,提示动态附加);
+  de-bias 上下文回滚——默认行为与 cwp200 基线逐字节一致;外部候选 seam 补契约单测。
+- **FreeAskAgent_R2R**(7f207f2/54fd2a2):panohop_actor 瘦身(删 LOOK 残留/
+  stop_pending/last_remaining/子目标指针;stop_verify 与 backtrack 保留为已
+  文档化的消融开关);修一个真 bug——selective 单目决策的提示曾把 3 视图条
+  说成 360° 全景(panorama 恒 True),修后 selective 提示正确描述前扇区
+  (always 模式验证逐字节一致;selective 轨迹相应变化,0.125 的数字对应旧
+  行为)。analyze_runs.py 入库(聚合/失败四分类/配对翻转,复现全部已发布
+  数字)。config.yaml 记录 panohop/cwp 旋钮;eval 默认改 200 集。
+- 两仓 git prune + gc,告警清除。回归:143+3 单测过;always 逐字节一致;
+  waypoint 原样/waypoint+cwp/panohop 三路 smoke 通过。
