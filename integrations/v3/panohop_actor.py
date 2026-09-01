@@ -112,6 +112,7 @@ class PanoHopActor:
         self.last_ring = None           # (rgbs, deps, yaw_rad) of last look-around
         self.lookaround_count = 0
         self.force_look = True          # first decision always looks around
+        self.nodes = []                 # visited look-around nodes (topological)
         self.last_remaining = ""        # (legacy, unused by the step scheme)
         self.mono_streak = 0            # mono decisions since the last look
         self.subgoals = []              # numbered steps from prepare()
@@ -187,8 +188,9 @@ class PanoHopActor:
                 return None, {"stop": False, "action_mode": "PANO_HOP",
                               "debug": {"hop": "no candidates"}}
 
+        back = self._backtrack_options(pos) if full_look else []
         choice, progress, raw, vlm_ms = self._choose(
-            strip, candidates, instruction, panorama=not allow_look,
+            strip, candidates + back, instruction, panorama=not allow_look,
             allow_look=allow_look)
         used_look = False
         if choice == "LOOK":
@@ -268,9 +270,12 @@ class PanoHopActor:
         self.hop_target = np.asarray(cand["world_xyz"], dtype=np.float64)
         self.hop_step_count = 0
         self.hop_dists = []
-        self.hop_budget = int(cand["distance_m"] / 0.25) * 2 + 10
-        self.hop_history.append("hop {}: went {}".format(
-            self.decision_count, _describe(cand["rel_deg"], cand["distance_m"])))
+        budget_factor = 4 if cand.get("kind") == "backtrack" else 2
+        self.hop_budget = int(cand["distance_m"] / 0.25) * budget_factor + 10
+        self.hop_history.append("hop {}: {}".format(
+            self.decision_count,
+            "backtracked to an earlier position" if cand.get("kind") == "backtrack"
+            else "went " + _describe(cand["rel_deg"], cand["distance_m"])))
         del self.hop_history[:-12]
         return self.hop_target.astype(np.float32), {
             "stop": False,
@@ -298,6 +303,7 @@ class PanoHopActor:
             self.lookaround_count += 1
             self.force_look = False
             self.mono_streak = 0
+            self._remember_node(pos, rgbs[0])
             out = self._predictor_lazy().predict(rgbs, deps)
             candidates = self._ground_candidates(out["waypoints"], pos, yaw)
             strip = self._annotate(rgbs, candidates, slots=range(NUM_SLOTS))
@@ -321,6 +327,33 @@ class PanoHopActor:
         # v2: no LOOK option — the VLM does not self-ration (measured: it
         # chose LOOK on 13/16 decisions); rules trigger look-arounds instead.
         return candidates, strip, False
+
+    def _remember_node(self, pos, fwd_tile):
+        for node in self.nodes:
+            if np.linalg.norm((np.asarray(node["pos"]) - pos)[[0, 2]]) < 1.0:
+                node["pos"] = pos.copy()
+                node["tile"] = fwd_tile.copy()
+                node["idx"] = self.decision_count
+                return
+        self.nodes.append({"pos": pos.copy(), "tile": fwd_tile.copy(),
+                           "idx": self.decision_count})
+
+    def _backtrack_options(self, pos, max_back=3, min_dist=1.5):
+        opts = []
+        for node in reversed(self.nodes):
+            d = float(np.linalg.norm((np.asarray(node["pos"]) - pos)[[0, 2]]))
+            if d < min_dist:
+                continue
+            look = np.asarray(node["pos"]) - pos
+            rel = 0.0  # bearing is meaningless for a remembered place; follower routes
+            opts.append({"label": "B{}".format(len(opts) + 1),
+                         "world_xyz": np.asarray(node["pos"]).tolist(),
+                         "rel_deg": rel, "distance_m": d, "score": 0.0,
+                         "kind": "backtrack", "tile": node["tile"],
+                         "idx": node["idx"]})
+            if len(opts) >= max_back:
+                break
+        return opts
 
     def _render_ring(self, pos, yaw):
         rgbs, deps = [], []
@@ -399,8 +432,18 @@ class PanoHopActor:
 
     # -- chooser --------------------------------------------------------------
     def _choose(self, strip, candidates, instruction, panorama, allow_look):
-        options = "\n".join("  {}: {}".format(c["label"], _describe(
-            c["rel_deg"], c["distance_m"])) for c in candidates)
+        lines, extras = [], []
+        for c in candidates:
+            if c.get("kind") == "backtrack":
+                extras.append(c["tile"])
+                lines.append(
+                    "  {}: go back to a place you visited earlier (decision {}, "
+                    "~{:.1f} m away; its forward view is extra image {})".format(
+                        c["label"], c["idx"], c["distance_m"], len(extras)))
+            else:
+                lines.append("  {}: {}".format(
+                    c["label"], _describe(c["rel_deg"], c["distance_m"])))
+        options = "\n".join(lines)
         if allow_look:
             options += ("\n  LOOK: turn in place to see all directions "
                         "(use when the instruction may require going somewhere "
@@ -434,7 +477,7 @@ class PanoHopActor:
                  options,
                  ', "STOP" or "LOOK"' if allow_look else ' or "STOP"')
         started = time.perf_counter()
-        raw = self._query(strip, prompt)
+        raw = self._query(strip, prompt, extras=extras)
         vlm_ms = (time.perf_counter() - started) * 1000
         choice, progress = self._parse(raw, candidates, allow_look)
         return choice, progress, raw, vlm_ms
@@ -472,7 +515,7 @@ class PanoHopActor:
             return "LOOK", progress
         if re.search(r"\bSTOP\b", raw or ""):
             return None, progress
-        found = re.search(r'choice[\"\s:]*([0-9]+)', raw or "")
+        found = re.search(r'choice[\"\s:]*([B]?[0-9]+)', raw or "")
         if found and found.group(1) in by_label:
             return by_label[found.group(1)], progress
         for token in re.findall(r"\d+", raw or ""):
@@ -533,17 +576,20 @@ class PanoHopActor:
             payload = json.load(response)
         return payload["choices"][0]["message"]["content"] or ""
 
-    def _query(self, strip, prompt):
+    def _query(self, strip, prompt, extras=None):
         import urllib.request
 
+        content = [{"type": "image_url",
+                    "image_url": {"url": _png_data_url(strip)}}]
+        for tile in (extras or []):
+            content.append({"type": "image_url", "image_url": {
+                "url": _png_data_url(Image.fromarray(np.asarray(tile)))}})
+        content.append({"type": "text", "text": prompt})
         body = json.dumps({
             "model": self.model,
             "temperature": 0.0,
             "max_tokens": 220,
-            "messages": [{"role": "user", "content": [
-                {"type": "image_url", "image_url": {"url": _png_data_url(strip)}},
-                {"type": "text", "text": prompt},
-            ]}],
+            "messages": [{"role": "user", "content": content}],
         }).encode("utf-8")
         request = urllib.request.Request(
             self.base_url + "/chat/completions", data=body,
