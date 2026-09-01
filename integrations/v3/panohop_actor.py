@@ -234,7 +234,25 @@ class PanoHopActor:
             if not ok and self.stop_votes < 3 and candidates:
                 self.hop_history.append(
                     "hop {}: STOP rejected by verification".format(self.decision_count))
-                choice = max(candidates, key=lambda c: c["score"])
+                # Instruction-aware redirect: re-ask the chooser with the
+                # verifier's evidence (a bare best-score hop is instruction-
+                # blind and measured to cause wandering, 200d).
+                self.abandoned_note = (
+                    "A verification check says you are NOT at the final location "
+                    "yet ({}). Continue following the instruction.".format(
+                        evidence[:140]))
+                choice2, progress2, raw2, vlm2 = self._choose(
+                    strip, candidates, instruction, panorama=True,
+                    allow_look=False)
+                vlm_ms += vlm2
+                raw += " || redirect: " + raw2
+                if isinstance(choice2, dict):
+                    choice = choice2
+                    if progress2:
+                        progress = progress2
+                else:
+                    choice = max(candidates, key=lambda c: c["score"])
+                self.abandoned_note = ""
         else:
             self.stop_votes = 0
         if choice is None:  # verified STOP
