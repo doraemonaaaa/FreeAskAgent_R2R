@@ -327,3 +327,24 @@ pitch−15)③ stale:上一决策点旧环对齐当前朝向+新前视槽 0 ④ 
    触发信号改用指令/进度侧:turn-stage、子目标切换、前方无匹配候选、看门狗。
 4. Phase 1:pano-hop agent,决策点四条件任一命中即环视(否则单目 fo 候选),
    对照上界=每步环视、下界=从不环视。
+
+## §20 Phase 1:pano-hop actor(2026-09-01)
+
+### §20.1 机制(integrations/v3/panohop_actor.py,commit 92ad75f)
+进程内 actor(与 awarevln_actor 同模式),现有 agent/worker 完全不动:
+- **决策点**:经由专用 cwp_rgb(224² pitch0)/cwp_depth(256² 米制)传感器
+  渲染 12 视图环 → CWPPredictor → navmesh 落地(snap、同层 |Δy|≤1.2m、去重
+  0.5m、分数下限 0.15×best)→ 编号标记画在全景条上 → VLM 选 marker 或 STOP
+  (JSON 带 progress 短句,进 prompt 滚动历史)。
+- **hop 缓存**:选中的 world_xyz 缓存;follower 每步来取动作时直接返回同一目标,
+  不调 VLM。到达 0.6m / 卡住(14 步窗口无进展,>180° 转身的 12 步不误判)/
+  预算(2×距离步数+10)时才重新决策。每集 VLM 调用 ≈ hop 数(~10-20)。
+- **量测 STOP 保护**:R2R 目标测地 ≥4m,总位移 <1m 时 STOP 转为最高分候选
+  (4B 冒烟中出现第 0 步 STOP,该规则同 judge-guards 哲学:可量测、非启发)。
+- runner 仅三处小改:--actor panohop、cwp 传感器注入(uuid 子类模式)、
+  attach_env;执行环路零改动。
+- 已修 bug:stuck 窗口 6→14(转身 >90° 需 7+ 步,原窗口把转身误判为卡住,
+  agent 整集原地转圈)。
+
+### §20.2 结果
+(200 集 8 分片进行中:panohop200,8B chooser@8100,每步全环视=上界模式,待补)
