@@ -1388,6 +1388,12 @@ def main():
     parser.add_argument("--awarevln-model", default="awarevln")
     parser.add_argument("--panohop-url", default="http://127.0.0.1:8100/v1")
     parser.add_argument("--panohop-model", default="qwen3-vl-8b")
+    parser.add_argument(
+        "--panohop-mode", choices=("always", "selective"), default="always",
+        help="always: look around at every decision point (upper bound). "
+        "selective: monocular forward arc by default; the VLM chooses LOOK "
+        "to spend a look-around (forced on first decision and failed hops).",
+    )
     parser.add_argument("--waypoint-radius", type=float, default=0.25)
     parser.add_argument(
         "--camera-pitch-deg", type=float, default=0.0,
@@ -1519,7 +1525,8 @@ def main():
     elif args.actor == "panohop":
         from panohop_actor import PanoHopActor
 
-        actor = PanoHopActor(args.panohop_url, args.panohop_model)
+        actor = PanoHopActor(args.panohop_url, args.panohop_model,
+                             mode=args.panohop_mode)
     else:
         actor = WaypointActorProcess(args.actor_python, ROOT / "integrations/v3/vln_waypoint_worker.py", args.model_path, args.gpu_id)
     actor.want_visuals = bool(args.record_video)

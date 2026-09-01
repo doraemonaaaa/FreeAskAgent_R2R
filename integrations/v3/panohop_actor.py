@@ -1,16 +1,23 @@
 """Pano-hop actor: CWP look-around candidates + VLM chooser + cached hop target.
 
 Drop-in for ``WaypointActorProcess`` (prepare / act / close, in-process like
-AwareVLNActor).  At each decision point it renders a 12-view clockwise ring
-through the env's dedicated ``cwp_rgb``/``cwp_depth`` sensors, runs the ported
-SmartWay CWP predictor (waypoint_cwp/), projects the surviving candidates into
-an annotated panorama strip, and asks a VLM to pick a marker or STOP.  The
-chosen waypoint is cached: while the hop is in progress ``act`` returns the
-same world point without consulting the VLM, so the runner's existing
-follower loop drives it one primitive at a time (zero changes to execution).
+AwareVLNActor).  At each decision point it obtains waypoint candidates from
+the ported SmartWay CWP predictor (waypoint_cwp/), projects them into an
+annotated image, and asks a VLM to pick a marker or STOP.  The chosen
+waypoint is cached: while the hop is in progress ``act`` returns the same
+world point without consulting the VLM, so the runner's existing follower
+loop drives it one primitive at a time (zero changes to execution).
 
-Phase 1 is the "always look around at every decision point" upper-bound mode;
-the selective trigger policy is layered on later.
+Two modes (--panohop-mode):
+  always     look around (12-view ring render) at every decision point —
+             the SmartWay-style upper bound.
+  selective  monocular by default: only the forward 90° arc is freshly
+             rendered (stale ring fills the other slots for CWP) and only
+             forward candidates are offered, plus a LOOK option — the VLM
+             itself decides when spinning in place is worth the cost.
+             Look-around is forced on the first decision and after a failed
+             hop.  ``lookarounds`` is logged per episode for the SR-vs-budget
+             curve.
 """
 from __future__ import annotations
 
@@ -32,6 +39,7 @@ STUCK_WINDOW = 14  # > the 12 primitives a 180 deg turn needs, so turning is nev
 STUCK_MIN_PROGRESS_M = 0.1
 MIN_SCORE_FRAC = 0.15  # keep candidates scoring >= frac * best score
 MIN_TRAVEL_BEFORE_STOP_M = 1.0  # R2R goals are >= 4 m away; a spawn STOP is never right
+MONO_ARC_DEG = 45.0  # candidates offered on a monocular decision
 
 
 def _wrap180(deg):
@@ -64,11 +72,13 @@ def _png_data_url(image):
 
 
 class PanoHopActor:
-    def __init__(self, base_url, model, device="cuda", max_candidates=5, timeout=300):
+    def __init__(self, base_url, model, device="cuda", max_candidates=5,
+                 timeout=300, mode="always"):
         self.base_url = base_url.rstrip("/")
         self.model = model
         self.timeout = timeout
         self.max_candidates = max_candidates
+        self.mode = mode
         self.want_visuals = False
         self.env = None
         self._predictor = None
@@ -89,7 +99,6 @@ class PanoHopActor:
 
     def _reset_episode_state(self):
         self.hop_target = None          # np.ndarray[3] world
-        self.hop_started_dist = 0.0
         self.hop_step_count = 0
         self.hop_budget = 0
         self.hop_dists = []             # recent distances to target (stuck check)
@@ -99,6 +108,11 @@ class PanoHopActor:
         self.decision_count = 0
         self.abandoned_note = ""
         self.stop_pending = False       # first STOP vote awaiting confirmation
+        self.last_ring = None           # (rgbs, deps, yaw_rad) of last look-around
+        self.lookaround_count = 0
+        self.force_look = True          # first decision always looks around
+        self.last_remaining = ""        # model's own "what is left" answer
+        self.mono_streak = 0            # mono decisions since the last look
 
     # -- protocol ------------------------------------------------------------
     def prepare(self, instruction):
@@ -142,30 +156,54 @@ class PanoHopActor:
             if not arrived:
                 self.abandoned_note = (
                     "Note: the previous waypoint was unreachable; pick a different one.")
+                self.force_look = True  # a failed hop means the plan was wrong
             self.hop_target = None
 
-        # ---- decision point: look around ----------------------------------
+        # ---- decision point ------------------------------------------------
         yaw = _agent_yaw(state.rotation)
-        started = time.perf_counter()
-        rgbs, deps = self._render_ring(pos, yaw)
-        render_ms = (time.perf_counter() - started) * 1000
-        out = self._predictor_lazy().predict(rgbs, deps)
-        candidates = self._ground_candidates(out["waypoints"], pos, yaw)
         self.decision_count += 1
+        full_look = (self.mode == "always" or self.force_look
+                     or self.last_ring is None
+                     or self._wants_turn(self.last_remaining)
+                     or self.mono_streak >= 4)
+        started = time.perf_counter()
+        candidates, strip, allow_look = self._propose(pos, yaw, full_look)
+        render_ms = (time.perf_counter() - started) * 1000
 
         if not candidates:
-            # nothing navigable: let the runner's keep-alive turn fire
-            return None, {"stop": False, "action_mode": "PANO_HOP",
-                          "debug": {"hop": "no candidates"}}
+            if not full_look:
+                # nothing ahead: looking around is the measured answer
+                candidates, strip, allow_look = self._propose(pos, yaw, True)
+            if not candidates:
+                return None, {"stop": False, "action_mode": "PANO_HOP",
+                              "debug": {"hop": "no candidates"}}
 
-        strip = self._annotate_strip(rgbs, candidates)
-        choice, progress, raw, vlm_ms = self._choose(strip, candidates, instruction)
+        choice, progress, raw, vlm_ms = self._choose(
+            strip, candidates, instruction, panorama=not allow_look,
+            allow_look=allow_look)
+        used_look = False
+        if choice == "LOOK":
+            used_look = True
+            candidates, strip, _ = self._propose(pos, yaw, True)
+            if not candidates:
+                return None, {"stop": False, "action_mode": "PANO_HOP",
+                              "debug": {"hop": "no candidates after LOOK"}}
+            choice, progress, raw, vlm2 = self._choose(
+                strip, candidates, instruction, panorama=True, allow_look=False)
+            vlm_ms += vlm2
         self.abandoned_note = ""
         if progress:
             self.last_progress = progress
+        label = (choice["label"] if isinstance(choice, dict) else "STOP")
+        print("PANOHOP dec={} {} cands={} choice={} la={} prog={!r}".format(
+            self.decision_count,
+            ("ring" if full_look else ("mono+LOOK" if used_look else "mono")),
+            len(candidates), label, self.lookaround_count,
+            (progress or "")[:60]), flush=True)
 
         timings = {"panohop_render_ms": render_ms, "panohop_vlm_ms": vlm_ms,
-                   "panohop_decision": self.decision_count}
+                   "panohop_decision": self.decision_count,
+                   "panohop_lookarounds": self.lookaround_count}
         visuals = {"som_png": self._encode_png(strip)} if self.want_visuals else None
 
         travelled = float(np.linalg.norm((pos - self.start_pos)[[0, 2]]))
@@ -190,14 +228,14 @@ class PanoHopActor:
             return None, {"stop": True, "action_mode": "PANO_HOP",
                           "raw_model_response": raw, "timings": timings,
                           **({"visuals": visuals} if visuals else {}),
-                          "debug": {"hop": "STOP", "progress": self.last_progress}}
+                          "debug": {"hop": "STOP", "progress": self.last_progress,
+                                    "lookarounds": self.lookaround_count}}
 
         cand = choice
         self.stop_pending = False
         self.hop_target = np.asarray(cand["world_xyz"], dtype=np.float64)
         self.hop_step_count = 0
         self.hop_dists = []
-        self.hop_started_dist = cand["distance_m"]
         self.hop_budget = int(cand["distance_m"] / 0.25) * 2 + 10
         self.hop_history.append("hop {}: went {}".format(
             self.decision_count, _describe(cand["rel_deg"], cand["distance_m"])))
@@ -214,23 +252,62 @@ class PanoHopActor:
             **({"visuals": visuals} if visuals else {}),
             "debug": {"hop": "new marker={} {}".format(
                 cand["label"], _describe(cand["rel_deg"], cand["distance_m"])),
-                "progress": self.last_progress},
+                "progress": self.last_progress,
+                "lookarounds": self.lookaround_count},
         }
 
-    # -- internals -----------------------------------------------------------
-    def _render_ring(self, pos, yaw):
-        from habitat_sim.utils.common import quat_from_angle_axis
+    # -- candidate proposal ---------------------------------------------------
+    def _propose(self, pos, yaw, full_look):
+        """Returns (candidates, annotated strip, allow_look)."""
+        if full_look:
+            rgbs, deps = self._render_ring(pos, yaw)
+            self.last_ring = ([r.copy() for r in rgbs],
+                              [d.copy() for d in deps], yaw)
+            self.lookaround_count += 1
+            self.force_look = False
+            self.mono_streak = 0
+            out = self._predictor_lazy().predict(rgbs, deps)
+            candidates = self._ground_candidates(out["waypoints"], pos, yaw)
+            strip = self._annotate(rgbs, candidates, slots=range(NUM_SLOTS))
+            return candidates, strip, False
+        # monocular: fresh forward arc (slots 11,0,1), stale ring elsewhere
+        p_rgbs, p_deps, p_yaw = self.last_ring
+        shift = int(round(_wrap180(math.degrees(p_yaw - yaw)) / SLOT_DEG)) % NUM_SLOTS
+        rgbs = [p_rgbs[(j + shift) % NUM_SLOTS] for j in range(NUM_SLOTS)]
+        deps = [p_deps[(j + shift) % NUM_SLOTS] for j in range(NUM_SLOTS)]
+        for slot in (11, 0, 1):
+            r, d = self._render_slot(pos, yaw - math.radians(SLOT_DEG) * slot)
+            rgbs[slot], deps[slot] = r, d
+        out = self._predictor_lazy().predict(rgbs, deps)
+        candidates = self._ground_candidates(out["waypoints"], pos, yaw)
+        candidates = [c for c in candidates if abs(c["rel_deg"]) <= MONO_ARC_DEG]
+        for i, c in enumerate(candidates, start=1):
+            c["label"] = str(i)
+        strip = self._annotate([rgbs[11], rgbs[0], rgbs[1]], candidates,
+                               slots=(11, 0, 1))
+        self.mono_streak += 1
+        # v2: no LOOK option — the VLM does not self-ration (measured: it
+        # chose LOOK on 13/16 decisions); rules trigger look-arounds instead.
+        return candidates, strip, False
 
+    def _render_ring(self, pos, yaw):
         rgbs, deps = [], []
         for i in range(NUM_SLOTS):
-            rot = quat_from_angle_axis(yaw - math.radians(SLOT_DEG) * i,
-                                       np.array([0.0, 1.0, 0.0]))
-            obs = self.env.sim.get_observations_at(
-                position=pos, rotation=rot, keep_agent_at_new_pose=False)
-            rgbs.append(np.asarray(obs["cwp_rgb"])[..., :3].copy())
-            d = np.asarray(obs["cwp_depth"], dtype=np.float32)
-            deps.append(np.clip(d.reshape(256, 256) / DEPTH_SCALE_M, 0.0, 1.0))
+            r, d = self._render_slot(pos, yaw - math.radians(SLOT_DEG) * i)
+            rgbs.append(r)
+            deps.append(d)
         return rgbs, deps
+
+    def _render_slot(self, pos, world_yaw):
+        from habitat_sim.utils.common import quat_from_angle_axis
+
+        rot = quat_from_angle_axis(world_yaw, np.array([0.0, 1.0, 0.0]))
+        obs = self.env.sim.get_observations_at(
+            position=pos, rotation=rot, keep_agent_at_new_pose=False)
+        rgb = np.asarray(obs["cwp_rgb"])[..., :3].copy()
+        dep = np.clip(np.asarray(obs["cwp_depth"], dtype=np.float32)
+                      .reshape(256, 256) / DEPTH_SCALE_M, 0.0, 1.0)
+        return rgb, dep
 
     def _ground_candidates(self, waypoints, pos, yaw):
         pf = self.env.sim.pathfinder
@@ -262,17 +339,21 @@ class PanoHopActor:
             c["label"] = str(i)
         return out
 
-    def _annotate_strip(self, rgbs, candidates):
-        tile = rgbs[0].shape[0]
-        strip = Image.fromarray(np.concatenate(rgbs, axis=1))
+    def _annotate(self, tiles, candidates, slots):
+        """Draw numbered markers on a strip of the given ring slots."""
+        tile = tiles[0].shape[0]
+        strip = Image.fromarray(np.concatenate(tiles, axis=1))
         draw = ImageDraw.Draw(strip)
-        f = (tile / 2.0)  # focal for hfov 90: (w/2)/tan(45) = w/2
+        f = tile / 2.0  # focal for hfov 90
+        slot_center = {s: idx for idx, s in enumerate(slots)}
         for c in candidates:
-            # clockwise angle from forward in [0,360)
-            cw = (-(-c["rel_deg"]) + 360.0) % 360.0  # rel_deg is right+ = clockwise+
+            cw = (c["rel_deg"] + 360.0) % 360.0  # right+ == clockwise slot angle
             slot = int((cw + SLOT_DEG / 2.0) // SLOT_DEG) % NUM_SLOTS
+            if slot not in slot_center:
+                continue
             in_tile = _wrap180(cw - slot * SLOT_DEG)
-            u = slot * tile + tile / 2.0 + math.tan(math.radians(in_tile)) * f
+            u = slot_center[slot] * tile + tile / 2.0 \
+                + math.tan(math.radians(in_tile)) * f
             v = tile / 2.0 + f * 1.25 / max(0.5, c["distance_m"])
             v = min(v, tile - 14)
             r = 11
@@ -280,29 +361,38 @@ class PanoHopActor:
                          outline=(255, 255, 255), width=2)
             draw.text((u - (4 if len(c["label"]) == 1 else 8), v - 7),
                       c["label"], fill=(255, 255, 255))
-        for i in range(NUM_SLOTS):
+        for i in range(1, len(tiles)):
             draw.line([i * tile, 0, i * tile, tile], fill=(255, 255, 255), width=1)
         return strip
 
-    def _choose(self, strip, candidates, instruction):
+    # -- chooser --------------------------------------------------------------
+    def _choose(self, strip, candidates, instruction, panorama, allow_look):
         options = "\n".join("  {}: {}".format(c["label"], _describe(
             c["rel_deg"], c["distance_m"])) for c in candidates)
+        if allow_look:
+            options += ("\n  LOOK: turn in place to see all directions "
+                        "(use when the instruction may require going somewhere "
+                        "not visible ahead)")
         history = "; ".join(self.hop_history[-8:]) or "just started"
+        image_desc = (
+            "The image is a full 360° look-around: 12 views left-to-right, each "
+            "30° further to the RIGHT; the leftmost view faces your current forward "
+            "direction, the 7th view faces behind you.\n" if panorama else
+            "The image shows your forward 90° arc: three views (30° left, ahead, "
+            "30° right). You can NOT see what is beside or behind you.\n")
         prompt = (
             "You are a robot navigating a building. Follow this instruction:\n"
             '"{}"\n\n'
             "Moves so far: {}.\n"
             "{}"
-            "The image is a full 360° look-around: 12 views left-to-right, each "
-            "30° further to the RIGHT; the leftmost view faces your current forward "
-            "direction, the 7th view faces behind you.\n"
+            "{}"
             "Red numbered markers are reachable waypoints:\n{}\n\n"
             "Pick the waypoint that best continues the instruction given the moves "
             "already made. Only answer STOP if the whole instruction is complete and "
             "you are standing at the final described location.\n"
             'Answer with JSON only: {{"progress": "<short clause: what part of the '
             'instruction is already done>", "remaining": "<what is still left to do, '
-            'or \\"none\\">", "choice": <marker number or "STOP">}}'
+            'or \\"none\\">", "choice": <marker number{}>}}'
         ).format(instruction.strip(),
                  history,
                  ("Progress so far: {}.\n".format(self.last_progress)
@@ -311,14 +401,28 @@ class PanoHopActor:
                  + ("You proposed STOP at the previous decision. Answer STOP again "
                     "ONLY if the instruction is fully complete; otherwise pick a "
                     "waypoint.\n" if self.stop_pending else ""),
-                 options)
+                 image_desc,
+                 options,
+                 ', "STOP" or "LOOK"' if allow_look else ' or "STOP"')
         started = time.perf_counter()
         raw = self._query(strip, prompt)
         vlm_ms = (time.perf_counter() - started) * 1000
-        choice, progress = self._parse(raw, candidates)
+        choice, progress = self._parse(raw, candidates, allow_look)
         return choice, progress, raw, vlm_ms
 
-    def _parse(self, raw, candidates):
+    _TURN_WORDS = re.compile(
+        r"\b(turn|left|right|around|exit|enter|door|doorway|stairs|stairway|"
+        r"upstairs|downstairs|behind|corner|hallway|out of)\b", re.I)
+
+    def _wants_turn(self, remaining):
+        # Only the NEXT action matters: match the first clause, not the whole
+        # tail (turn-heavy instructions otherwise force a ring every time).
+        if not remaining:
+            return False
+        first = re.split(r"[,.;]| then | and ", remaining, maxsplit=1)[0]
+        return bool(self._TURN_WORDS.search(first))
+
+    def _parse(self, raw, candidates, allow_look=False):
         by_label = {c["label"]: c for c in candidates}
         match = re.search(r"\{.*\}", raw or "", re.DOTALL)
         if match:
@@ -326,7 +430,10 @@ class PanoHopActor:
                 data = json.loads(match.group(0))
                 progress = str(data.get("progress", "")).strip()[:200]
                 remaining = str(data.get("remaining", "")).strip().lower()
+                self.last_remaining = remaining
                 choice = str(data.get("choice", "")).strip().upper()
+                if allow_look and choice == "LOOK":
+                    return "LOOK", progress
                 if choice == "STOP":
                     if remaining not in ("", "none", "nothing", "n/a", "-", "done"):
                         # The model itself says work remains: not a real STOP.
@@ -336,6 +443,8 @@ class PanoHopActor:
                     return by_label[choice], progress
             except (ValueError, TypeError):
                 pass
+        if allow_look and re.search(r"\bLOOK\b", raw or ""):
+            return "LOOK", ""
         if re.search(r"\bSTOP\b", raw or ""):
             return None, ""
         for token in re.findall(r"\d+", raw or ""):
