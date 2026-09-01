@@ -98,6 +98,7 @@ class PanoHopActor:
         self.last_progress = ""
         self.decision_count = 0
         self.abandoned_note = ""
+        self.stop_pending = False       # first STOP vote awaiting confirmation
 
     # -- protocol ------------------------------------------------------------
     def prepare(self, instruction):
@@ -174,7 +175,17 @@ class PanoHopActor:
             choice = max(candidates, key=lambda c: c["score"])
             self.hop_history.append(
                 "hop {}: STOP suppressed (has not moved yet)".format(self.decision_count))
-        if choice is None:  # STOP
+        if choice is None and not self.stop_pending:
+            # First STOP vote: require a second consecutive confirmation (the
+            # runner's keep-alive turn nudges the view before the re-decision).
+            self.stop_pending = True
+            self.hop_history.append(
+                "hop {}: proposed STOP (awaiting confirmation)".format(self.decision_count))
+            return None, {"stop": False, "action_mode": "PANO_HOP",
+                          "raw_model_response": raw, "timings": timings,
+                          **({"visuals": visuals} if visuals else {}),
+                          "debug": {"hop": "STOP pending confirmation"}}
+        if choice is None:  # confirmed STOP
             self.hop_history.append("hop {}: STOP".format(self.decision_count))
             return None, {"stop": True, "action_mode": "PANO_HOP",
                           "raw_model_response": raw, "timings": timings,
@@ -182,6 +193,7 @@ class PanoHopActor:
                           "debug": {"hop": "STOP", "progress": self.last_progress}}
 
         cand = choice
+        self.stop_pending = False
         self.hop_target = np.asarray(cand["world_xyz"], dtype=np.float64)
         self.hop_step_count = 0
         self.hop_dists = []
@@ -289,12 +301,16 @@ class PanoHopActor:
             "already made. Only answer STOP if the whole instruction is complete and "
             "you are standing at the final described location.\n"
             'Answer with JSON only: {{"progress": "<short clause: what part of the '
-            'instruction is already done>", "choice": <marker number or "STOP">}}'
+            'instruction is already done>", "remaining": "<what is still left to do, '
+            'or \\"none\\">", "choice": <marker number or "STOP">}}'
         ).format(instruction.strip(),
                  history,
                  ("Progress so far: {}.\n".format(self.last_progress)
                   if self.last_progress else "")
-                 + (self.abandoned_note + "\n" if self.abandoned_note else ""),
+                 + (self.abandoned_note + "\n" if self.abandoned_note else "")
+                 + ("You proposed STOP at the previous decision. Answer STOP again "
+                    "ONLY if the instruction is fully complete; otherwise pick a "
+                    "waypoint.\n" if self.stop_pending else ""),
                  options)
         started = time.perf_counter()
         raw = self._query(strip, prompt)
@@ -309,8 +325,12 @@ class PanoHopActor:
             try:
                 data = json.loads(match.group(0))
                 progress = str(data.get("progress", "")).strip()[:200]
+                remaining = str(data.get("remaining", "")).strip().lower()
                 choice = str(data.get("choice", "")).strip().upper()
                 if choice == "STOP":
+                    if remaining not in ("", "none", "nothing", "n/a", "-", "done"):
+                        # The model itself says work remains: not a real STOP.
+                        return max(candidates, key=lambda c: c["score"]), progress
                     return None, progress
                 if choice in by_label:
                     return by_label[choice], progress
