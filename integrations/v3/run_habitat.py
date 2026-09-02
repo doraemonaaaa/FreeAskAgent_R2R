@@ -1336,6 +1336,7 @@ def _load_config(path):
         env["VLLM_BASE_URL"] = str(model["base_url"])
     for env_key, cfg_key, as_int in (
         ("VLN_SOM_MODEL", "som_model", False),
+        ("VLN_JOYAI_CAPTIONER", "joyai_captioner", True),
         ("VLN_SPATIAL_MEMORY", "spatial_memory", True),
         ("VLN_SOM", "som", True),
         ("VLN_CAPTIONER_MAX_TOKENS", "captioner_max_tokens", True),

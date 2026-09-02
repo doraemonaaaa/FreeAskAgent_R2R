@@ -22,6 +22,9 @@ model:
     served_name: qwen3-vl-4b
 
 agent:
+  # Opt-in only. False preserves the existing Qwen captioner behavior. Start
+  # JoyAI on :7060 before enabling this for a new evaluation run.
+  joyai_captioner: false      # -> env VLN_JOYAI_CAPTIONER
   spatial_memory: true        # -> env VLN_SPATIAL_MEMORY (occupancy map, committed targets, doorway events)
   som: true                   # -> env VLN_SOM (set-of-mark candidate selection; needs spatial_memory)
   # som_model: som-v1        # -> env VLN_SOM_MODEL: LoRA adapter (served via --lora-modules) used only for the SoM choice
