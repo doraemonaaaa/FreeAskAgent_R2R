@@ -53,7 +53,7 @@ STOP 通道嫁接(S 票)机理级证伪:stage 追踪器停摆时过期子目标�
 | **InternVLA-N1 S2(本机复现)** | 1839 | **0.585** | 0.538 | Qwen2.5-VL-7B 全参微调+DAgger;单目+低头像素目标;STOP 5×过采样,到达后停止精度 88.8% | `Reproductions/InternNav/logs/habitat/test_s2/` |
 | InternVLA-N1(论文,双系统) | 1839 | 0.641–0.643 | 0.581–0.585 | NavDP/DualVLN 权重不在盘上 | InternNav README |
 | AwareVLN(训练 8B) | 1839 | 0.647 | 0.563 | OS 0.744, NE 4.10;40 集同 0.65 | `Reproductions/AwareVLN`;§8 |
-| SmartWay | 190 | 0.205 | – | 训练版 CWP+全景每步看,qwen3-vl-8b navigator | `Reproductions/SmartWay-Code/logs/eval_results/vu_merged` |
+| SmartWay | 1839 | 0.178 | 0.134 | 训练版 CWP+全景每步看,qwen3-vl-8b navigator;OS 0.361,nDTW 0.380,NE 7.39(2026-09-09 全量merge) | `Reproductions/SmartWay-Code/logs/eval_results/vu_merged` |
 | Open-Nav | 100 | 0.10 | – | 原版 CWP,Qwen3-8B LLM | `Reproductions/Open-Nav/`(full100fix) |
 
 ## 三、核心结论(截至 2026-09-02)

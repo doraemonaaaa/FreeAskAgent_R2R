@@ -37,6 +37,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(HABITAT_ROOT / "habitat-lab"))
 
 import habitat  # noqa: E402
+from integrations.v3.preview_protocol import preview_headings_for_request, preview_for_unseen_frame, execution_observation
 from habitat.tasks.nav.shortest_path_follower import ShortestPathFollower  # noqa: E402
 
 # The actor asks for turns in degrees and this runner executes whole repeats of
@@ -78,13 +79,21 @@ DEPTH_SENSOR_OVERRIDES = [
 class WaypointActorProcess:
     """Keep the Python 3.12 vision model out of Habitat's Python process."""
 
-    def __init__(self, python, worker, model_path, gpu_id=None, timeout=600, camera_height_m=SENSOR_HEIGHT_M):
+    def __init__(self, python, worker, model_path, gpu_id=None, timeout=600, camera_height_m=SENSOR_HEIGHT_M,
+                 base_url=None, evidence_dir=None):
         command = [
             str(python), str(worker), "--model-path", str(model_path),
             "--camera-height-m", repr(float(camera_height_m)),
         ]
+        if base_url:
+            command += ["--base-url", str(base_url)]
         environment = os.environ.copy()
         environment["PYTHONPATH"] = str(AGENTFLOW_ROOT) + os.pathsep + environment.get("PYTHONPATH", "")
+        if evidence_dir is not None:
+            # Recording a debug/video evaluation must retain the original
+            # images used by its auditable decisions, not just an overlay MP4.
+            # Respect an explicitly configured location (including opt-out "").
+            environment.setdefault("JOYAI_EVIDENCE_DIR", str(Path(evidence_dir).resolve()))
         # Only pin the worker when --gpu-id is given; otherwise inherit the
         # caller's CUDA_VISIBLE_DEVICES so the shell setting is not silently lost.
         if gpu_id is not None:
@@ -125,7 +134,7 @@ class WaypointActorProcess:
         """Initialize the worker's task memory before an episode starts."""
         return self._request({"operation": "prepare", "instruction": instruction})
 
-    def act(self, rgb, depth, instruction, intrinsics, camera_to_world, navigable=None, oracle_goal=None, cwp_candidates=None):
+    def act(self, rgb, depth, instruction, intrinsics, camera_to_world, navigable=None, oracle_goal=None, cwp_candidates=None, temporal_observed=False, preview_views=(), preview_request_id="", previous_execution=None):
         encode_started = time.perf_counter()
         request = {
             "operation": "act",
@@ -135,7 +144,19 @@ class WaypointActorProcess:
             # Ask for the agent's own map and marker frame only when a video
             # is being recorded: they cost a PNG encode per step.
             "want_visuals": bool(getattr(self, "want_visuals", False)),
+            "temporal_observed": bool(temporal_observed),
+            "previous_execution": previous_execution,
         }
+        if preview_views:
+            request["preview_request_id"] = preview_request_id
+            request["preview_views"] = [
+                {
+                    "yaw_deg": v["yaw_deg"], "rgb": self._png(v["rgb"]),
+                    "depth": self._array(v["depth"]),
+                    "intrinsics": np.asarray(v["intrinsics"]).tolist(),
+                    "camera_to_world": np.asarray(v["camera_to_world"]).tolist(),
+                } for v in preview_views
+            ]
         if cwp_candidates is not None:
             # Externally supplied (runner-side CWP) waypoint candidates; the
             # worker substitutes them for its floor-openings generator.
@@ -155,6 +176,9 @@ class WaypointActorProcess:
                 "resolution_m": navigable["resolution_m"],
                 "mask": self._array(navigable["mask"]),
             }
+            if navigable.get("height_m") is not None:
+                request["navigable"]["height_m"] = self._array(navigable["height_m"])
+                request["navigable"]["height_cell_m"] = float(navigable.get("height_cell_m", 0.0))
         encode_ms = (time.perf_counter() - encode_started) * 1000
         roundtrip_started = time.perf_counter()
         result = self._request(request)
@@ -203,6 +227,18 @@ class WaypointActorProcess:
         if "world_xyz" not in result:
             return None, result
         return np.asarray(result["world_xyz"], dtype=np.float32), result
+
+    def observe(self, rgb, camera_to_world, *, depth=None, intrinsics=None):
+        """Send one queued simulator primitive to Temporal Memory only."""
+        return self._request(
+            {
+                "operation": "observe",
+                "rgb": self._png(rgb),
+                "camera_to_world": np.asarray(camera_to_world).tolist(),
+                **({"depth": self._array(depth), "intrinsics": np.asarray(intrinsics).tolist()}
+                   if depth is not None and intrinsics is not None else {}),
+            }
+        )
 
     def close(self):
         if self.process.poll() is None:
@@ -388,7 +424,7 @@ def _preview_views(env, yaws_deg, hfov_deg, scale=1.0):
     return views
 
 
-def _navigable_window(env, radius_m=6.0, resolution_m=0.25):
+def _navigable_window(env, radius_m=6.0, resolution_m=0.25, *, include_heights=False):
     """Navmesh traversability on a grid around the agent, at its floor level."""
     state = env.sim.get_agent_state()
     pathfinder = env.sim.pathfinder
@@ -396,21 +432,49 @@ def _navigable_window(env, radius_m=6.0, resolution_m=0.25):
     cells = int(round(2 * radius_m / resolution_m))
     origin = (x0 - radius_m, z0 - radius_m)
     mask = np.zeros((cells, cells), dtype=np.bool_)
+    heights = np.full((cells, cells), np.nan, dtype=np.float32) if include_heights else None
     for row in range(cells):
         z = origin[1] + (row + 0.5) * resolution_m
         for col in range(cells):
             x = origin[0] + (col + 0.5) * resolution_m
             mask[row, col] = pathfinder.is_navigable([x, y0, z], 0.5)
-    return {"origin_xz": origin, "resolution_m": resolution_m, "mask": mask}
+            if heights is not None and mask[row, col]:
+                snapped = np.asarray(pathfinder.snap_point([x, y0, z]), dtype=float)
+                if np.isfinite(snapped).all():
+                    heights[row, col] = snapped[1]
+    result = {"origin_xz": origin, "resolution_m": resolution_m, "mask": mask}
+    if heights is not None:
+        result["height_m"] = heights
+        settings = getattr(pathfinder, "nav_mesh_settings", None)
+        result["height_cell_m"] = float(getattr(settings, "cell_height", 0.0))
+    return result
 
 
-def _build_navmesh_map(env, resolution=1024):
-    """Render the scene navmesh for the optional trajectory visualization."""
-    from habitat.utils.visualizations.maps import get_topdown_map_from_sim
+def _floor_map_key(height):
+    """Stable half-metre cache key; floors remain separate while stairs blend."""
+    return round(float(height) * 2.0) / 2.0
 
-    return get_topdown_map_from_sim(
-        env.sim, map_resolution=resolution, draw_border=True
+
+def _build_navmesh_map(env, resolution=1024, height=None):
+    """Render one floor slice of the scene navmesh."""
+    from habitat.utils.visualizations.maps import get_topdown_map
+
+    if height is None:
+        height = env.sim.get_agent_state().position[1]
+    return get_topdown_map(
+        env.sim.pathfinder,
+        float(height),
+        map_resolution=resolution,
+        draw_border=True,
     )
+
+
+def _navmesh_map_for_height(env, cache, height):
+    """Return the current floor slice without rebuilding it every video frame."""
+    key = _floor_map_key(height)
+    if key not in cache:
+        cache[key] = _build_navmesh_map(env, height=height)
+    return key, cache[key]
 
 
 def _render_topdown(
@@ -421,6 +485,7 @@ def _render_topdown(
     output_height,
     waypoints=(),
     landmark_marks=(),
+    floor_height=None,
 ):
     """Draw the executed trajectory, start, current position, and goal.
 
@@ -432,6 +497,9 @@ def _render_topdown(
     import cv2
     from habitat.utils.visualizations import maps
 
+    if floor_height is None:
+        floor_height = float(env.sim.get_agent_state().position[1])
+    floor_tolerance = 0.75
     image = maps.colorize_topdown_map(navmesh_map.copy())
     rows, columns = navmesh_map.shape[:2]
 
@@ -447,18 +515,30 @@ def _render_topdown(
             int(np.clip(row, 0, rows - 1)),
         )
 
-    path = [to_pixel(position) for position in positions]
+    floor_positions = [
+        position for position in positions
+        if abs(float(position[1]) - floor_height) <= floor_tolerance
+    ]
+    floor_waypoints = [
+        waypoint for waypoint in waypoints
+        if abs(float(waypoint[1]) - floor_height) <= floor_tolerance
+    ]
+    floor_landmarks = [
+        (position, kind) for position, kind in landmark_marks
+        if abs(float(position[1]) - floor_height) <= floor_tolerance
+    ]
+    path = [to_pixel(position) for position in floor_positions]
     if len(path) > 1:
         cv2.polylines(image, [np.asarray(path, dtype=np.int32)], False, (0, 80, 255), 3)
     # Drawn under the trajectory endpoints so the executed path stays legible.
-    for waypoint in waypoints:
+    for waypoint in floor_waypoints:
         cv2.circle(image, to_pixel(waypoint), 3, _REQUESTED_COLOR, -1, cv2.LINE_AA)
-    if waypoints and path:
+    if floor_waypoints and path:
         cv2.line(
-            image, path[-1], to_pixel(waypoints[-1]), _REQUESTED_COLOR, 1,
+            image, path[-1], to_pixel(floor_waypoints[-1]), _REQUESTED_COLOR, 1,
             cv2.LINE_AA,
         )
-    for position, kind in landmark_marks:
+    for position, kind in floor_landmarks:
         cv2.drawMarker(
             image, to_pixel(position),
             (230, 80, 230) if kind == "PASSED" else _LANDMARK_COLORS["AT"],
@@ -468,13 +548,37 @@ def _render_topdown(
     if path:
         cv2.circle(image, path[0], 7, (0, 180, 0), -1)
         cv2.circle(image, path[-1], 7, (255, 80, 0), -1)
-    if goal_position is not None:
+    if (
+        goal_position is not None
+        and abs(float(goal_position[1]) - floor_height) <= floor_tolerance
+    ):
         cv2.drawMarker(image, to_pixel(goal_position), (255, 0, 0), cv2.MARKER_STAR, 16, 2)
-    height, width = image.shape[:2]
-    return cv2.resize(
-        image, (int(width * output_height / height), output_height),
-        interpolation=cv2.INTER_NEAREST,
+
+    # Habitat maps use the full scene bounds, which can leave the active floor
+    # as a tiny island in a large blank canvas. Crop to the valid slice, then
+    # resize to a fixed square so every MP4 frame keeps identical dimensions.
+    valid_rows, valid_cols = np.where(navmesh_map != 0)
+    if valid_rows.size and valid_cols.size:
+        margin = max(8, int(0.02 * max(navmesh_map.shape)))
+        row0 = max(0, int(valid_rows.min()) - margin)
+        row1 = min(rows, int(valid_rows.max()) + margin + 1)
+        col0 = max(0, int(valid_cols.min()) - margin)
+        col1 = min(columns, int(valid_cols.max()) + margin + 1)
+        image = image[row0:row1, col0:col1]
+    image = cv2.resize(
+        image, (output_height, output_height), interpolation=cv2.INTER_NEAREST
     )
+    cv2.putText(
+        image,
+        "floor y={:+.2f}m".format(float(floor_height)),
+        (10, 24),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.55,
+        (20, 20, 20),
+        2,
+        cv2.LINE_AA,
+    )
+    return image
 
 
 def _topdown_panel(rgb, topdown, agent_map=None):
@@ -761,9 +865,111 @@ def _draw_task_context(image, decision):
             thickness,
             cv2.LINE_AA,
         )
+    return min(strip_height, image.shape[0])
 
 
-def _annotated_video_frame(rgb, decision, _steps):
+CHAIN_DONE = (60, 180, 75)      # completed stage
+CHAIN_ACTIVE = (250, 200, 40)   # active stage
+CHAIN_TODO = (90, 90, 90)       # not reached
+CHAIN_STUCK = (230, 90, 40)     # active stage held longer than CHAIN_STUCK_STEPS
+CHAIN_STUCK_STEPS = 30
+
+
+def new_subgoal_chain(subgoals):
+    """Per-episode tracker for the subgoal-chain strip drawn on video frames."""
+    return {
+        "ids": [str(item.get("subgoal_id")) for item in subgoals],
+        "stage_id": None,
+        "entered_step": 0,
+        "completed": [],
+        "transition": False,
+    }
+
+
+def update_subgoal_chain(chain, decision, steps):
+    """Advance the tracker from this step's decision; returns the tracker."""
+    if chain is None:
+        return None
+    debug = decision.get("debug") or {}
+    task = decision.get("task_memory") or {}
+    after = debug.get("subgoal_after") or {}
+    stage_id = after.get("subgoal_id")
+    if stage_id is None:
+        stage_id = task.get("current_subgoal_id")
+    stage_id = None if stage_id is None else str(stage_id)
+    chain["transition"] = False
+    if stage_id != chain["stage_id"]:
+        if chain["stage_id"] is not None:
+            chain["transition"] = True
+            # Every stage strictly before the new one counts as passed; the
+            # planner may skip ahead (skip_to_final) over several stages.
+            ids = chain["ids"]
+            stop = ids.index(stage_id) if stage_id in ids else len(ids)
+            for item in ids[:stop]:
+                if item not in chain["completed"]:
+                    chain["completed"].append(item)
+        chain["stage_id"] = stage_id
+        chain["entered_step"] = steps
+    if decision.get("stop") and debug.get("stop_reason") == "ALL_SUBGOALS_COMPLETE":
+        chain["completed"] = list(chain["ids"])
+        chain["stage_id"] = None
+    return chain
+
+
+def _draw_subgoal_chain(image, decision, chain, steps, y_top):
+    """One box per planned stage under the instruction strip.
+
+    Completed stages are green, the active one yellow (orange once it has
+    been held for CHAIN_STUCK_STEPS), unreached ones grey. The active box
+    shows how many steps the agent has spent in it. A dot to the right
+    reports the Captioner this step: grey ran/in-progress, green accepted
+    completion, red completion claimed but rejected. The frame on which a
+    stage advanced gets a yellow border so it is easy to find when scrubbing.
+    """
+    import cv2
+
+    if not chain or not chain["ids"]:
+        return y_top
+    ids = chain["ids"]
+    height, width = image.shape[:2]
+    margin, gap, box_h = 8, 4, 20
+    dot_room = 22
+    usable = width - 2 * margin - dot_room
+    box_w = max(min(90, (usable - gap * (len(ids) - 1)) // len(ids)), 14)
+    y0 = y_top + 3
+    overlay = image.copy()
+    cv2.rectangle(overlay, (0, y_top), (width - 1, y0 + box_h + 3), (0, 0, 0), -1)
+    cv2.addWeighted(overlay, 0.62, image, 0.38, 0, dst=image)
+    held = steps - chain["entered_step"]
+    x = margin
+    for item in ids:
+        if item in chain["completed"]:
+            color, label = CHAIN_DONE, item
+        elif item == chain["stage_id"]:
+            color = CHAIN_STUCK if held >= CHAIN_STUCK_STEPS else CHAIN_ACTIVE
+            label = "{} +{}".format(item, held)
+        else:
+            color, label = CHAIN_TODO, item
+        cv2.rectangle(image, (x, y0), (x + box_w, y0 + box_h), color, -1)
+        cv2.putText(
+            image, label, (x + 4, y0 + box_h - 6), cv2.FONT_HERSHEY_SIMPLEX,
+            0.42, (0, 0, 0), 1, cv2.LINE_AA,
+        )
+        x += box_w + gap
+    if decision.get("captioner_ran_this_step"):
+        if decision.get("captioner_completed"):
+            dot = CHAIN_DONE
+        elif decision.get("captioner_model_completed_raw"):
+            dot = (220, 40, 40)
+        else:
+            dot = (170, 170, 170)
+        cv2.circle(image, (width - margin - 7, y0 + box_h // 2), 6, dot, -1)
+    if chain.get("transition"):
+        cv2.rectangle(image, (0, 0), (width - 1, height - 1), CHAIN_ACTIVE, 4)
+    return y0 + box_h + 3
+
+
+def _annotated_video_frame(rgb, decision, steps, chain=None):
     """Visualize only navigation actions and perception decisions.
 
     ``requested_pixel_uv`` is the location the waypoint policy asked for;
@@ -780,7 +986,8 @@ def _annotated_video_frame(rgb, decision, _steps):
     image = rgb.copy()
     height, width = image.shape[:2]
     debug = decision.get("debug") or {}
-    _draw_task_context(image, decision)
+    strip_bottom = _draw_task_context(image, decision)
+    _draw_subgoal_chain(image, decision, chain, steps, strip_bottom)
 
     def to_pixel(value):
         if not value:
@@ -891,15 +1098,25 @@ def _captioner_line(episode_id, steps, decision):
     """Report the Captioner's judgement beside its raw model text."""
     return (
         "episode={} step={} CAPTIONER ran={} history={} evidence={} "
-        "evidence_ids={} completed={} error={} "
-        "mode={} confidence={:.2f} evidence={!r} latency={:.0f}ms "
+        "window_ids={} eligible_ids={} evidence_ids={} evidence_paths={} "
+        "raw_completed={} completed={} evidence_valid={} rejection={!r} "
+        "completion_confidence={:.2f} completion_evidence={!r} error={} "
+        "mode={} error_confidence={:.2f} error_evidence={!r} latency={:.0f}ms "
         "response={!r} analysis_error={!r}".format(
             episode_id, steps,
             decision.get("captioner_ran_this_step"),
             decision.get("temporal_frames"),
             decision.get("completion_evidence_frames"),
             decision.get("completion_frame_ids"),
+            decision.get("completion_eligible_frame_ids"),
+            decision.get("completion_evidence_frame_ids"),
+            decision.get("completion_evidence_frame_paths"),
+            decision.get("captioner_model_completed_raw"),
             decision.get("captioner_completed"),
+            decision.get("captioner_completion_evidence_valid"),
+            decision.get("captioner_completion_rejection_reason"),
+            decision.get("captioner_completion_confidence", 0.0),
+            decision.get("captioner_completion_evidence"),
             decision.get("captioner_error"),
             decision.get("captioner_error_mode"),
             decision.get("captioner_error_confidence", 0.0),
@@ -921,11 +1138,15 @@ def _action_summary(decision, action):
         return "STOP"
     if decision.get("turn_deg"):
         turn_deg = int(decision["turn_deg"])
-        return "TURN {:+d}deg x{} a={}".format(
-            turn_deg, abs(turn_deg) // TURN_ANGLE_DEG, int(action)
+        return "TURN request={:+d}deg execute={:+d}deg x1 a={}".format(
+            turn_deg,
+            TURN_ANGLE_DEG if turn_deg > 0 else -TURN_ANGLE_DEG,
+            int(action),
         )
     if decision.get("forward_steps"):
-        return "FWD x{} a={}".format(int(decision["forward_steps"]), int(action))
+        return "FWD request=x{} execute=x1 a={}".format(
+            int(decision["forward_steps"]), int(action)
+        )
     pixel = decision.get("pixel_uv")
     if pixel is None:
         return "PREVIEW a={}".format(int(action))
@@ -985,7 +1206,10 @@ def _step_line(episode_id, steps, decision, step_ms, action):
         )
     # Surface only the abnormal cases inline; the rest stays behind the flag.
     if decision.get("temporal_error"):
-        line += " ANALYSIS_ERROR={!r}".format(decision.get("temporal_error"))
+        line += " ANALYSIS_ERROR_STAGE={} ANALYSIS_ERROR={!r}".format(
+            decision.get("captioner_failed_stage") or "unknown",
+            decision.get("temporal_error"),
+        )
     if debug.get("spatial_error"):
         line += " SPATIAL_ERROR={!r}".format(debug.get("spatial_error"))
     return line
@@ -1000,12 +1224,12 @@ ACTION_NAMES = {
 
 
 def _turn_primitive(turn_deg):
-    """Split a requested turn into one primitive and a repeat count.
+    """Resolve a requested turn to exactly one simulator primitive.
 
     Positive is to the right, matching ``yaw_delta_deg`` everywhere else. The
-    request is rejected rather than rounded when it is not whole repeats of the
-    simulator's turn angle: rounding would execute a smaller turn than the actor
-    asked for and nothing downstream would notice.
+    magnitude is validated against the simulator angle, but is deliberately not
+    executed open-loop.  The next 15-degree observation must pass through the
+    Actor and TemporalMemory before another primitive can be issued.
     """
     turn_deg = int(turn_deg)
     if turn_deg == 0 or turn_deg % TURN_ANGLE_DEG:
@@ -1014,7 +1238,7 @@ def _turn_primitive(turn_deg):
             "turn_angle={}".format(turn_deg, TURN_ANGLE_DEG)
         )
     action = 3 if turn_deg > 0 else 2  # turn_right / turn_left
-    return action, abs(turn_deg) // TURN_ANGLE_DEG
+    return action, 1
 
 
 def _turn_frame(
@@ -1049,6 +1273,7 @@ def _turn_frame(
             env, navmesh_map, positions, goal_position, rgb.shape[0],
             waypoints=waypoint_targets,
             landmark_marks=landmark_marks,
+            floor_height=env.sim.get_agent_state().position[1],
         ),
         agent_map=agent_map,
     )
@@ -1115,13 +1340,23 @@ def _navigation_debug_lines(
         "    completion_criteria={!r}".format(
             analyzed.get("completion_criteria")
         ),
-        "  CAPTION completed={} history={} evidence={} ids={} raw={!r} "
-        "error={!r} mode={} "
-        "confidence={:.2f} evidence={!r}".format(
+        "  CAPTION raw_completed={} completed={} valid={} rejection={!r} "
+        "confidence={:.2f} completion_evidence={!r} history={} evidence={} "
+        "window_ids={} eligible_ids={} evidence_ids={} evidence_paths={} "
+        "raw={!r} error={!r} mode={} error_confidence={:.2f} "
+        "error_evidence={!r}".format(
+            decision.get("captioner_model_completed_raw"),
             decision.get("captioner_completed"),
+            decision.get("captioner_completion_evidence_valid"),
+            decision.get("captioner_completion_rejection_reason"),
+            decision.get("captioner_completion_confidence", 0.0),
+            decision.get("captioner_completion_evidence"),
             decision.get("temporal_frames"),
             decision.get("completion_evidence_frames"),
             decision.get("completion_frame_ids"),
+            decision.get("completion_eligible_frame_ids"),
+            decision.get("completion_evidence_frame_ids"),
+            decision.get("completion_evidence_frame_paths"),
             decision.get("captioner_raw_response"),
             decision.get("temporal_error"),
             decision.get("captioner_error_mode"),
@@ -1255,6 +1490,40 @@ def _write_rank_summary(output_dir, rank, count, totals):
         json.dump(result, handle, sort_keys=True)
 
 
+def _write_step_trace(
+    handle,
+    *,
+    episode_id,
+    step,
+    decision,
+    action,
+    executed,
+    position_before,
+    position_after,
+    distance_before,
+    distance_after,
+):
+    """Persist the complete non-image decision while the episode is running."""
+    if handle is None:
+        return
+    traced_decision = dict(decision or {})
+    # Base64 visualization panels can be reconstructed from the MP4 and make
+    # a long JSONL trace unnecessarily huge. All model/memory evidence stays.
+    traced_decision.pop("visuals", None)
+    payload = {
+        "episode_id": str(episode_id),
+        "step": int(step),
+        "action": int(action),
+        "executed_primitives": int(executed),
+        "position_before": [float(value) for value in position_before],
+        "position_after": [float(value) for value in position_after],
+        "distance_to_goal_before": float(distance_before),
+        "distance_to_goal_after": float(distance_after),
+        "decision": traced_decision,
+    }
+    handle.write(json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n")
+
+
 def _parse_episode_ids(spec):
     """``"1,2,3"`` or ``"@file"`` -> list of id strings, in order."""
     if not spec:
@@ -1314,42 +1583,18 @@ def _select_episodes(
     return selected[rank::world_size]
 
 
-def _load_config(path):
-    """YAML -> (argparse defaults, agent environment). CLI and preset env win."""
-    import yaml
+def _load_config(path, rank=0):
+    """YAML -> (argparse defaults, agent environment). CLI and preset env win.
 
-    with open(path) as handle:
-        config = yaml.safe_load(handle) or {}
-    model = config.get("model") or {}
-    agent = config.get("agent") or {}
-    runner = config.get("runner") or {}
-    defaults = {}
-    if model.get("path"):
-        defaults["model_path"] = str(model["path"])
-    for key in ("camera_pitch_deg", "max_steps", "waypoint_radius", "depth_hfov",
-                "actor", "record_video", "cwp_candidates", "panohop_mode",
-                "panohop_url", "panohop_model"):
-        if runner.get(key) is not None:
-            defaults[key] = runner[key]
-    env = {}
-    if model.get("base_url"):
-        env["VLLM_BASE_URL"] = str(model["base_url"])
-    for env_key, cfg_key, as_int in (
-        ("VLN_SOM_MODEL", "som_model", False),
-        ("VLN_JOYAI_CAPTIONER", "joyai_captioner", True),
-        ("VLN_SPATIAL_MEMORY", "spatial_memory", True),
-        ("VLN_SOM", "som", True),
-        ("VLN_CAPTIONER_MAX_TOKENS", "captioner_max_tokens", True),
-        ("VLN_STRUCTURED_VLM_MAX_TOKENS", "structured_vlm_max_tokens", True),
-        ("VLN_CAPTIONER_INTERVAL_STEPS", "captioner_interval_steps", True),
-        ("VLN_COMPLETION_EVIDENCE_FRAMES", "completion_evidence_frames", True),
-        ("VLN_TEMPORAL_MAX_IMAGE_EDGE", "temporal_max_image_edge", True),
-        ("VLN_IMAGE_MAX_PIXELS", "vlm_image_max_pixels", True),
-    ):
-        value = agent.get(cfg_key)
-        if value is not None:
-            env[env_key] = str(int(value)) if as_int else str(value)
-    return defaults, env
+    Delegates to integrations/v3/run_config.py, the single parser of
+    config.yaml shared with the launcher and serving scripts. ``rank`` selects
+    the replica when a service lists several ``base_urls``.
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from run_config import RunConfig
+
+    config = RunConfig.load(path)
+    return config.argparse_defaults(rank), config.agent_env(rank)
 
 
 def main():
@@ -1384,7 +1629,9 @@ def main():
         default=str(
             AGENTFLOW_ROOT / "models" / "JoyAI-VL-Interaction"
         ),
+        help="Planner/set-of-mark model name: vllm-<served>, joyai[-<served>] or a local path.",
     )
+    parser.add_argument("--base-url", default=None, help="Server for --model-path (default: env VLLM_BASE_URL).")
     parser.add_argument("--actor-python", type=Path, default=ROOT / ".venv/bin/python")
     parser.add_argument(
         "--actor", choices=("waypoint", "awarevln", "panohop"), default="waypoint",
@@ -1442,6 +1689,15 @@ def main():
     parser.add_argument("--som-oracle", action="store_true", help="DIAGNOSTIC: give the worker the goal position so set-of-mark picks the geometrically best marker instead of asking the model.")
     parser.add_argument("--debug-memory", action="store_true", help="Dump both memories and the full latency breakdown under each step.")
     parser.add_argument(
+        "--trace-jsonl",
+        type=Path,
+        help=(
+            "Persist one complete non-image model/memory decision per executed "
+            "decision step. With --debug-memory, defaults to output-dir or the "
+            "launch directory as r2r_trace_rank_<rank>.jsonl."
+        ),
+    )
+    parser.add_argument(
         "--debug-navigation",
         action="store_true",
         help="Explain position, subgoal, Captioner, waypoint, and control decisions every step.",
@@ -1455,7 +1711,7 @@ def main():
     )
     pre, _ = parser.parse_known_args()
     if not pre.no_config_file and pre.config and Path(pre.config).exists():
-        defaults, agent_env = _load_config(pre.config)
+        defaults, agent_env = _load_config(pre.config, rank=pre.rank)
         parser.set_defaults(**defaults)
         for key, value in agent_env.items():
             # A variable exported by the caller (e.g. an A/B script) wins.
@@ -1484,6 +1740,13 @@ def main():
     if args.output_dir is not None:
         # Habitat changes the working directory below, so pin this now.
         args.output_dir = args.output_dir.expanduser().resolve()
+    if args.trace_jsonl is None and args.debug_memory:
+        trace_parent = args.output_dir or Path.cwd()
+        args.trace_jsonl = trace_parent / "r2r_trace_rank_{}.jsonl".format(
+            args.rank
+        )
+    if args.trace_jsonl is not None:
+        args.trace_jsonl = args.trace_jsonl.expanduser().resolve()
 
     overrides = R2R_CE_OVERRIDES + DEPTH_SENSOR_OVERRIDES + [
         "habitat.dataset.split={}".format(args.split),
@@ -1547,7 +1810,11 @@ def main():
                              mode=args.panohop_mode,
                              stop_verify=bool(args.panohop_stop_verify))
     else:
-        actor = WaypointActorProcess(args.actor_python, ROOT / "integrations/v3/vln_waypoint_worker.py", args.model_path, args.gpu_id)
+        actor = WaypointActorProcess(
+            args.actor_python, ROOT / "integrations/v3/vln_waypoint_worker.py", args.model_path, args.gpu_id,
+            base_url=args.base_url,
+            evidence_dir=(args.output_dir / "evidence" if args.record_video or args.debug_memory else None),
+        )
     actor.want_visuals = bool(args.record_video)
     if args.record_video:
         # Habitat changes the working directory below; keep media paths pinned
@@ -1557,7 +1824,13 @@ def main():
         args.video_dir.mkdir(parents=True, exist_ok=True)
         (args.video_dir / "topdown").mkdir(exist_ok=True)
     previous_directory = Path.cwd()
+    trace_handle = None
     try:
+        if args.trace_jsonl is not None:
+            args.trace_jsonl.parent.mkdir(parents=True, exist_ok=True)
+            trace_handle = args.trace_jsonl.open(
+                "w", encoding="utf-8", buffering=1
+            )
         os.chdir(HABITAT_ROOT)
         with habitat.Env(config=config) as env:
             if hasattr(actor, "attach_env"):
@@ -1575,7 +1848,12 @@ def main():
                 world_size=args.world_size,
                 episode_ids=episode_ids,
             )
-            env.episodes = episodes
+            # Habitat Env.episodes has no setter. Assigning that name merely
+            # creates a shadow attribute while reset() continues consuming the
+            # iterator constructed for the full dataset. Replace the iterator
+            # so explicit IDs, prefixes, and rank sharding are actually used.
+            env.episode_iterator = iter(episodes)
+            env.number_of_episodes = len(episodes)
             if not episodes:
                 print("rank={} has no episodes".format(args.rank), flush=True)
                 _write_rank_summary(args.output_dir, args.rank, 0, _empty_totals())
@@ -1589,6 +1867,8 @@ def main():
                 if cwp_feed is not None:
                     cwp_feed.reset()
                 steps = 0
+                pending_preview = None
+                previous_execution = None
                 _, _, instruction = _observation(observation)
                 print(
                     "episode={} instruction={!r} start_position={} goal_position={} "
@@ -1625,10 +1905,20 @@ def main():
                         flush=True,
                     )
                 frames = [] if args.record_video else None
+                subgoal_chain = new_subgoal_chain(subgoals)
                 navmesh_map = None
+                navmesh_floor_key = None
+                navmesh_maps = {}
                 if frames is not None:
                     try:
-                        navmesh_map = _build_navmesh_map(env)
+                        initial_height = float(
+                            env.sim.get_agent_state().position[1]
+                        )
+                        navmesh_floor_key, navmesh_map = (
+                            _navmesh_map_for_height(
+                                env, navmesh_maps, initial_height
+                            )
+                        )
                     except Exception as exc:
                         print(
                             "Top-down video fallback to RGB: {}: {}".format(
@@ -1648,6 +1938,7 @@ def main():
                 follower = ShortestPathFollower(
                     env.sim, args.waypoint_radius, return_one_hot=False
                 )
+                temporal_observed = False
                 step_started = time.perf_counter()
                 while not env.episode_over:
                     position_before = (
@@ -1666,12 +1957,40 @@ def main():
                     if step_cands is not None and steps == 0:
                         print("cwp_feed: {} forward candidates at step 0".format(
                             len(step_cands)), flush=True)
+                    joint_views = ()
+                    capture_request = preview_for_unseen_frame(pending_preview, temporal_observed)
+                    if args.actor == "waypoint" and capture_request:
+                        preview_started = time.perf_counter()
+                        # Include a rear view when the model explicitly needs
+                        # it; all images belong to this step's actual pose.
+                        yaws = preview_headings_for_request(args.preview_yaws, capture_request, camera_to_world)
+                        joint_views = _preview_views(env, yaws, args.depth_hfov, args.preview_scale)
+                        preview_render_ms = (time.perf_counter() - preview_started) * 1000
                     waypoint, decision = actor.act(
                         rgb, depth, instruction, intrinsics, camera_to_world,
-                        navigable=_navigable_window(env),
+                        navigable=_navigable_window(env, include_heights=bool(joint_views)),
                         oracle_goal=(goal_position if args.som_oracle else None),
                         cwp_candidates=step_cands,
+                        **(
+                            {
+                                "temporal_observed": temporal_observed,
+                                "preview_views": joint_views,
+                                "previous_execution": previous_execution,
+                                "preview_request_id": pending_preview["recovery_id"] if pending_preview else "",
+                            }
+                            if args.actor == "waypoint"
+                            else {}
+                        ),
                     )
+                    temporal_observed = False
+                    if joint_views:
+                        decision["preview"] = {
+                            "render_ms": preview_render_ms,
+                            "yaws_deg": [v["yaw_deg"] for v in joint_views],
+                            "recovery_id": pending_preview["recovery_id"],
+                            "joint_inference": True,
+                        }
+                    pending_preview = decision.get("preview_request")
                     if decision.get("action_mode") == "PREVIEW":
                         # The actor asked to look around before committing.
                         # Rendering is not a simulator step, so this costs the
@@ -1736,12 +2055,27 @@ def main():
                         if marker_frame is not None and marker_frame.shape == rgb.shape
                         else rgb
                     )
+                    update_subgoal_chain(subgoal_chain, decision, steps)
                     debug_rgb = (
                         _clean_video_frame(shown_rgb)
                         if args.clean_video
-                        else _annotated_video_frame(shown_rgb, decision, steps)
+                        else _annotated_video_frame(
+                            shown_rgb, decision, steps, chain=subgoal_chain,
+                        )
                     )
                     if frames is not None:
+                        try:
+                            navmesh_floor_key, navmesh_map = (
+                                _navmesh_map_for_height(
+                                    env, navmesh_maps, position_before[1]
+                                )
+                            )
+                        except Exception as exc:
+                            print(
+                                "Top-down floor slice fallback to RGB: "
+                                "{}: {}".format(type(exc).__name__, exc),
+                                flush=True,
+                            )
                         if navmesh_map is None:
                             frames.append(debug_rgb)
                         else:
@@ -1751,6 +2085,7 @@ def main():
                                     rgb.shape[0],
                                     waypoints=waypoint_targets,
                                     landmark_marks=landmark_marks,
+                                    floor_height=position_before[1],
                                 ),
                                 agent_map=last_agent_map,
                             ))
@@ -1764,9 +2099,11 @@ def main():
                             decision["turn_deg"]
                         )
                     elif decision.get("forward_steps"):
-                        # A discrete policy (AwareVLN) asked for N x 25 cm.
+                        # A discrete policy asked for N x 25 cm. Execute only
+                        # one real step, then consult the policy on the new
+                        # observation rather than running an open-loop burst.
                         action = 1  # HabitatSimActions.move_forward
-                        repeats = max(1, int(decision["forward_steps"]))
+                        repeats = 1
                     elif waypoint is None:
                         # No waypoint, no turn and no stop: the previewed
                         # heading had no valid depth, or a PREVIEW went
@@ -1790,35 +2127,98 @@ def main():
                         else:
                             action = follower_action
                     env_started = time.perf_counter()
-                    # A requested turn is several primitives. Every one of them
-                    # is a real simulator step against the episode budget, so
-                    # they are counted and recorded individually rather than
-                    # collapsed into the single step the actor was consulted on.
+                    # The control contract is one decision, one simulator
+                    # primitive, one resulting observation.  The loop remains
+                    # for protocol compatibility, but ``repeats`` is one for
+                    # every action path above.
                     executed = 0
+                    intermediate_traces = []
                     for repeat in range(repeats):
+                        cancel_queued = False
                         # A turn can reach the episode's step limit partway
                         # through; stop issuing primitives rather than stepping
                         # an environment that has already finished.
                         if repeat and env.episode_over:
                             break
                         observation = env.step({"action": action})
+                        previous_execution = execution_observation(action, env.get_metrics())
                         executed += 1
                         positions.append(
                             env.sim.get_agent_state().position.copy()
                         )
-                        if repeat < repeats - 1 and hasattr(actor, "observe"):
+                        if (
+                            repeat < repeats - 1
+                            and args.actor == "waypoint"
+                            and hasattr(actor, "observe")
+                        ):
                             # Queued primitives are steps the policy was not
                             # asked about; it still sees their frames.
+                            intermediate_rgb, intermediate_depth = _rgb_depth(observation)
+                            observed = actor.observe(
+                                intermediate_rgb,
+                                _camera_to_world(env),
+                                depth=intermediate_depth,
+                                intrinsics=_intrinsics(intermediate_rgb.shape[1], intermediate_rgb.shape[0], args.depth_hfov),
+                            )
+                            observed_distance = float(
+                                env.get_metrics().get("distance_to_goal", 0.0)
+                            )
+                            intermediate_traces.append(
+                                {
+                                    "step": steps + repeat + 1,
+                                    "decision": {
+                                        "operation": "observe",
+                                        **observed,
+                                    },
+                                    "position_before": positions[-2],
+                                    "position_after": positions[-1],
+                                    "distance": observed_distance,
+                                }
+                            )
+                            advanced = (
+                                observed.get("task_complete")
+                                or observed.get("subgoal_before")
+                                != observed.get("subgoal_after")
+                            )
+                            preview_requested = bool(
+                                observed.get("preview_requested")
+                            )
+                            pending_preview = observed.get("preview_request")
+                            if advanced or preview_requested:
+                                # Do not finish an old subgoal's queued turn
+                                # after JoyAI advanced the task or requested a
+                                # surrounding-view decision on this frame.
+                                # The next act consumes this same frame for
+                                # control but skips its temporal ingestion.
+                                temporal_observed = True
+                                cancel_queued = True
+                        elif repeat < repeats - 1 and hasattr(actor, "observe"):
+                            # Other actor protocols keep their existing
+                            # observation contract.
                             actor.observe(_observation(observation)[0])
-                        if frames is not None and repeat:
-                            # The frame recorded before the loop already covers
-                            # the first primitive, so this starts at the second
-                            # and the video stays one frame per executed step.
+                        if frames is not None and repeat < repeats - 1:
+                            # These are the intermediate observations Captioner
+                            # receives through ``observe``. The final result is
+                            # recorded by the next actor decision (or the final
+                            # episode frame), avoiding both gaps and duplicates.
+                            turn_height = float(
+                                env.sim.get_agent_state().position[1]
+                            )
+                            try:
+                                navmesh_floor_key, navmesh_map = (
+                                    _navmesh_map_for_height(
+                                        env, navmesh_maps, turn_height
+                                    )
+                                )
+                            except Exception:
+                                pass
                             frames.append(_turn_frame(
-                                env, observation, decision, steps + repeat,
+                                env, observation, decision, steps + repeat + 1,
                                 args, navmesh_map, positions, goal_position,
                                 waypoint_targets, landmark_marks,
                             ))
+                        if cancel_queued:
+                            break
                     env_ms = (time.perf_counter() - env_started) * 1000
                     position_after = (
                         env.sim.get_agent_state().position.copy()
@@ -1826,6 +2226,31 @@ def main():
                     distance_after = float(
                         env.get_metrics().get("distance_to_goal", 0.0)
                     )
+                    _write_step_trace(
+                        trace_handle,
+                        episode_id=episode.episode_id,
+                        step=steps,
+                        decision=decision,
+                        action=action,
+                        executed=executed,
+                        position_before=position_before,
+                        position_after=position_after,
+                        distance_before=distance_before,
+                        distance_after=distance_after,
+                    )
+                    for trace in intermediate_traces:
+                        _write_step_trace(
+                            trace_handle,
+                            episode_id=episode.episode_id,
+                            step=trace["step"],
+                            decision=trace["decision"],
+                            action=action,
+                            executed=1,
+                            position_before=trace["position_before"],
+                            position_after=trace["position_after"],
+                            distance_before=trace["distance"],
+                            distance_after=trace["distance"],
+                        )
                     now = time.perf_counter()
                     step_ms = (now - step_started) * 1000
                     print(
@@ -1874,6 +2299,17 @@ def main():
                 print("rank={} [{}/{}] id={} steps={} success={:.3f} spl={:.3f} dtg={:.2f}".format(args.rank, index, len(episodes), episode.episode_id, steps, float(metrics.get("success", 0)), float(metrics.get("spl", 0)), float(metrics.get("distance_to_goal", 0))), flush=True)
                 if frames:
                     rgb, _, _ = _observation(observation)
+                    final_height = float(
+                        env.sim.get_agent_state().position[1]
+                    )
+                    try:
+                        navmesh_floor_key, navmesh_map = (
+                            _navmesh_map_for_height(
+                                env, navmesh_maps, final_height
+                            )
+                        )
+                    except Exception:
+                        pass
                     if navmesh_map is None:
                         frames.append(rgb.copy())
                     else:
@@ -1883,6 +2319,7 @@ def main():
                                 rgb.shape[0],
                                 waypoints=waypoint_targets,
                                 landmark_marks=landmark_marks,
+                                floor_height=final_height,
                             ),
                             agent_map=last_agent_map,
                         ))
@@ -1895,10 +2332,29 @@ def main():
                                 rgb.shape[0],
                                 waypoints=waypoint_targets,
                                 landmark_marks=landmark_marks,
+                                floor_height=final_height,
                             )
                         ).save(str(args.video_dir / "topdown" / (episode_id + ".png")))
+                    for floor_key, floor_map in sorted(navmesh_maps.items()):
+                        floor_name = "{}_floor_{:+.1f}.png".format(
+                            episode_id, floor_key
+                        )
+                        Image.fromarray(
+                            _render_topdown(
+                                env,
+                                floor_map,
+                                positions,
+                                goal_position,
+                                rgb.shape[0],
+                                waypoints=waypoint_targets,
+                                landmark_marks=landmark_marks,
+                                floor_height=floor_key,
+                            )
+                        ).save(str(args.video_dir / "topdown" / floor_name))
             _write_rank_summary(args.output_dir, args.rank, len(episodes), totals)
     finally:
+        if trace_handle is not None:
+            trace_handle.close()
         actor.close()
         os.chdir(previous_directory)
 

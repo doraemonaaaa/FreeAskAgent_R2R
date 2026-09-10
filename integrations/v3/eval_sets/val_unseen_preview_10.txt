@@ -1,0 +1,13 @@
+# One episode per unseen scene, seed 20260905. Selected before live evaluation.
+# Excluded previously inspected IDs: 334,1552,921,1110,401,289,290,473,1650,1236,356,719,685,1197.
+# No episode- or scene-specific policy configuration; use the same checkpoint and prompts.
+1422
+1219
+706
+961
+10
+1178
+1226
+349
+442
+223

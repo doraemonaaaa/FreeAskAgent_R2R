@@ -32,6 +32,8 @@ if [[ "${trust_remote}" == "1" ]]; then extra_args+=(--trust-remote-code); fi
 # VLLM_EXTRA_ARGS: extra CLI flags, e.g. --mm-processor-kwargs '{"max_dynamic_patch": 1}' for InternVL
 if [[ -n "${VLLM_EXTRA_ARGS:-}" ]]; then eval "extra_args+=(${VLLM_EXTRA_ARGS})"; fi
 
+vllm_bin_dir="$(cd -- "$(dirname -- "${vllm_bin}")" && pwd)"
+PATH="${vllm_bin_dir}:${PATH}" \
 CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES="${gpu}" \
 TRANSFORMERS_OFFLINE=1 HF_HUB_OFFLINE=1 \
 exec "${vllm_bin}" serve "${model_path}" \

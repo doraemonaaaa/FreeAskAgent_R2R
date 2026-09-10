@@ -29,7 +29,7 @@ def _temporal_report(actor):
         return {}
     # Prefer this step's own analysis: reading Temporal Memory's latest_result
     # clears it whenever that analysis completed the subgoal.
-    result = actor.last_caption or memory.latest_result
+    result = actor.last_caption
     diagnostics = memory.diagnostics()
     report = {
         "temporal_frames": len(memory.recent_frames()),
@@ -39,18 +39,56 @@ def _temporal_report(actor):
         "completion_frame_ids": diagnostics.get(
             "completion_frame_ids", []
         ),
+        "completion_eligible_frame_ids": diagnostics.get(
+            "completion_eligible_frame_ids", []
+        ),
         "temporal_error": memory.last_analysis_error,
         "captioner_ran_this_step": actor.last_caption is not None,
+        "captioner_model_calls": (diagnostics.get("captioner") or {}).get("model_calls", 0),
+        "captioner_stage_timings_ms": (diagnostics.get("captioner") or {}).get("last_stage_timings_ms", {}),
+        "captioner_stage_budgets_ms": (diagnostics.get("captioner") or {}).get("last_stage_budgets_ms", {}),
+        "captioner_failed_stage": (diagnostics.get("captioner") or {}).get("last_failed_stage"),
+        "captioner_execution_history": (diagnostics.get("captioner") or {}).get("execution_history", {}),
+        "captioner_route_action": result.route_action if result is not None else None,
+        "captioner_route_reason": result.route_reason if result is not None else None,
     }
     if result is not None:
         report.update({
             "captioner_completed": result.completed,
+            "captioner_model_completed_raw": result.model_completed_raw,
+            "captioner_completion_evidence_valid": (
+                result.completion_evidence_valid
+            ),
+            "captioner_completion_rejection_reason": (
+                result.completion_rejection_reason
+            ),
+            "captioner_completion_confidence": (
+                result.completion_confidence
+            ),
+            "captioner_completion_evidence": result.completion_evidence,
+            "completion_evidence_frame_ids": list(
+                result.completion_evidence_frame_ids
+            ),
+            "completion_evidence_frame_paths": list(
+                result.completion_evidence_frame_paths
+            ),
             "captioner_error": result.error,
             "captioner_error_mode": result.error_mode,
             "captioner_error_confidence": result.error_confidence,
             "captioner_error_evidence": result.error_evidence,
             "captioner_latency_ms": result.latency_ms,
             "captioner_raw_response": result.raw_response,
+            "captioner_decision": result.decision,
+            "captioner_scene_facts": list(result.scene_facts),
+            "captioner_change_from_previous": result.change_from_previous,
+            "captioner_route_alignment": result.route_alignment,
+            "captioner_route_state": result.route_state,
+            "captioner_target_identity": result.target_identity,
+            "captioner_error_evidence_frame_ids": list(
+                result.error_evidence_frame_ids
+            ),
+            "captioner_recovery_id": result.recovery_id,
+            "captioner_preview_direction": result.preview_direction,
         })
     return report
 
@@ -130,6 +168,8 @@ def _act_response(actor, decision, want_visuals=False):
     response.update(_temporal_report(actor))
     response.update(_memory_state(actor))
     response.update(_agent_debug_state(actor, decision))
+    response["preview_request"] = actor.temporal_memory.preview_request()
+    response["preview_execution"] = getattr(actor, "_preview_execution", None)
     if want_visuals:
         response["visuals"] = _visuals(actor)
     if decision.point is not None:
@@ -322,7 +362,9 @@ def _agent_debug_state(actor, decision):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model-path", required=True)
+    parser.add_argument("--model-path", required=True,
+                        help="Planner/set-of-mark model name (see create_vln_engine).")
+    parser.add_argument("--base-url", default=None)
     parser.add_argument(
         "--camera-height-m", type=float, default=None,
         help="Camera height above the agent's base; enables floor-level "
@@ -336,6 +378,7 @@ def main():
 
     actor = VLNAgent(
         args.model_path,
+        base_url=args.base_url,
         debug_performance=False,
         camera_height_m=args.camera_height_m,
     )
@@ -369,12 +412,27 @@ def main():
                             "origin_xz": tuple(request["navigable"]["origin_xz"]),
                             "resolution_m": float(request["navigable"]["resolution_m"]),
                             "mask": _decode_array(request["navigable"]["mask"]),
+                            **({"height_m": _decode_array(request["navigable"]["height_m"])}
+                               if "height_m" in request["navigable"] else {}),
+                            "height_cell_m": float(request["navigable"].get("height_cell_m", 0.0)),
                         }
                         if request.get("navigable")
                         else None
                     ),
                     oracle_goal_xyz=request.get("oracle_goal_xyz"),
                     cwp_candidates=request.get("cwp_candidates"),
+                    temporal_observed=bool(request.get("temporal_observed")),
+                    preview_views=[
+                        PreviewView(
+                            yaw_deg=float(view["yaw_deg"]),
+                            rgb=_decode_rgb(view["rgb"]),
+                            depth=_decode_array(view["depth"]),
+                            intrinsics=np.asarray(view["intrinsics"], dtype=np.float64),
+                            camera_to_world=np.asarray(view["camera_to_world"], dtype=np.float64),
+                        ) for view in request.get("preview_views", [])
+                    ],
+                    preview_request_id=request.get("preview_request_id", ""),
+                    previous_execution=request.get("previous_execution"),
                 )
                 response = _act_response(actor, decision, want_visuals=bool(request.get("want_visuals")))
             elif request.get("operation") == "act_on_preview":
@@ -405,6 +463,16 @@ def main():
                     depth_max_m=request.get("depth_max_m"),
                 )
                 response = _act_response(actor, decision, want_visuals=bool(request.get("want_visuals")))
+            elif request.get("operation") == "observe":
+                # A real intermediate Habitat primitive in a queued turn.
+                # It advances only episode-local temporal evidence; waypoint
+                # and Spatial Memory selection remain on the next act call.
+                response = actor.observe_navigation_step(
+                    _decode_rgb(request["rgb"]),
+                    np.asarray(request["camera_to_world"], dtype=np.float64),
+                    depth=_decode_array(request["depth"]) if "depth" in request else None,
+                    intrinsics=np.asarray(request["intrinsics"], dtype=np.float64) if "intrinsics" in request else None,
+                )
             else:
                 raise ValueError("Unsupported operation: {!r}".format(request["operation"]))
         except Exception as exc:

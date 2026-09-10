@@ -1,53 +1,97 @@
 # Single source of run configuration for the v3 VLN stack.
-# Load order: this file fills the defaults; CLI flags and already-set
-# environment variables always win. Run with:
-#   python integrations/v3/run_habitat.py --config integrations/v3/config.yaml ...
-# (run_habitat.py picks this file up automatically when it exists.)
+#
+# Precedence, lowest to highest: this file -> environment variables already
+# exported by the caller -> CLI flags. run_habitat.py loads it automatically;
+# integrations/v3/run_config.py is the parser (``--manifest`` shows the
+# resolved result, ``--shell`` feeds the launcher, ``--serve NAME`` feeds
+# serve_vllm.sh / start_joyai_captioner.sh).
+#
+# Model services on GPUs 0-3, Habitat rollout workers on GPUs 4-7.
 
-model:
-  # ``vllm-<served-name>`` talks to the OpenAI-compatible server at base_url;
-  # a plain path loads the checkpoint in-process. One engine drives the
-  # planner, the captioner/judge and the waypoint selection.
-  path: vllm-qwen3-vl-4b
-  base_url: http://127.0.0.1:8300/v1        # -> env VLLM_BASE_URL
-  # Serving defaults consumed by integrations/v3/serve_vllm.sh (env of the
-  # same names, upper-cased): GPU, PORT, GPU_UTIL, MAX_MODEL_LEN, MAX_IMAGES.
-  serve:
-    gpu: 2
-    port: 8300
-    gpu_util: 0.30
-    max_model_len: 8192
-    max_images: 16
-    model_dir: /data/pengyh/workspace/FreeAskAgent/models/Qwen3-VL-4B-Instruct
+services:
+  joyai:                                   # task-blind observer (Captioner)
+    kind: joyai                            # served by FreeAskAgent/scripts/start_joyai_captioner.sh
+    served_name: jdopensource/JoyAI-VL-Interaction
+    base_url: http://127.0.0.1:7060/v1
+    serve:
+      model_dir: /data/pengyh/workspace/FreeAskAgent/models/JoyAI-VL-Interaction
+      gpu: "0,1"
+      tp: 2
+      port: 7060
+      gpu_util: 0.28
+      max_model_len: 16384
+      max_num_seqs: 4                      # one endpoint serves at most four ranks
+      max_images: 14
+  qwen3-vl-8b:                             # decision + completion gate + planner + actor + SoM
+    served_name: qwen3-vl-8b
+    base_url: http://127.0.0.1:8302/v1
+    # Several replicas: use ``base_urls: [..]``; rank r talks to base_urls[r % n].
+    serve:                                 # -> integrations/v3/serve_vllm.sh (SERVICE=qwen3-vl-8b)
+      model_dir: /data/pengyh/workspace/FreeAskAgent/models/Qwen3-VL-8B-Instruct
+      gpu: 2
+      port: 8302
+      gpu_util: 0.30
+      max_model_len: 8192
+      # v19 served 4 sequences for decision+gate+planner alone. The actor and
+      # set-of-mark calls now land on the same endpoint (one more call per
+      # step, sequential within a rank), so allow eight in flight.
+      max_num_seqs: 8
+      max_images: 16
+  qwen3-vl-4b:                             # kept for A/B; no role uses it now
     served_name: qwen3-vl-4b
+    base_url: http://127.0.0.1:8300/v1
+    serve:
+      model_dir: /data/pengyh/workspace/FreeAskAgent/models/Qwen3-VL-4B-Instruct
+      gpu: 3
+      port: 8300
+      gpu_util: 0.30
+      max_model_len: 8192
+      max_num_seqs: 4
+      max_images: 16
+
+# Which service each model role calls. A role may also be an inline mapping
+# ({service: qwen3-vl-8b, served_name: som-v1} for a LoRA adapter served with
+# --lora-modules). planner defaults to decision, som defaults to actor.
+models:
+  observer: joyai                          # -> JOYAI_API_BASE
+  decision: qwen3-vl-8b                    # -> CAPTIONER_DECISION_MODEL/_BASE_URL (also the isolated completion gate)
+  planner: qwen3-vl-8b                     # -> VLN_PLANNER_MODEL/_BASE_URL
+  actor: qwen3-vl-8b                       # -> --model-path vllm-<served_name> / --base-url / VLLM_BASE_URL
+  som: qwen3-vl-8b                         # -> VLN_SOM_MODEL/_BASE_URL (omitted when same as actor)
+
+captioner:                                 # TemporalMemory / Captioner switches (v19 inference-only mode)
+  native_minimal: true                     # -> JOYAI_NATIVE_MINIMAL
+  observe_then_judge: true                 # -> JOYAI_OBSERVE_THEN_JUDGE
+  judge_preview_images: true               # -> JOYAI_JUDGE_PREVIEW_IMAGES
+  reasoned_control: true                   # -> JOYAI_REASONED_CONTROL
+  inference_only_completion: true          # -> CAPTIONER_INFERENCE_ONLY_COMPLETION (needs a decision model)
+  route_identity: false                    # -> CAPTIONER_ROUTE_IDENTITY
+  sparse_judgement_images: false           # -> CAPTIONER_SPARSE_JUDGEMENT_IMAGES
+  preview_candidates: true                 # -> CAPTIONER_PREVIEW_CANDIDATES
+  step_deadline_s: 30                      # -> CAPTIONER_STEP_DEADLINE_S
+  # evidence_dir: /path                    # -> JOYAI_EVIDENCE_DIR (archive request images)
 
 agent:
-  # Opt-in only. False preserves the existing Qwen captioner behavior. Start
-  # JoyAI on :7060 before enabling this for a new evaluation run.
-  joyai_captioner: false      # -> env VLN_JOYAI_CAPTIONER
-  spatial_memory: true        # -> env VLN_SPATIAL_MEMORY (occupancy map, committed targets, doorway events)
-  som: true                   # -> env VLN_SOM (set-of-mark candidate selection; needs spatial_memory)
-  # som_model: som-v1        # -> env VLN_SOM_MODEL: LoRA adapter (served via --lora-modules) used only for the SoM choice
-  captioner_max_tokens: 512           # -> env VLN_CAPTIONER_MAX_TOKENS
-  structured_vlm_max_tokens: 192      # -> env VLN_STRUCTURED_VLM_MAX_TOKENS
-  captioner_interval_steps: 2         # -> env VLN_CAPTIONER_INTERVAL_STEPS
-  completion_evidence_frames: 8       # -> env VLN_COMPLETION_EVIDENCE_FRAMES
-  temporal_max_image_edge: 320        # -> env VLN_TEMPORAL_MAX_IMAGE_EDGE
-  vlm_image_max_pixels: 200704        # -> env VLN_IMAGE_MAX_PIXELS (448*448)
+  spatial_memory: true                     # -> VLN_SPATIAL_MEMORY (occupancy map, committed targets, doorway events)
+  som: true                                # -> VLN_SOM (set-of-mark candidate selection; needs spatial_memory)
+  compact_subgoals: false                  # -> VLN_COMPACT_SUBGOALS
+  filter_route_candidates: false           # -> VLN_FILTER_ROUTE_CANDIDATES
+  structured_vlm_max_tokens: 192           # -> VLN_STRUCTURED_VLM_MAX_TOKENS
+  vlm_image_max_pixels: 200704             # -> VLN_IMAGE_MAX_PIXELS (448*448)
+  # frozen_plan_file: /path.json           # -> VLN_FROZEN_PLAN_FILE (replay a fixed subgoal plan)
 
-runner:
-  camera_pitch_deg: -15   # -15 measured best on the 40-set (docs/experiments 2026-08-30 §8)
-  max_steps: 150
+runner:                                    # run_habitat.py argparse defaults
+  camera_pitch_deg: -15                    # -15 measured best on the 40-set (docs/experiments 2026-08-30 §8)
+  max_steps: 500
   waypoint_radius: 0.25
   depth_hfov: 90.0
-  actor: waypoint         # waypoint | awarevln (serve_awarevln.py) | panohop (CWP look-around hops, panohop_actor.py)
+  actor: waypoint                          # waypoint | awarevln (serve_awarevln.py) | panohop (CWP look-around hops)
   record_video: false
-  # cwp_candidates: 1     # -> --cwp-candidates: runner-side CWP candidates replace the
-  #                       #    waypoint actor's floor-openings (cwp200: oracle 0.365, docs §23)
-  # panohop_mode: always  # -> --panohop-mode: always | selective (rule-triggered look-arounds)
+  # cwp_candidates: 1                      # runner-side CWP candidates replace the actor's floor openings
+  # panohop_mode: always                   # always | selective
 
-eval:
-  # The 200-episode stratified set is the decision standard (50/category);
-  # the 40-set is retained only for quick smoke passes.
-  episode_set: integrations/v3/eval_sets/val_unseen_200.txt
-  world_size: 8
+eval:                                      # consumed by the launcher scripts
+  split: val_unseen
+  episodes: 0                              # 0 = every episode of the split (unless episode_set is given)
+  # episode_set: integrations/v3/eval_sets/val_unseen_200.txt   # the 200-episode set is the decision standard
+  rank_gpus: [4, 5, 6, 7]                  # one Habitat worker per entry; length = world size
