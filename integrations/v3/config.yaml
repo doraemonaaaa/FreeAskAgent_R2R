@@ -59,14 +59,9 @@ models:
   actor: qwen3-vl-8b                       # -> --model-path vllm-<served_name> / --base-url / VLLM_BASE_URL
   som: qwen3-vl-8b                         # -> VLN_SOM_MODEL/_BASE_URL (omitted when same as actor)
 
-captioner:                                 # TemporalMemory / Captioner switches (v19 inference-only mode)
-  native_minimal: true                     # -> JOYAI_NATIVE_MINIMAL
-  observe_then_judge: true                 # -> JOYAI_OBSERVE_THEN_JUDGE
-  judge_preview_images: true               # -> JOYAI_JUDGE_PREVIEW_IMAGES
-  reasoned_control: true                   # -> JOYAI_REASONED_CONTROL
-  inference_only_completion: true          # -> CAPTIONER_INFERENCE_ONLY_COMPLETION (needs a decision model)
-  route_identity: false                    # -> CAPTIONER_ROUTE_IDENTITY
-  sparse_judgement_images: false           # -> CAPTIONER_SPARSE_JUDGEMENT_IMAGES
+captioner:                                 # TemporalMemory / Captioner switches
+  # The Captioner always runs as JoyAI observer + separate decision model.
+  inference_only_completion: true          # -> CAPTIONER_INFERENCE_ONLY_COMPLETION (isolated 2nd call before a stage advances)
   preview_candidates: true                 # -> CAPTIONER_PREVIEW_CANDIDATES
   step_deadline_s: 30                      # -> CAPTIONER_STEP_DEADLINE_S
   # evidence_dir: /path                    # -> JOYAI_EVIDENCE_DIR (archive request images)

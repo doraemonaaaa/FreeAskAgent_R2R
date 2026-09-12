@@ -12,9 +12,7 @@ from PIL import Image
 
 
 def _decode_rgb(encoded):
-    return np.asarray(
-        Image.open(io.BytesIO(base64.b64decode(encoded))).convert("RGB")
-    )
+    return np.asarray(Image.open(io.BytesIO(base64.b64decode(encoded))).convert("RGB"))
 
 
 def _decode_array(encoded):
@@ -22,101 +20,68 @@ def _decode_array(encoded):
         return np.load(buffer, allow_pickle=False)
 
 
+def _encode_png(rgb):
+    buffer = io.BytesIO()
+    Image.fromarray(np.asarray(rgb, dtype=np.uint8)).save(buffer, format="PNG")
+    return base64.b64encode(buffer.getvalue()).decode("ascii")
+
+
 def _temporal_report(actor):
     """Expose the Captioner's own judgement and raw text for step debugging."""
-    memory = getattr(actor, "temporal_memory", None)
-    if memory is None:
-        return {}
+    memory = actor.temporal_memory
     # Prefer this step's own analysis: reading Temporal Memory's latest_result
     # clears it whenever that analysis completed the subgoal.
     result = actor.last_caption
     diagnostics = memory.diagnostics()
+    captioner = diagnostics.get("captioner") or {}
     report = {
         "temporal_frames": len(memory.recent_frames()),
-        "completion_evidence_frames": diagnostics.get(
-            "completion_window_size"
-        ),
-        "completion_frame_ids": diagnostics.get(
-            "completion_frame_ids", []
-        ),
-        "completion_eligible_frame_ids": diagnostics.get(
-            "completion_eligible_frame_ids", []
-        ),
+        "completion_frame_ids": diagnostics.get("frame_ids", []),
+        "completion_eligible_frame_ids": diagnostics.get("completion_eligible_frame_ids", []),
         "temporal_error": memory.last_analysis_error,
-        "captioner_ran_this_step": actor.last_caption is not None,
-        "captioner_model_calls": (diagnostics.get("captioner") or {}).get("model_calls", 0),
-        "captioner_stage_timings_ms": (diagnostics.get("captioner") or {}).get("last_stage_timings_ms", {}),
-        "captioner_stage_budgets_ms": (diagnostics.get("captioner") or {}).get("last_stage_budgets_ms", {}),
-        "captioner_failed_stage": (diagnostics.get("captioner") or {}).get("last_failed_stage"),
-        "captioner_execution_history": (diagnostics.get("captioner") or {}).get("execution_history", {}),
-        "captioner_route_action": result.route_action if result is not None else None,
-        "captioner_route_reason": result.route_reason if result is not None else None,
+        "captioner_ran_this_step": result is not None,
+        "captioner_model_calls": captioner.get("model_calls", 0),
+        "captioner_stage_timings_ms": captioner.get("last_stage_timings_ms", {}),
+        "captioner_stage_budgets_ms": captioner.get("last_stage_budgets_ms", {}),
+        "captioner_failed_stage": captioner.get("last_failed_stage"),
+        "captioner_execution_history": captioner.get("execution_history", {}),
     }
     if result is not None:
         report.update({
             "captioner_completed": result.completed,
-            "captioner_model_completed_raw": result.model_completed_raw,
-            "captioner_completion_evidence_valid": (
-                result.completion_evidence_valid
-            ),
-            "captioner_completion_rejection_reason": (
-                result.completion_rejection_reason
-            ),
-            "captioner_completion_confidence": (
-                result.completion_confidence
-            ),
             "captioner_completion_evidence": result.completion_evidence,
-            "completion_evidence_frame_ids": list(
-                result.completion_evidence_frame_ids
-            ),
-            "completion_evidence_frame_paths": list(
-                result.completion_evidence_frame_paths
-            ),
+            "completion_evidence_frame_ids": list(result.completion_evidence_frame_ids),
+            "completion_evidence_frame_paths": list(result.completion_evidence_frame_paths),
             "captioner_error": result.error,
             "captioner_error_mode": result.error_mode,
-            "captioner_error_confidence": result.error_confidence,
             "captioner_error_evidence": result.error_evidence,
             "captioner_latency_ms": result.latency_ms,
             "captioner_raw_response": result.raw_response,
             "captioner_decision": result.decision,
-            "captioner_scene_facts": list(result.scene_facts),
-            "captioner_change_from_previous": result.change_from_previous,
-            "captioner_route_alignment": result.route_alignment,
-            "captioner_route_state": result.route_state,
-            "captioner_target_identity": result.target_identity,
-            "captioner_error_evidence_frame_ids": list(
-                result.error_evidence_frame_ids
-            ),
+            "captioner_error_evidence_frame_ids": list(result.error_evidence_frame_ids),
             "captioner_recovery_id": result.recovery_id,
             "captioner_preview_direction": result.preview_direction,
+            "captioner_route_action": result.route_action,
+            "captioner_route_reason": result.route_reason,
         })
     return report
 
 
 def _memory_state(actor):
-    """Forward both memories' own diagnostics so each step's state is visible.
-
-    ``pending_events`` is reported as a count because Temporal Memory never
-    drains it in this worker, so the list itself only grows with the episode.
-    """
-    state = {}
-    task_memory = getattr(actor, "task_memory", None)
-    if task_memory is not None:
-        state["task_memory"] = task_memory.diagnostics()
-    memory = getattr(actor, "temporal_memory", None)
-    if memory is not None:
-        temporal = memory.diagnostics()
-        temporal["pending_events"] = len(temporal["pending_events"])
-        state["temporal_memory"] = temporal
-    spatial = getattr(actor, "spatial_memory", None)
-    if spatial is not None:
-        state["spatial_memory"] = spatial.diagnostics()
+    """Forward the memories' own diagnostics so each step's state is visible."""
+    temporal = actor.temporal_memory.diagnostics()
+    # Events are reported as a count: the worker never drains them, so the
+    # list itself only grows with the episode.
+    temporal["events"] = len(temporal["events"])
+    state = {"task_memory": actor.task_memory.diagnostics(), "temporal_memory": temporal}
+    if actor.use_spatial_memory:
+        state["spatial_memory"] = actor.spatial_memory.diagnostics()
     return state
 
 
 def _subgoal_debug(actor, subgoal_id):
     """Return the exact planner text used for one subgoal ID."""
-    for subgoal in getattr(actor, "subgoals", ()):
+    for subgoal in actor.subgoals:
         if str(subgoal.subgoal_id) == str(subgoal_id):
             return {
                 "subgoal_id": subgoal.subgoal_id,
@@ -126,50 +91,35 @@ def _subgoal_debug(actor, subgoal_id):
     return None
 
 
-def _encode_png(rgb):
-    buffer = io.BytesIO()
-    Image.fromarray(np.asarray(rgb, dtype=np.uint8)).save(buffer, format="PNG")
-    return base64.b64encode(buffer.getvalue()).decode("ascii")
-
-
 def _visuals(actor):
     """What the agent believes, for the video: its map and the marker frame."""
     out = {}
-    spatial = getattr(actor, "spatial_memory", None)
-    if spatial is not None and getattr(actor, "use_spatial_memory", False):
+    if actor.use_spatial_memory:
         try:
-            points = [c["world_xyz"] for c in (getattr(actor, "last_som_candidates", None) or ()) if c.get("world_xyz")]
-            out["map_png"] = _encode_png(spatial.visual_map(extra_points=points))
+            points = [c["world_xyz"] for c in actor.last_som_candidates if c.get("world_xyz")]
+            out["map_png"] = _encode_png(actor.spatial_memory.visual_map(extra_points=points))
         except Exception as exc:  # a broken picture must not break the step
             out["map_error"] = f"{type(exc).__name__}: {exc}"
-    som = getattr(actor, "last_som_image", None)
-    if som is not None:
-        out["som_png"] = _encode_png(som)
+    if actor.last_som_image is not None:
+        out["som_png"] = _encode_png(actor.last_som_image)
     return out
 
 
 def _act_response(actor, decision, want_visuals=False):
-    """Build the response shared by ``act`` and ``act_on_preview``."""
     response = {
-        # The one nested object the runner should read: the mode decision with
-        # its waypoint underneath.
         "decision": _decision_payload(actor, decision),
-        # Kept flat alongside it so the existing runner call sites keep working
-        # while they migrate onto "decision".
         "stop": decision.stop,
-        "action_mode": decision.action_mode,
-        # Flat as well, because it is how the runner tells a turn apart from
-        # the other two decisions that carry no world point: a PREVIEW and a
-        # stop. None on every step that steers to a waypoint.
+        # How the runner tells a turn apart from a stop and a steer; None on
+        # every step that steers to a waypoint.
         "turn_deg": decision.turn_deg,
         "raw_model_response": decision.raw_response,
         "timings": actor.last_timings,
     }
     response.update(_temporal_report(actor))
     response.update(_memory_state(actor))
-    response.update(_agent_debug_state(actor, decision))
+    response["debug"] = _agent_debug_state(actor, decision)
     response["preview_request"] = actor.temporal_memory.preview_request()
-    response["preview_execution"] = getattr(actor, "_preview_execution", None)
+    response["preview_execution"] = actor._preview_execution
     if want_visuals:
         response["visuals"] = _visuals(actor)
     if decision.point is not None:
@@ -183,181 +133,83 @@ def _act_response(actor, decision, want_visuals=False):
 
 
 def _decision_payload(actor, decision):
-    """Mirror the actor's own wire schema so one shape crosses every boundary.
-
-    The mode is the discriminator and the waypoint lives under the block that
-    mode names, exactly as the model emits it; the geometry the RGB-D layer
-    resolved is added alongside the normalized coordinates it came from.
-    """
-    payload = {
-        "action_mode": decision.action_mode,
-        "confidence": getattr(actor, "last_waypoint_confidence", None),
-        "evidence": getattr(actor, "last_waypoint_evidence", None),
-    }
-    if decision.action_mode == "PREVIEW":
-        payload["preview"] = True
-        return payload
-
-    block = {
-        "intent": getattr(actor, "last_waypoint_applied_intent", None),
-    }
+    """The step's action with the geometry the RGB-D layer resolved."""
+    block = {"intent": actor.last_waypoint_intent, "stop": decision.stop}
     if decision.turn_deg is not None:
-        # An in-place turn has no coordinates at all: the controller repeats the
+        # An in-place turn has no coordinates: the controller repeats the
         # simulator's turn primitive instead of steering to a point.
         block["turn_deg"] = decision.turn_deg
-        payload["execution"] = block
-        return payload
-
-    block["normalized_uv"] = getattr(actor, "last_requested_normalized", None)
-    # Present only when this action was resolved from surrounding views, in
-    # which case the coordinates address that view rather than the forward one.
-    view_index = getattr(actor, "last_preview_view_index", None)
-    if view_index is not None:
-        block.update({
-            "view_index": view_index,
-            "view_yaw_deg": getattr(actor, "last_preview_yaw_deg", None),
-        })
-    if decision.point is not None:
-        block.update({
-            "pixel_uv": list(decision.point.pixel_uv),
-            "depth_m": decision.point.depth_m,
-            "camera_xyz": list(decision.point.camera_xyz),
-            "world_xyz": list(decision.point.world_xyz),
-        })
-    if decision.action_mode == "EXPLORATION":
-        payload["exploration"] = block
     else:
-        block["stop"] = decision.stop
-        payload["execution"] = block
-    return payload
+        block["normalized_uv"] = actor.last_requested_normalized
+        # Present only when this action was resolved from surrounding views, in
+        # which case the coordinates address that view rather than the forward one.
+        if actor.last_preview_view_index is not None:
+            block.update({"view_index": actor.last_preview_view_index, "view_yaw_deg": actor.last_preview_yaw_deg})
+        if decision.point is not None:
+            block.update({
+                "pixel_uv": list(decision.point.pixel_uv),
+                "depth_m": decision.point.depth_m,
+                "camera_xyz": list(decision.point.camera_xyz),
+                "world_xyz": list(decision.point.world_xyz),
+            })
+    return {
+        "confidence": actor.last_waypoint_confidence,
+        "evidence": actor.last_waypoint_evidence,
+        "execution": block,
+    }
 
 
 def _agent_debug_state(actor, decision):
     """Expose v3 decisions without asking the runner to infer internal state."""
-    analyzed_id = (
-        actor.last_caption.subgoal_id
-        if getattr(actor, "last_caption", None) is not None
-        else None
-    )
-    before_id = getattr(actor, "last_subgoal_before", None)
-    after_id = getattr(actor, "last_subgoal_after", None)
+    analyzed_id = actor.last_caption.subgoal_id if actor.last_caption is not None else None
     if decision.stop:
-        if getattr(actor, "last_waypoint_stop_disposition", None):
-            stop_reason = "WAYPOINT_FINAL_STOP"
-        elif actor.task_memory.is_task_complete():
-            stop_reason = "ALL_SUBGOALS_COMPLETE"
-        else:
-            stop_reason = "UNCLASSIFIED_STOP"
+        stop_reason = "ALL_SUBGOALS_COMPLETE" if actor.task_memory.is_task_complete() else "UNCLASSIFIED_STOP"
     else:
         stop_reason = "CONTINUE"
-    landmark = getattr(actor, "last_landmark", None)
     return {
-        "debug": {
-            "analyzed_subgoal": _subgoal_debug(actor, analyzed_id),
-            "subgoal_before": _subgoal_debug(actor, before_id),
-            "subgoal_after": _subgoal_debug(actor, after_id),
-            "subgoal_transition": before_id != after_id,
-            "requested_pixel_uv": getattr(
-                actor, "last_requested_pixel", None
-            ),
-            "requested_normalized_uv": getattr(
-                actor, "last_requested_normalized", None
-            ),
-            "requested_turn_deg": getattr(
-                actor, "last_requested_turn_deg", None
-            ),
-            "navigation_phase": getattr(
-                actor, "_navigation_phase", None
-            ),
-            "corridor_heading_yaw_deg": getattr(
-                actor, "_corridor_heading_yaw_deg", None
-            ),
-            "waypoint_model_intent": getattr(
-                actor, "last_waypoint_model_intent", None
-            ),
-            "waypoint_applied_intent": getattr(
-                actor, "last_waypoint_applied_intent", None
-            ),
-            "waypoint_model_action_mode": getattr(
-                actor, "last_waypoint_model_action_mode", None
-            ),
-            "waypoint_applied_action_mode": getattr(
-                actor, "last_waypoint_applied_action_mode", None
-            ),
-            "waypoint_guard_reason": getattr(
-                actor, "last_waypoint_guard_reason", None
-            ),
-            "waypoint_evidence": getattr(
-                actor, "last_waypoint_evidence", None
-            ),
-            "waypoint_confidence": getattr(
-                actor, "last_waypoint_confidence", None
-            ),
-            "preview_view_index": getattr(
-                actor, "last_preview_view_index", None
-            ),
-            "preview_yaw_deg": getattr(
-                actor, "last_preview_yaw_deg", None
-            ),
-            "preview_selection": (
-                asdict(actor.last_preview_selection)
-                if getattr(actor, "last_preview_selection", None) is not None
-                else None
-            ),
-            "preview_guard_reason": getattr(
-                actor, "last_preview_guard_reason", None
-            ),
-            "error_candidate": getattr(
-                actor, "last_error_candidate", None
-            ),
-            "error_guard_reason": getattr(
-                actor, "last_error_guard_reason", None
-            ),
-            "recovery_mode": getattr(
-                actor, "last_recovery_mode", None
-            ),
-            "landmark": (
-                landmark.model_dump()
-                if landmark is not None
-                else None
-            ),
-            # The tracker keeps its last state after a subgoal advances, so the
-            # visualization needs this to tell a fresh reading from a stale one.
-            "landmark_subgoal_id": getattr(
-                actor, "_landmark_subgoal_id", None
-            ),
-            "landmark_pixel_uv": getattr(
-                actor, "last_landmark_pixel", None
-            ),
-            "landmark_normalized_uv": getattr(
-                actor, "last_landmark_normalized", None
-            ),
-            "landmark_raw_response": getattr(
-                actor, "last_landmark_raw_response", None
-            ),
-            "landmark_error": getattr(
-                actor, "last_landmark_error", None
-            ),
-            "behavior_history": list(
-                actor.behavior_history()
-                if hasattr(actor, "behavior_history")
-                else ()
-            ),
-            "waypoint_raw_response": getattr(
-                actor, "last_waypoint_raw_response", None
-            ),
-            "spatial_summary": getattr(actor, "last_spatial_summary", None),
-            "som_choice": getattr(actor, "last_som_choice", None),
-            "som_candidates": getattr(actor, "last_som_candidates", None),
-            "som_error": getattr(actor, "last_som_error", None),
-            "som_raw_response": getattr(actor, "last_som_raw_response", None),
-            "spatial_error": getattr(actor, "last_spatial_error", None),
-            "waypoint_stop_disposition": getattr(
-                actor, "last_waypoint_stop_disposition", None
-            ),
-            "stop_reason": stop_reason,
-        }
+        "analyzed_subgoal": _subgoal_debug(actor, analyzed_id),
+        "subgoal_before": _subgoal_debug(actor, actor.last_subgoal_before),
+        "subgoal_after": _subgoal_debug(actor, actor.last_subgoal_after),
+        "subgoal_transition": actor.last_subgoal_before != actor.last_subgoal_after,
+        "requested_pixel_uv": actor.last_requested_pixel,
+        "requested_normalized_uv": actor.last_requested_normalized,
+        "requested_turn_deg": actor.last_requested_turn_deg,
+        "navigation_phase": actor._navigation_phase,
+        "waypoint_intent": actor.last_waypoint_intent,
+        "waypoint_guard_reason": actor.last_waypoint_guard_reason,
+        "waypoint_evidence": actor.last_waypoint_evidence,
+        "waypoint_confidence": actor.last_waypoint_confidence,
+        "waypoint_raw_response": actor.last_waypoint_raw_response,
+        "preview_view_index": actor.last_preview_view_index,
+        "preview_yaw_deg": actor.last_preview_yaw_deg,
+        "preview_selection": asdict(actor.last_preview_selection) if actor.last_preview_selection is not None else None,
+        "preview_guard_reason": actor.last_preview_guard_reason,
+        "error_candidate": actor.last_error_candidate,
+        "error_guard_reason": actor.last_error_guard_reason,
+        "recovery_mode": actor.last_recovery_mode,
+        "behavior_history": list(actor.behavior_history()),
+        "spatial_summary": actor.last_spatial_summary,
+        "spatial_error": actor.last_spatial_error,
+        "som_choice": actor.last_som_choice,
+        "som_candidates": actor.last_som_candidates,
+        "som_error": actor.last_som_error,
+        "som_raw_response": actor.last_som_raw_response,
+        "stop_reason": stop_reason,
     }
+
+
+def _navigable_window(payload):
+    if not payload:
+        return None
+    window = {
+        "origin_xz": tuple(payload["origin_xz"]),
+        "resolution_m": float(payload["resolution_m"]),
+        "mask": _decode_array(payload["mask"]),
+        "height_cell_m": float(payload.get("height_cell_m", 0.0)),
+    }
+    if "height_m" in payload:
+        window["height_m"] = _decode_array(payload["height_m"])
+    return window
 
 
 def main():
@@ -367,8 +219,7 @@ def main():
     parser.add_argument("--base-url", default=None)
     parser.add_argument(
         "--camera-height-m", type=float, default=None,
-        help="Camera height above the agent's base; enables floor-level "
-             "waypoint validation in the actor.",
+        help="Camera height above the agent's base; enables floor-level waypoint validation in the actor.",
     )
     args = parser.parse_args()
 
@@ -376,28 +227,17 @@ def main():
     sys.stdout = sys.stderr
     from agentflow.agents.vln_agent_4 import PreviewView, VLNAgent
 
-    actor = VLNAgent(
-        args.model_path,
-        base_url=args.base_url,
-        debug_performance=False,
-        camera_height_m=args.camera_height_m,
-    )
+    actor = VLNAgent(args.model_path, base_url=args.base_url, camera_height_m=args.camera_height_m)
     for line in sys.stdin:
         try:
             request = json.loads(line)
-            if request.get("operation") == "prepare":
-                subgoals = actor.prepare_task(request["instruction"])
-                response = {
-                    "subgoals": [
-                        {
-                            "subgoal_id": subgoal.subgoal_id,
-                            "description": subgoal.description,
-                            "completion_criteria": subgoal.completion_criteria,
-                        }
-                        for subgoal in subgoals
-                    ]
-                }
-            elif request.get("operation", "act") == "act":
+            operation = request.get("operation", "act")
+            if operation == "prepare":
+                response = {"subgoals": [
+                    {"subgoal_id": s.subgoal_id, "description": s.description, "completion_criteria": s.completion_criteria}
+                    for s in actor.prepare_task(request["instruction"])
+                ]}
+            elif operation == "act":
                 decision = actor.act(
                     _decode_rgb(request["rgb"]),
                     _decode_array(request["depth"]),
@@ -407,21 +247,9 @@ def main():
                     normalized_depth=bool(request.get("normalized_depth", False)),
                     depth_min_m=request.get("depth_min_m"),
                     depth_max_m=request.get("depth_max_m"),
-                    navigable_window=(
-                        {
-                            "origin_xz": tuple(request["navigable"]["origin_xz"]),
-                            "resolution_m": float(request["navigable"]["resolution_m"]),
-                            "mask": _decode_array(request["navigable"]["mask"]),
-                            **({"height_m": _decode_array(request["navigable"]["height_m"])}
-                               if "height_m" in request["navigable"] else {}),
-                            "height_cell_m": float(request["navigable"].get("height_cell_m", 0.0)),
-                        }
-                        if request.get("navigable")
-                        else None
-                    ),
+                    navigable_window=_navigable_window(request.get("navigable")),
                     oracle_goal_xyz=request.get("oracle_goal_xyz"),
                     cwp_candidates=request.get("cwp_candidates"),
-                    temporal_observed=bool(request.get("temporal_observed")),
                     preview_views=[
                         PreviewView(
                             yaw_deg=float(view["yaw_deg"]),
@@ -435,46 +263,8 @@ def main():
                     previous_execution=request.get("previous_execution"),
                 )
                 response = _act_response(actor, decision, want_visuals=bool(request.get("want_visuals")))
-            elif request.get("operation") == "act_on_preview":
-                # The second half of a previewed step: the runner rendered the
-                # headings the actor asked for, and the actor commits to one.
-                # It must not re-enter ``act``, which would advance motion,
-                # landmark, and temporal state a second time for one step.
-                decision = actor.act_on_preview(
-                    [
-                        PreviewView(
-                            yaw_deg=float(view["yaw_deg"]),
-                            rgb=_decode_rgb(view["rgb"]),
-                            depth=_decode_array(view["depth"]),
-                            intrinsics=np.asarray(
-                                view["intrinsics"], dtype=np.float64
-                            ),
-                            camera_to_world=np.asarray(
-                                view["camera_to_world"], dtype=np.float64
-                            ),
-                        )
-                        for view in request["views"]
-                    ],
-                    request["instruction"],
-                    normalized_depth=bool(
-                        request.get("normalized_depth", False)
-                    ),
-                    depth_min_m=request.get("depth_min_m"),
-                    depth_max_m=request.get("depth_max_m"),
-                )
-                response = _act_response(actor, decision, want_visuals=bool(request.get("want_visuals")))
-            elif request.get("operation") == "observe":
-                # A real intermediate Habitat primitive in a queued turn.
-                # It advances only episode-local temporal evidence; waypoint
-                # and Spatial Memory selection remain on the next act call.
-                response = actor.observe_navigation_step(
-                    _decode_rgb(request["rgb"]),
-                    np.asarray(request["camera_to_world"], dtype=np.float64),
-                    depth=_decode_array(request["depth"]) if "depth" in request else None,
-                    intrinsics=np.asarray(request["intrinsics"], dtype=np.float64) if "intrinsics" in request else None,
-                )
             else:
-                raise ValueError("Unsupported operation: {!r}".format(request["operation"]))
+                raise ValueError("Unsupported operation: {!r}".format(operation))
         except Exception as exc:
             response = {"error": "{}: {}".format(type(exc).__name__, exc)}
         protocol_stdout.write(json.dumps(response) + "\n")

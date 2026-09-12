@@ -7,19 +7,6 @@ from integrations.v3.run_habitat import WaypointActorProcess
 
 
 class EvidenceEnvironmentTests(TestCase):
-    def test_intermediate_observation_transports_its_own_depth_and_calibration(self):
-        import numpy as np
-        actor = object.__new__(WaypointActorProcess)
-        actor._png = lambda value: "rgb"
-        actor._array = lambda value: value.tolist()
-        actor._request = lambda request: request
-        depth = np.full((2, 3), 2.)
-        k = np.eye(3)
-        result = actor.observe(np.zeros((2, 3, 3)), np.eye(4), depth=depth, intrinsics=k)
-        self.assertEqual(result["depth"], depth.tolist())
-        self.assertEqual(result["intrinsics"], k.tolist())
-        self.assertNotIn("depth", actor.observe(np.zeros((2, 3, 3)), np.eye(4)))
-
     @patch("integrations.v3.run_habitat.subprocess.Popen")
     def test_recording_directory_is_absolute_and_not_a_parent_environment_write(self, popen):
         with patch.dict("os.environ", {}, clear=True):

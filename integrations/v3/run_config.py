@@ -36,13 +36,7 @@ ROLE_FALLBACK = {"planner": "decision", "som": "actor"}
 
 # captioner.<key> -> environment variable (bool flags become "1"/"0").
 CAPTIONER_ENV = {
-    "native_minimal": "JOYAI_NATIVE_MINIMAL",
-    "observe_then_judge": "JOYAI_OBSERVE_THEN_JUDGE",
-    "judge_preview_images": "JOYAI_JUDGE_PREVIEW_IMAGES",
-    "reasoned_control": "JOYAI_REASONED_CONTROL",
     "inference_only_completion": "CAPTIONER_INFERENCE_ONLY_COMPLETION",
-    "route_identity": "CAPTIONER_ROUTE_IDENTITY",
-    "sparse_judgement_images": "CAPTIONER_SPARSE_JUDGEMENT_IMAGES",
     "preview_candidates": "CAPTIONER_PREVIEW_CANDIDATES",
     "step_deadline_s": "CAPTIONER_STEP_DEADLINE_S",
     "evidence_dir": "JOYAI_EVIDENCE_DIR",
@@ -56,7 +50,6 @@ AGENT_ENV = {
     "structured_vlm_max_tokens": "VLN_STRUCTURED_VLM_MAX_TOKENS",
     "vlm_image_max_pixels": "VLN_IMAGE_MAX_PIXELS",
     "frozen_plan_file": "VLN_FROZEN_PLAN_FILE",
-    "som_trace": "VLN_SOM_TRACE",
 }
 # runner.<key> -> run_habitat.py argparse default of the same name.
 RUNNER_KEYS = (

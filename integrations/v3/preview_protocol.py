@@ -19,11 +19,6 @@ def preview_headings(configured, direction):
     return selected or headings
 
 
-def preview_for_unseen_frame(pending, temporal_observed):
-    """Never attach images to an act() that skips Captioner for this frame."""
-    return pending if not temporal_observed else None
-
-
 def preview_headings_for_request(configured, request, camera_to_world):
     """Keep the requested world bearings across queued physical turns.
 

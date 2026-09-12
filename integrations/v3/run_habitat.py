@@ -37,7 +37,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(HABITAT_ROOT / "habitat-lab"))
 
 import habitat  # noqa: E402
-from integrations.v3.preview_protocol import preview_headings_for_request, preview_for_unseen_frame, execution_observation
+from integrations.v3.preview_protocol import preview_headings_for_request, execution_observation
 from habitat.tasks.nav.shortest_path_follower import ShortestPathFollower  # noqa: E402
 
 # The actor asks for turns in degrees and this runner executes whole repeats of
@@ -134,7 +134,7 @@ class WaypointActorProcess:
         """Initialize the worker's task memory before an episode starts."""
         return self._request({"operation": "prepare", "instruction": instruction})
 
-    def act(self, rgb, depth, instruction, intrinsics, camera_to_world, navigable=None, oracle_goal=None, cwp_candidates=None, temporal_observed=False, preview_views=(), preview_request_id="", previous_execution=None):
+    def act(self, rgb, depth, instruction, intrinsics, camera_to_world, navigable=None, oracle_goal=None, cwp_candidates=None, preview_views=(), preview_request_id="", previous_execution=None):
         encode_started = time.perf_counter()
         request = {
             "operation": "act",
@@ -144,7 +144,6 @@ class WaypointActorProcess:
             # Ask for the agent's own map and marker frame only when a video
             # is being recorded: they cost a PNG encode per step.
             "want_visuals": bool(getattr(self, "want_visuals", False)),
-            "temporal_observed": bool(temporal_observed),
             "previous_execution": previous_execution,
         }
         if preview_views:
@@ -186,59 +185,9 @@ class WaypointActorProcess:
         # worker's own model time so a slow step can be attributed to one side.
         result["encode_ms"] = encode_ms
         result["roundtrip_ms"] = (time.perf_counter() - roundtrip_started) * 1000
-        if result.get("stop"):
-            return None, result
-        if "world_xyz" not in result:
-            # A PREVIEW decision carries no waypoint by design: the actor is
-            # asking to inspect the surrounding views before committing. The
-            # caller distinguishes it from STOP by reading "action_mode".
+        if result.get("stop") or "world_xyz" not in result:
             return None, result
         return np.asarray(result["world_xyz"], dtype=np.float32), result
-
-    def act_on_preview(self, views, instruction, cwp_candidates=None):
-        """Answer a PREVIEW decision with the headings Habitat just rendered."""
-        encode_started = time.perf_counter()
-        request = {
-            "operation": "act_on_preview",
-            "instruction": instruction,
-            "want_visuals": bool(getattr(self, "want_visuals", False)),
-            "views": [
-                {
-                    "yaw_deg": view["yaw_deg"],
-                    "rgb": self._png(view["rgb"]),
-                    "depth": self._array(view["depth"]),
-                    "intrinsics": np.asarray(view["intrinsics"]).tolist(),
-                    "camera_to_world": np.asarray(
-                        view["camera_to_world"]
-                    ).tolist(),
-                }
-                for view in views
-            ],
-        }
-        if cwp_candidates is not None:
-            request["cwp_candidates"] = cwp_candidates
-        encode_ms = (time.perf_counter() - encode_started) * 1000
-        roundtrip_started = time.perf_counter()
-        result = self._request(request)
-        result["encode_ms"] = encode_ms
-        result["roundtrip_ms"] = (time.perf_counter() - roundtrip_started) * 1000
-        if result.get("stop"):
-            return None, result
-        if "world_xyz" not in result:
-            return None, result
-        return np.asarray(result["world_xyz"], dtype=np.float32), result
-
-    def observe(self, rgb, camera_to_world, *, depth=None, intrinsics=None):
-        """Send one queued simulator primitive to Temporal Memory only."""
-        return self._request(
-            {
-                "operation": "observe",
-                "rgb": self._png(rgb),
-                "camera_to_world": np.asarray(camera_to_world).tolist(),
-                **({"depth": self._array(depth), "intrinsics": np.asarray(intrinsics).tolist()}
-                   if depth is not None and intrinsics is not None else {}),
-            }
-        )
 
     def close(self):
         if self.process.poll() is None:
@@ -484,15 +433,12 @@ def _render_topdown(
     goal_position,
     output_height,
     waypoints=(),
-    landmark_marks=(),
     floor_height=None,
 ):
     """Draw the executed trajectory, start, current position, and goal.
 
     ``waypoints`` are the world-space targets the actor asked for, which show
     where it intended to go as opposed to where the follower took it.
-    ``landmark_marks`` are ``(position, kind)`` pairs recording where the
-    tracker reported standing at or crossing the active subgoal's landmark.
     """
     import cv2
     from habitat.utils.visualizations import maps
@@ -523,10 +469,6 @@ def _render_topdown(
         waypoint for waypoint in waypoints
         if abs(float(waypoint[1]) - floor_height) <= floor_tolerance
     ]
-    floor_landmarks = [
-        (position, kind) for position, kind in landmark_marks
-        if abs(float(position[1]) - floor_height) <= floor_tolerance
-    ]
     path = [to_pixel(position) for position in floor_positions]
     if len(path) > 1:
         cv2.polylines(image, [np.asarray(path, dtype=np.int32)], False, (0, 80, 255), 3)
@@ -537,13 +479,6 @@ def _render_topdown(
         cv2.line(
             image, path[-1], to_pixel(floor_waypoints[-1]), _REQUESTED_COLOR, 1,
             cv2.LINE_AA,
-        )
-    for position, kind in floor_landmarks:
-        cv2.drawMarker(
-            image, to_pixel(position),
-            (230, 80, 230) if kind == "PASSED" else _LANDMARK_COLORS["AT"],
-            cv2.MARKER_DIAMOND if kind == "PASSED" else cv2.MARKER_TRIANGLE_UP,
-            14, 2,
         )
     if path:
         cv2.circle(image, path[0], 7, (0, 180, 0), -1)
@@ -617,86 +552,14 @@ def _decode_visuals(decision):
     return _png("map_png"), _png("som_png")
 
 
-def _clean_video_frame(rgb):
-    """Return an unannotated RGB frame for the saved video."""
-    return rgb.copy()
-
-
 # Requested amber, executed green: the same pair the legend names.
 _REQUESTED_COLOR = (255, 190, 0)
 _APPLIED_COLOR = (0, 220, 90)
 
-# The landmark tracker reports a proximity class rather than a distance, so the
-# overlay carries it as color: cool when far, warm as the camera closes in.
-_LANDMARK_COLORS = {
-    "FAR": (110, 170, 255),
-    "NEAR": (255, 150, 40),
-    "AT": (60, 235, 140),
-    "UNKNOWN": (170, 170, 170),
-}
-
-
-def _landmark_state(decision):
-    """Return this step's landmark reading, or None when it never ran."""
-    return (decision.get("debug") or {}).get("landmark")
-
-
-def _landmark_mark_kind(landmark):
-    """Classify a landmark reading for the top-down trajectory markers.
-
-    Only the two states that pin the route to a place are marked: crossing the
-    landmark, and standing at it. FAR/NEAR sightings happen on most steps and
-    would bury the map.
-    """
-    if not landmark:
-        return None
-    if landmark.get("passed"):
-        return "PASSED"
-    if landmark.get("visible") and landmark.get("proximity") == "AT":
-        return "AT"
-    return None
-
-
-def _draw_landmark_point(image, decision):
-    """Plot the landmark the tracker located, colored by its proximity.
-
-    The pixel is optional by design: when the model returns no usable ``u``/``v``
-    there is simply no marker. The structured state remains available in the
-    terminal debug output.
-    """
-    import cv2
-
-    landmark = _landmark_state(decision)
-    pixel = (decision.get("debug") or {}).get("landmark_pixel_uv")
-    if not landmark or not pixel:
-        return
-    height, width = image.shape[:2]
-    center = (
-        int(np.clip(int(pixel[0]), 0, width - 1)),
-        int(np.clip(int(pixel[1]), 0, height - 1)),
-    )
-    proximity = landmark.get("proximity") or "UNKNOWN"
-    color = _LANDMARK_COLORS.get(proximity, _LANDMARK_COLORS["UNKNOWN"])
-    # A diamond, so the landmark never reads as one of the waypoint circles.
-    cv2.drawMarker(
-        image, center, color, cv2.MARKER_DIAMOND, 22, 2, cv2.LINE_AA,
-    )
-    cv2.circle(image, center, 3, color, -1, cv2.LINE_AA)
-    label = "LM {}{}".format(proximity, " PASSED" if landmark.get("passed") else "")
-    cv2.putText(
-        image, label, (center[0] + 14, center[1] - 10),
-        cv2.FONT_HERSHEY_SIMPLEX, 0.42, color, 1, cv2.LINE_AA,
-    )
-
-
 def _previewed_view(decision):
     """Return the surrounding view a previewed step committed to, if any."""
-    block = decision.get("decision") or {}
-    for key in ("execution", "exploration"):
-        inner = block.get(key) or {}
-        if inner.get("view_index") is not None:
-            return inner
-    return None
+    inner = (decision.get("decision") or {}).get("execution") or {}
+    return inner if inner.get("view_index") is not None else None
 
 
 def _draw_preview_indicator(image, decision):
@@ -923,7 +786,7 @@ def _draw_subgoal_chain(image, decision, chain, steps, y_top):
     been held for CHAIN_STUCK_STEPS), unreached ones grey. The active box
     shows how many steps the agent has spent in it. A dot to the right
     reports the Captioner this step: grey ran/in-progress, green accepted
-    completion, red completion claimed but rejected. The frame on which a
+    completion. The frame on which a
     stage advanced gets a yellow border so it is easy to find when scrubbing.
     """
     import cv2
@@ -957,12 +820,7 @@ def _draw_subgoal_chain(image, decision, chain, steps, y_top):
         )
         x += box_w + gap
     if decision.get("captioner_ran_this_step"):
-        if decision.get("captioner_completed"):
-            dot = CHAIN_DONE
-        elif decision.get("captioner_model_completed_raw"):
-            dot = (220, 40, 40)
-        else:
-            dot = (170, 170, 170)
+        dot = CHAIN_DONE if decision.get("captioner_completed") else (170, 170, 170)
         cv2.circle(image, (width - margin - 7, y0 + box_h // 2), 6, dot, -1)
     if chain.get("transition"):
         cv2.rectangle(image, (0, 0), (width - 1, height - 1), CHAIN_ACTIVE, 4)
@@ -975,11 +833,10 @@ def _annotated_video_frame(rgb, decision, steps, chain=None):
     ``requested_pixel_uv`` is the location the waypoint policy asked for;
     ``pixel_uv`` is where the depth map allowed that waypoint to land. Drawing
     both, joined by a line, separates a bad model selection from a good
-    selection that the walkable-pixel snap pulled somewhere else. The landmark
-    decision is a diamond, PREVIEW is a cyan heading arrow, and an in-place
-    turn is a yellow bent arrow. The top strip contains only the route
-    instruction and active subgoal; detailed diagnostics remain in terminal
-    logs.
+    selection that the walkable-pixel snap pulled somewhere else. PREVIEW is a
+    cyan heading arrow and an in-place turn a yellow bent arrow. The top strip
+    holds the route instruction and active subgoal; detailed diagnostics
+    remain in terminal logs.
     """
     import cv2
 
@@ -1015,81 +872,41 @@ def _annotated_video_frame(rgb, decision, steps, chain=None):
     if applied is not None:
         cv2.circle(image, applied, 6, _APPLIED_COLOR, -1, cv2.LINE_AA)
         cv2.circle(image, applied, 6, (255, 255, 255), 1, cv2.LINE_AA)
-    _draw_landmark_point(image, decision)
     _draw_preview_indicator(image, decision)
     _draw_turn_arrow(image, decision.get("turn_deg"))
     return image
 
 
-def _combined_step_timings(decision):
-    """Combine the first and second halves of a PREVIEW step.
-
-    ``act_on_preview`` returns its own timing dictionary, so without this merge
-    the initial Captioner and waypoint request disappear from the runner log.
-    """
-    resolved = decision.get("timings") or {}
-    preview = decision.get("preview") or {}
-    initial = preview.get("act_timings") or {}
-
-    def total(key):
-        return float(initial.get(key, 0.0)) + float(
-            resolved.get(key, 0.0)
-        )
-
-    return {
-        "rgb_ms": total("rgb_ms"),
-        "memory_ms": total("memory_ms"),
-        "captioner_ms": total("captioner_ms"),
-        "depth_ms": total("depth_ms"),
-        "select_pixel_ms": total("select_pixel_ms"),
-        "preview_select_ms": total("preview_select_ms"),
-        "waypoint_ms": total("waypoint_ms"),
-        "worker_ms": float(initial.get("total_ms", 0.0)) + float(
-            resolved.get("total_ms", 0.0)
-        ),
-        "encode_ms": float(preview.get("act_encode_ms", 0.0)) + float(
-            decision.get("encode_ms", 0.0)
-        ),
-        "roundtrip_ms": float(
-            preview.get("act_roundtrip_ms", 0.0)
-        ) + float(decision.get("roundtrip_ms", 0.0)),
-        "preview_render_ms": float(preview.get("render_ms", 0.0)),
-    }
+def _step_timings(decision):
+    """The worker's phase timings plus transport and Preview rendering."""
+    timings = dict(decision.get("timings") or {})
+    timings["worker_ms"] = float(timings.get("total_ms", 0.0))
+    timings["encode_ms"] = float(decision.get("encode_ms", 0.0))
+    timings["roundtrip_ms"] = float(decision.get("roundtrip_ms", 0.0))
+    timings["preview_render_ms"] = float((decision.get("preview") or {}).get("render_ms", 0.0))
+    return timings
 
 
 def _latency_line(episode_id, steps, decision, step_ms, render_ms, env_ms):
     """Attribute one step's wall time to the model, the IPC, and the simulator."""
-    timings = _combined_step_timings(decision)
-    roundtrip_ms = timings["roundtrip_ms"]
+    timings = _step_timings(decision)
     worker_ms = timings["worker_ms"]
     memory_ms = timings.get("memory_ms", 0.0)
     captioner_ms = timings.get("captioner_ms", 0.0)
-    accounted = (
-        timings.get("rgb_ms", 0.0) + memory_ms + timings.get("depth_ms", 0.0)
-        + timings.get("select_pixel_ms", 0.0)
-        + timings.get("preview_select_ms", 0.0)
-        + timings.get("waypoint_ms", 0.0)
-    )
+    select_ms = timings.get("select_pixel_ms", 0.0)
     return (
         "episode={} step={} LATENCY step={:.0f}ms | encode={:.0f} ipc={:.0f} "
-        "worker={:.0f} [rgb={:.0f} memory={:.0f} (captioner={:.0f} rules={:.0f}) "
-        "depth={:.0f} select_pixel={:.0f} preview_select={:.0f} "
-        "waypoint={:.0f} other={:.0f}] preview_render={:.0f} "
+        "worker={:.0f} [memory={:.0f} (captioner={:.0f} rules={:.0f}) "
+        "select_pixel={:.0f} other={:.0f}] preview_render={:.0f} "
         "render={:.0f} env={:.0f}".format(
             episode_id, steps, step_ms,
             timings["encode_ms"],
             # Whatever the round trip spent outside the worker's own act() call.
-            roundtrip_ms - worker_ms,
-            worker_ms,
-            timings.get("rgb_ms", 0.0),
-            memory_ms, captioner_ms, memory_ms - captioner_ms,
-            timings.get("depth_ms", 0.0), timings.get("select_pixel_ms", 0.0),
-            timings.get("preview_select_ms", 0.0),
-            timings.get("waypoint_ms", 0.0),
+            timings["roundtrip_ms"] - worker_ms,
+            worker_ms, memory_ms, captioner_ms, memory_ms - captioner_ms, select_ms,
             # Non-zero here means act() spends time outside every named phase.
-            worker_ms - accounted,
-            timings["preview_render_ms"],
-            render_ms, env_ms,
+            worker_ms - memory_ms - select_ms,
+            timings["preview_render_ms"], render_ms, env_ms,
         )
     )
 
@@ -1097,29 +914,22 @@ def _latency_line(episode_id, steps, decision, step_ms, render_ms, env_ms):
 def _captioner_line(episode_id, steps, decision):
     """Report the Captioner's judgement beside its raw model text."""
     return (
-        "episode={} step={} CAPTIONER ran={} history={} evidence={} "
+        "episode={} step={} CAPTIONER ran={} history={} "
         "window_ids={} eligible_ids={} evidence_ids={} evidence_paths={} "
-        "raw_completed={} completed={} evidence_valid={} rejection={!r} "
-        "completion_confidence={:.2f} completion_evidence={!r} error={} "
-        "mode={} error_confidence={:.2f} error_evidence={!r} latency={:.0f}ms "
+        "completed={} completion_evidence={!r} error={} "
+        "mode={} error_evidence={!r} latency={:.0f}ms "
         "response={!r} analysis_error={!r}".format(
             episode_id, steps,
             decision.get("captioner_ran_this_step"),
             decision.get("temporal_frames"),
-            decision.get("completion_evidence_frames"),
             decision.get("completion_frame_ids"),
             decision.get("completion_eligible_frame_ids"),
             decision.get("completion_evidence_frame_ids"),
             decision.get("completion_evidence_frame_paths"),
-            decision.get("captioner_model_completed_raw"),
             decision.get("captioner_completed"),
-            decision.get("captioner_completion_evidence_valid"),
-            decision.get("captioner_completion_rejection_reason"),
-            decision.get("captioner_completion_confidence", 0.0),
             decision.get("captioner_completion_evidence"),
             decision.get("captioner_error"),
             decision.get("captioner_error_mode"),
-            decision.get("captioner_error_confidence", 0.0),
             decision.get("captioner_error_evidence"),
             decision.get("captioner_latency_ms", 0.0),
             decision.get("captioner_raw_response"),
@@ -1160,26 +970,22 @@ def _step_line(episode_id, steps, decision, step_ms, action):
 
     ``--debug-memory`` adds the full per-memory dumps below this line.
     """
-    timings = _combined_step_timings(decision)
+    timings = _step_timings(decision)
     task = decision.get("task_memory") or {}
     temporal = decision.get("temporal_memory") or {}
-    waypoint_ms = timings.get("waypoint_ms", 0.0)
     select_ms = timings.get("select_pixel_ms", 0.0)
     captioner_ms = timings.get("captioner_ms", 0.0)
-    preview_select_ms = timings.get("preview_select_ms", 0.0)
     preview_render_ms = timings.get("preview_render_ms", 0.0)
     debug = decision.get("debug") or {}
     analyzed = debug.get("analyzed_subgoal") or {}
     analyzed_id = analyzed.get("subgoal_id")
     current_id = task.get("current_subgoal_id")
     line = (
-        "ep={} s={} {:.0f}ms [wp={:.0f} sel={:.0f} cap={:.0f} "
-        "pre={:.0f} rest={:.0f}] "
+        "ep={} s={} {:.0f}ms [sel={:.0f} cap={:.0f} rest={:.0f}] "
         "sg={}->{} mode={} win={} obs={} | cap={} act={}".format(
             episode_id, steps, step_ms,
-            waypoint_ms, select_ms, captioner_ms, preview_select_ms,
-            step_ms - waypoint_ms - select_ms - captioner_ms
-            - preview_select_ms - preview_render_ms,
+            select_ms, captioner_ms,
+            step_ms - select_ms - captioner_ms - preview_render_ms,
             analyzed_id, current_id,
             temporal.get("active_error_mode"),
             len(temporal.get("frame_ids") or ()),
@@ -1237,46 +1043,7 @@ def _turn_primitive(turn_deg):
             "turn_deg={} is not a non-zero multiple of the simulator's "
             "turn_angle={}".format(turn_deg, TURN_ANGLE_DEG)
         )
-    action = 3 if turn_deg > 0 else 2  # turn_right / turn_left
-    return action, 1
-
-
-def _turn_frame(
-    env,
-    observation,
-    decision,
-    steps,
-    args,
-    navmesh_map,
-    positions,
-    goal_position,
-    waypoint_targets,
-    landmark_marks,
-):
-    """Render one intermediate frame of a multi-primitive turn.
-
-    Without these the video would jump the whole turn at once, which reads as a
-    teleport and hides how many steps the turn actually cost.
-    """
-    rgb, _ = _rgb_depth(observation)
-    agent_map, _ = _decode_visuals(decision)
-    debug_rgb = (
-        _clean_video_frame(rgb)
-        if args.clean_video
-        else _annotated_video_frame(rgb, decision, steps)
-    )
-    if navmesh_map is None:
-        return debug_rgb
-    return _topdown_panel(
-        debug_rgb,
-        _render_topdown(
-            env, navmesh_map, positions, goal_position, rgb.shape[0],
-            waypoints=waypoint_targets,
-            landmark_marks=landmark_marks,
-            floor_height=env.sim.get_agent_state().position[1],
-        ),
-        agent_map=agent_map,
-    )
+    return 3 if turn_deg > 0 else 2  # turn_right / turn_left
 
 
 def _fallback_action_for_follower_stop(decision):
@@ -1340,19 +1107,12 @@ def _navigation_debug_lines(
         "    completion_criteria={!r}".format(
             analyzed.get("completion_criteria")
         ),
-        "  CAPTION raw_completed={} completed={} valid={} rejection={!r} "
-        "confidence={:.2f} completion_evidence={!r} history={} evidence={} "
+        "  CAPTION completed={} completion_evidence={!r} history={} "
         "window_ids={} eligible_ids={} evidence_ids={} evidence_paths={} "
-        "raw={!r} error={!r} mode={} error_confidence={:.2f} "
-        "error_evidence={!r}".format(
-            decision.get("captioner_model_completed_raw"),
+        "raw={!r} error={!r} mode={} error_evidence={!r}".format(
             decision.get("captioner_completed"),
-            decision.get("captioner_completion_evidence_valid"),
-            decision.get("captioner_completion_rejection_reason"),
-            decision.get("captioner_completion_confidence", 0.0),
             decision.get("captioner_completion_evidence"),
             decision.get("temporal_frames"),
-            decision.get("completion_evidence_frames"),
             decision.get("completion_frame_ids"),
             decision.get("completion_eligible_frame_ids"),
             decision.get("completion_evidence_frame_ids"),
@@ -1360,13 +1120,7 @@ def _navigation_debug_lines(
             decision.get("captioner_raw_response"),
             decision.get("temporal_error"),
             decision.get("captioner_error_mode"),
-            decision.get("captioner_error_confidence", 0.0),
             decision.get("captioner_error_evidence"),
-        ),
-        "  LANDMARK state={} raw={!r} error={!r}".format(
-            debug.get("landmark"),
-            debug.get("landmark_raw_response"),
-            debug.get("landmark_error"),
         ),
         "  BEHAVIOR recent={}".format(
             (debug.get("behavior_history") or [])[-3:]
@@ -1380,15 +1134,11 @@ def _navigation_debug_lines(
             debug.get("preview_selection"),
             debug.get("preview_guard_reason"),
         ),
-        "  WAYPOINT phase={} heading_lock={} model_intent={} "
-        "applied_intent={} confidence={} guard={!r} evidence={!r} raw={!r} "
+        "  WAYPOINT phase={} intent={} confidence={} guard={!r} evidence={!r} raw={!r} "
         "normalized={} requested={} validated={} depth={} "
-        "world={} error_candidate={} guard={!r} recovery={} "
-        "stop_disposition={} stop_reason={}".format(
+        "world={} error_candidate={} guard={!r} recovery={} stop_reason={}".format(
             debug.get("navigation_phase"),
-            debug.get("corridor_heading_yaw_deg"),
-            debug.get("waypoint_model_intent"),
-            debug.get("waypoint_applied_intent"),
+            debug.get("waypoint_intent"),
             debug.get("waypoint_confidence"),
             debug.get("waypoint_guard_reason"),
             debug.get("waypoint_evidence"),
@@ -1401,7 +1151,6 @@ def _navigation_debug_lines(
             debug.get("error_candidate"),
             debug.get("error_guard_reason"),
             debug.get("recovery_mode"),
-            debug.get("waypoint_stop_disposition"),
             debug.get("stop_reason"),
         ),
         "  SPATIAL {} target={} som_choice={} candidates={}".format(
@@ -1459,13 +1208,13 @@ def _temporal_memory_line(episode_id, steps, decision):
     state = decision.get("temporal_memory") or {}
     return (
         "episode={} step={} TEMPORAL_MEMORY subgoal={} frames={} "
-        "active_error_mode={} pending_events={} latest_result={} "
+        "active_error_mode={} events={} latest_result={} "
         "analysis_error={!r}".format(
             episode_id, steps,
             state.get("current_subgoal_id"),
             state.get("frame_ids"),
             state.get("active_error_mode"),
-            state.get("pending_events"),
+            state.get("events"),
             state.get("latest_result"),
             state.get("last_analysis_error"),
         )
@@ -1497,7 +1246,6 @@ def _write_step_trace(
     step,
     decision,
     action,
-    executed,
     position_before,
     position_after,
     distance_before,
@@ -1514,7 +1262,6 @@ def _write_step_trace(
         "episode_id": str(episode_id),
         "step": int(step),
         "action": int(action),
-        "executed_primitives": int(executed),
         "position_before": [float(value) for value in position_before],
         "position_after": [float(value) for value in position_after],
         "distance_to_goal_before": float(distance_before),
@@ -1929,16 +1676,13 @@ def main():
                 positions = [env.sim.get_agent_state().position.copy()]
                 goal_position = episode.goals[0].position if episode.goals else None
                 last_agent_map = None
-                # Requested waypoints and landmark events accumulate over the
-                # episode so the top-down map shows the whole intended route
-                # beside the executed one.
+                # Requested waypoints accumulate over the episode so the
+                # top-down map shows the whole intended route beside the
+                # executed one.
                 waypoint_targets = []
-                landmark_marks = []
-                previous_landmark_mark = None
                 follower = ShortestPathFollower(
                     env.sim, args.waypoint_radius, return_one_hot=False
                 )
-                temporal_observed = False
                 step_started = time.perf_counter()
                 while not env.episode_over:
                     position_before = (
@@ -1958,12 +1702,11 @@ def main():
                         print("cwp_feed: {} forward candidates at step 0".format(
                             len(step_cands)), flush=True)
                     joint_views = ()
-                    capture_request = preview_for_unseen_frame(pending_preview, temporal_observed)
-                    if args.actor == "waypoint" and capture_request:
+                    if args.actor == "waypoint" and pending_preview:
                         preview_started = time.perf_counter()
                         # Include a rear view when the model explicitly needs
                         # it; all images belong to this step's actual pose.
-                        yaws = preview_headings_for_request(args.preview_yaws, capture_request, camera_to_world)
+                        yaws = preview_headings_for_request(args.preview_yaws, pending_preview, camera_to_world)
                         joint_views = _preview_views(env, yaws, args.depth_hfov, args.preview_scale)
                         preview_render_ms = (time.perf_counter() - preview_started) * 1000
                     waypoint, decision = actor.act(
@@ -1973,7 +1716,6 @@ def main():
                         cwp_candidates=step_cands,
                         **(
                             {
-                                "temporal_observed": temporal_observed,
                                 "preview_views": joint_views,
                                 "previous_execution": previous_execution,
                                 "preview_request_id": pending_preview["recovery_id"] if pending_preview else "",
@@ -1982,7 +1724,6 @@ def main():
                             else {}
                         ),
                     )
-                    temporal_observed = False
                     if joint_views:
                         decision["preview"] = {
                             "render_ms": preview_render_ms,
@@ -1991,60 +1732,10 @@ def main():
                             "joint_inference": True,
                         }
                     pending_preview = decision.get("preview_request")
-                    if decision.get("action_mode") == "PREVIEW":
-                        # The actor asked to look around before committing.
-                        # Rendering is not a simulator step, so this costs the
-                        # episode nothing but one extra model call.
-                        preview_started = time.perf_counter()
-                        views = _preview_views(
-                            env,
-                            args.preview_yaws,
-                            args.depth_hfov,
-                            args.preview_scale,
-                        )
-                        preview_render_ms = (
-                            time.perf_counter() - preview_started
-                        ) * 1000
-                        preview_request = decision
-                        ring_cands = (
-                            cwp_feed.ring(intrinsics, camera_to_world)
-                            if cwp_feed is not None else None
-                        )
-                        waypoint, decision = actor.act_on_preview(
-                            views, instruction, cwp_candidates=ring_cands
-                        )
-                        decision["preview"] = {
-                            "render_ms": preview_render_ms,
-                            "yaws_deg": [view["yaw_deg"] for view in views],
-                            "act_timings": preview_request.get("timings") or {},
-                            "act_encode_ms": preview_request.get(
-                                "encode_ms", 0.0
-                            ),
-                            "act_roundtrip_ms": preview_request.get(
-                                "roundtrip_ms", 0.0
-                            ),
-                            "requested_by": preview_request.get(
-                                "decision"
-                            ),
-                        }
                     if waypoint is not None:
                         waypoint_targets.append(
                             np.asarray(waypoint, dtype=np.float64)
                         )
-                    landmark_mark = _landmark_mark_kind(
-                        _landmark_state(decision)
-                    )
-                    # Only the transition is marked: the tracker holds AT or
-                    # passed for several consecutive steps, and one marker per
-                    # step would bury the map.
-                    if (
-                        landmark_mark is not None
-                        and landmark_mark != previous_landmark_mark
-                    ):
-                        landmark_marks.append(
-                            (position_before.copy(), landmark_mark)
-                        )
-                    previous_landmark_mark = landmark_mark
                     render_started = time.perf_counter()
                     agent_map, marker_frame = _decode_visuals(decision)
                     last_agent_map = agent_map if agent_map is not None else last_agent_map
@@ -2057,7 +1748,7 @@ def main():
                     )
                     update_subgoal_chain(subgoal_chain, decision, steps)
                     debug_rgb = (
-                        _clean_video_frame(shown_rgb)
+                        shown_rgb.copy()
                         if args.clean_video
                         else _annotated_video_frame(
                             shown_rgb, decision, steps, chain=subgoal_chain,
@@ -2084,7 +1775,6 @@ def main():
                                     env, navmesh_map, positions, goal_position,
                                     rgb.shape[0],
                                     waypoints=waypoint_targets,
-                                    landmark_marks=landmark_marks,
                                     floor_height=position_before[1],
                                 ),
                                 agent_map=last_agent_map,
@@ -2093,26 +1783,20 @@ def main():
                     follower_action = None
                     if decision.get("stop"):
                         action = 0  # HabitatSimActions.stop, chosen by Actor.
-                        repeats = 1
                     elif decision.get("turn_deg"):
-                        action, repeats = _turn_primitive(
-                            decision["turn_deg"]
-                        )
+                        action = _turn_primitive(decision["turn_deg"])
                     elif decision.get("forward_steps"):
                         # A discrete policy asked for N x 25 cm. Execute only
                         # one real step, then consult the policy on the new
                         # observation rather than running an open-loop burst.
                         action = 1  # HabitatSimActions.move_forward
-                        repeats = 1
                     elif waypoint is None:
                         # No waypoint, no turn and no stop: the previewed
-                        # heading had no valid depth, or a PREVIEW went
-                        # unanswered. Turning in place keeps the episode alive
-                        # instead of handing the follower a None target.
+                        # heading had no valid depth. Turning in place keeps
+                        # the episode alive instead of handing the follower a
+                        # None target.
                         action = 2  # HabitatSimActions.turn_left
-                        repeats = 1
                     else:
-                        repeats = 1
                         follower_action = follower.get_next_action(waypoint)
                         if follower_action is None or int(follower_action) == 0:
                             # STOP is reserved exclusively for the Actor. A
@@ -2127,98 +1811,10 @@ def main():
                         else:
                             action = follower_action
                     env_started = time.perf_counter()
-                    # The control contract is one decision, one simulator
-                    # primitive, one resulting observation.  The loop remains
-                    # for protocol compatibility, but ``repeats`` is one for
-                    # every action path above.
-                    executed = 0
-                    intermediate_traces = []
-                    for repeat in range(repeats):
-                        cancel_queued = False
-                        # A turn can reach the episode's step limit partway
-                        # through; stop issuing primitives rather than stepping
-                        # an environment that has already finished.
-                        if repeat and env.episode_over:
-                            break
-                        observation = env.step({"action": action})
-                        previous_execution = execution_observation(action, env.get_metrics())
-                        executed += 1
-                        positions.append(
-                            env.sim.get_agent_state().position.copy()
-                        )
-                        if (
-                            repeat < repeats - 1
-                            and args.actor == "waypoint"
-                            and hasattr(actor, "observe")
-                        ):
-                            # Queued primitives are steps the policy was not
-                            # asked about; it still sees their frames.
-                            intermediate_rgb, intermediate_depth = _rgb_depth(observation)
-                            observed = actor.observe(
-                                intermediate_rgb,
-                                _camera_to_world(env),
-                                depth=intermediate_depth,
-                                intrinsics=_intrinsics(intermediate_rgb.shape[1], intermediate_rgb.shape[0], args.depth_hfov),
-                            )
-                            observed_distance = float(
-                                env.get_metrics().get("distance_to_goal", 0.0)
-                            )
-                            intermediate_traces.append(
-                                {
-                                    "step": steps + repeat + 1,
-                                    "decision": {
-                                        "operation": "observe",
-                                        **observed,
-                                    },
-                                    "position_before": positions[-2],
-                                    "position_after": positions[-1],
-                                    "distance": observed_distance,
-                                }
-                            )
-                            advanced = (
-                                observed.get("task_complete")
-                                or observed.get("subgoal_before")
-                                != observed.get("subgoal_after")
-                            )
-                            preview_requested = bool(
-                                observed.get("preview_requested")
-                            )
-                            pending_preview = observed.get("preview_request")
-                            if advanced or preview_requested:
-                                # Do not finish an old subgoal's queued turn
-                                # after JoyAI advanced the task or requested a
-                                # surrounding-view decision on this frame.
-                                # The next act consumes this same frame for
-                                # control but skips its temporal ingestion.
-                                temporal_observed = True
-                                cancel_queued = True
-                        elif repeat < repeats - 1 and hasattr(actor, "observe"):
-                            # Other actor protocols keep their existing
-                            # observation contract.
-                            actor.observe(_observation(observation)[0])
-                        if frames is not None and repeat < repeats - 1:
-                            # These are the intermediate observations Captioner
-                            # receives through ``observe``. The final result is
-                            # recorded by the next actor decision (or the final
-                            # episode frame), avoiding both gaps and duplicates.
-                            turn_height = float(
-                                env.sim.get_agent_state().position[1]
-                            )
-                            try:
-                                navmesh_floor_key, navmesh_map = (
-                                    _navmesh_map_for_height(
-                                        env, navmesh_maps, turn_height
-                                    )
-                                )
-                            except Exception:
-                                pass
-                            frames.append(_turn_frame(
-                                env, observation, decision, steps + repeat + 1,
-                                args, navmesh_map, positions, goal_position,
-                                waypoint_targets, landmark_marks,
-                            ))
-                        if cancel_queued:
-                            break
+                    # One decision, one simulator primitive, one observation.
+                    observation = env.step({"action": action})
+                    previous_execution = execution_observation(action, env.get_metrics())
+                    positions.append(env.sim.get_agent_state().position.copy())
                     env_ms = (time.perf_counter() - env_started) * 1000
                     position_after = (
                         env.sim.get_agent_state().position.copy()
@@ -2232,25 +1828,11 @@ def main():
                         step=steps,
                         decision=decision,
                         action=action,
-                        executed=executed,
                         position_before=position_before,
                         position_after=position_after,
                         distance_before=distance_before,
                         distance_after=distance_after,
                     )
-                    for trace in intermediate_traces:
-                        _write_step_trace(
-                            trace_handle,
-                            episode_id=episode.episode_id,
-                            step=trace["step"],
-                            decision=trace["decision"],
-                            action=action,
-                            executed=1,
-                            position_before=trace["position_before"],
-                            position_after=trace["position_after"],
-                            distance_before=trace["distance"],
-                            distance_after=trace["distance"],
-                        )
                     now = time.perf_counter()
                     step_ms = (now - step_started) * 1000
                     print(
@@ -2289,10 +1871,7 @@ def main():
                         ):
                             print(line, flush=True)
                     step_started = now
-                    # Counted from what the loop actually executed: a turn is
-                    # several steps, and an early break makes it fewer than
-                    # were asked for.
-                    steps += executed
+                    steps += 1
                 metrics = env.get_metrics()
                 for name in totals:
                     totals[name] += float(metrics.get(name, 0.0))
@@ -2318,7 +1897,6 @@ def main():
                                 env, navmesh_map, positions, goal_position,
                                 rgb.shape[0],
                                 waypoints=waypoint_targets,
-                                landmark_marks=landmark_marks,
                                 floor_height=final_height,
                             ),
                             agent_map=last_agent_map,
@@ -2331,7 +1909,6 @@ def main():
                                 env, navmesh_map, positions, goal_position,
                                 rgb.shape[0],
                                 waypoints=waypoint_targets,
-                                landmark_marks=landmark_marks,
                                 floor_height=final_height,
                             )
                         ).save(str(args.video_dir / "topdown" / (episode_id + ".png")))
@@ -2347,7 +1924,6 @@ def main():
                                 goal_position,
                                 rgb.shape[0],
                                 waypoints=waypoint_targets,
-                                landmark_marks=landmark_marks,
                                 floor_height=floor_key,
                             )
                         ).save(str(args.video_dir / "topdown" / floor_name))

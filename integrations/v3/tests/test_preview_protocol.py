@@ -1,4 +1,4 @@
-from integrations.v3.preview_protocol import preview_for_unseen_frame, preview_headings, execution_observation
+from integrations.v3.preview_protocol import preview_headings, execution_observation
 from integrations.v3.preview_protocol import preview_headings_for_request
 import math
 import pytest
@@ -17,12 +17,6 @@ def test_custom_angles_are_preserved_not_replaced_with_scene_specific_views():
     assert preview_headings((-70, -20, 10, 60), "LEFT") == (-70, -20)
     assert preview_headings((20,), "LEFT") == (20,)
 
-
-def test_preview_waits_for_an_unanalyzed_frame_without_changing_request():
-    pending = {"recovery_id": "episode:preview:1", "direction": "LEFT"}
-    assert preview_for_unseen_frame(pending, True) is None
-    assert preview_for_unseen_frame(pending, False) is pending
-    assert preview_for_unseen_frame(None, False) is None
 
 
 def test_execution_feedback_never_leaks_oracle_navigation_metrics():
