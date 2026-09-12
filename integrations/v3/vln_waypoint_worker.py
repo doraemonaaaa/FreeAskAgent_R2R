@@ -73,10 +73,8 @@ def _memory_state(actor):
     # Events are reported as a count: the worker never drains them, so the
     # list itself only grows with the episode.
     temporal["events"] = len(temporal["events"])
-    state = {"task_memory": actor.task_memory.diagnostics(), "temporal_memory": temporal}
-    if actor.use_spatial_memory:
-        state["spatial_memory"] = actor.spatial_memory.diagnostics()
-    return state
+    return {"task_memory": actor.task_memory.diagnostics(), "temporal_memory": temporal,
+            "spatial_memory": actor.spatial_memory.diagnostics()}
 
 
 def _subgoal_debug(actor, subgoal_id):
@@ -94,12 +92,11 @@ def _subgoal_debug(actor, subgoal_id):
 def _visuals(actor):
     """What the agent believes, for the video: its map and the marker frame."""
     out = {}
-    if actor.use_spatial_memory:
-        try:
-            points = [c["world_xyz"] for c in actor.last_som_candidates if c.get("world_xyz")]
-            out["map_png"] = _encode_png(actor.spatial_memory.visual_map(extra_points=points))
-        except Exception as exc:  # a broken picture must not break the step
-            out["map_error"] = f"{type(exc).__name__}: {exc}"
+    try:
+        points = [c["world_xyz"] for c in actor.last_som_candidates if c.get("world_xyz")]
+        out["map_png"] = _encode_png(actor.spatial_memory.visual_map(extra_points=points))
+    except Exception as exc:  # a broken picture must not break the step
+        out["map_error"] = f"{type(exc).__name__}: {exc}"
     if actor.last_som_image is not None:
         out["som_png"] = _encode_png(actor.last_som_image)
     return out
@@ -225,7 +222,7 @@ def main():
 
     protocol_stdout = sys.stdout
     sys.stdout = sys.stderr
-    from agentflow.agents.vln_agent_4 import PreviewView, VLNAgent
+    from agentflow.agents.vln.agent import PreviewView, VLNAgent
 
     actor = VLNAgent(args.model_path, base_url=args.base_url, camera_height_m=args.camera_height_m)
     for line in sys.stdin:
@@ -248,8 +245,6 @@ def main():
                     depth_min_m=request.get("depth_min_m"),
                     depth_max_m=request.get("depth_max_m"),
                     navigable_window=_navigable_window(request.get("navigable")),
-                    oracle_goal_xyz=request.get("oracle_goal_xyz"),
-                    cwp_candidates=request.get("cwp_candidates"),
                     preview_views=[
                         PreviewView(
                             yaw_deg=float(view["yaw_deg"]),

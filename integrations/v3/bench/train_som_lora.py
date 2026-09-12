@@ -13,7 +13,7 @@ sys.path.insert(0, AGENT)
 SOM_PROMPT = None
 for line in [None]:
     import re
-    src = open(AGENT + "/agentflow/agents/models_embodied_v2/skiils/protocol.py").read()
+    src = open(AGENT + "/agentflow/agents/vln/config.py").read()
     m = re.search(r'SOM_PROMPT = """(.*?)"""', src, re.S)
     SOM_PROMPT = m.group(1)
 

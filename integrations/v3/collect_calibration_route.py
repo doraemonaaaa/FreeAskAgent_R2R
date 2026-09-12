@@ -90,10 +90,11 @@ def main():
     # Imports deliberately follow split/provenance validation; unit tests need no GPU.
     import numpy as np
     from PIL import Image
-    from integrations.v3.run_habitat import (habitat, HABITAT_ROOT, HABITAT_DATA,
-        R2R_CE_OVERRIDES, DEPTH_SENSOR_OVERRIDES, ShortestPathFollower,
-        _rgb_depth, _intrinsics, _camera_to_world, _preview_views, _navigable_window)
-    overrides = R2R_CE_OVERRIDES + DEPTH_SENSOR_OVERRIDES + [
+    from integrations.v3.run_habitat import (habitat, HABITAT_ROOT, HABITAT_DATA, CAMERA,
+        FORWARD_STEP_M, TURN_ANGLE_DEG, ShortestPathFollower, motion_overrides, sensor_overrides,
+        rgb_depth, camera_intrinsics, camera_to_world_matrix, render_preview_views, navigable_window)
+    overrides = motion_overrides(FORWARD_STEP_M, TURN_ANGLE_DEG) + sensor_overrides(
+        CAMERA, CAMERA.width, CAMERA.height, CAMERA.hfov_deg, 0.0, 10.0, False) + [
         "habitat.dataset.split=train",
         "habitat.dataset.data_path='{}/datasets/vln/mp3d/r2r/v1/{{split}}/{{split}}.json.gz'".format(HABITAT_DATA),
         "habitat.dataset.scenes_dir={}/scene_datasets".format(HABITAT_DATA),
@@ -101,7 +102,7 @@ def main():
         "habitat.dataset.content_scenes=[{}]".format(Path(episode["scene_id"]).stem)]
     for sensor in ("rgb", "depth"):
         overrides.append("habitat.simulator.agents.main_agent.sim_sensors.{}_sensor.orientation=[{},0,0]".format(
-            sensor, float(np.deg2rad(args.camera_pitch_deg))))
+            sensor, float(np.deg2rad(args.camera_pitch_deg))))  # the collector's own pitch wins
     config = habitat.get_config("benchmark/nav/vln_r2r.yaml", overrides=overrides)
     private = dict(episode=episode, split_plan_sha256=plan_hash, collector="reference_route",
                    calibration_split=args.calibration_split,
@@ -123,7 +124,7 @@ def main():
             with (output / "observations.jsonl").open("x") as stream:
                 while True:
                     frame += 1
-                    rgb, depth = _rgb_depth(observation)
+                    rgb, depth = rgb_depth(observation)
                     rgb_path = output / "frame_{:06d}.png".format(frame)
                     depth_path = output / "frame_{:06d}.depth.npy".format(frame)
                     Image.fromarray(rgb).save(rgb_path)
@@ -131,18 +132,18 @@ def main():
                     row = dict(frame_id=frame, instruction=episode["instruction"]["instruction_text"].strip(),
                         rgb=rgb_path.name, rgb_sha256=sha256(rgb_path.read_bytes()).hexdigest(),
                         depth=depth_path.name, depth_file_sha256=sha256(depth_path.read_bytes()).hexdigest(),
-                        depth_max_m=10.0, intrinsics=_intrinsics(rgb.shape[1], rgb.shape[0], 90).tolist(),
-                        camera_to_world=_camera_to_world(env).tolist(),
+                        depth_max_m=10.0, intrinsics=camera_intrinsics(rgb.shape[1], rgb.shape[0], 90).tolist(),
+                        camera_to_world=camera_to_world_matrix(env).tolist(),
                         previous_action=previous_action, collision=bool(env.sim.previous_step_collided))
                     stream.write(json.dumps(row, allow_nan=False) + "\n")
                     stream.flush()
                     if args.preview_interval and (frame - 1) % args.preview_interval == 0:
-                        before = _camera_to_world(env).copy()
-                        preview_records.append(save_preview_snapshot(env, frame, output, _preview_views))
-                        if not np.allclose(before, _camera_to_world(env), atol=1e-6, rtol=0):
+                        before = camera_to_world_matrix(env).copy()
+                        preview_records.append(save_preview_snapshot(env, frame, output, render_preview_views))
+                        if not np.allclose(before, camera_to_world_matrix(env), atol=1e-6, rtol=0):
                             raise ValueError("Preview rendering did not restore the real camera pose")
                         # Same task-blind local height grid used by live Preview filtering.
-                        grid = _navigable_window(env, include_heights=True)
+                        grid = navigable_window(env, include_heights=True)
                         geometry_path = output / "preview_{:06d}_geometry.npz".format(frame)
                         np.savez_compressed(geometry_path, **grid)
                         camera_height = float(before[1, 3] - env.sim.get_agent_state().position[1])

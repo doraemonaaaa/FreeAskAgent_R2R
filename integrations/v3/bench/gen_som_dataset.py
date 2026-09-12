@@ -31,7 +31,7 @@ def _load(name, path):
     sys.modules[name] = mod
     spec.loader.exec_module(mod)
     return mod
-_sm = AGENT + "/agentflow/agents/models_embodied_v2/memory/spatial_memory"
+_sm = AGENT + "/agentflow/agents/vln/memory/spatial_memory"
 occupancy_grid = _load("sm_pkg.occupancy_grid", _sm + "/occupancy_grid.py")
 sys.modules["sm_pkg"] = type(sys)("sm_pkg"); sys.modules["sm_pkg"].occupancy_grid = occupancy_grid
 cand_src = open(_sm + "/candidates.py").read().replace("from .occupancy_grid import Frontier",

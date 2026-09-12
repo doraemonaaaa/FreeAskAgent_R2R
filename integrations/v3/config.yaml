@@ -67,21 +67,92 @@ captioner:                                 # TemporalMemory / Captioner switches
   # evidence_dir: /path                    # -> JOYAI_EVIDENCE_DIR (archive request images)
 
 agent:
-  spatial_memory: true                     # -> VLN_SPATIAL_MEMORY (occupancy map, committed targets, doorway events)
-  som: true                                # -> VLN_SOM (set-of-mark candidate selection; needs spatial_memory)
+  som: true                                # -> VLN_SOM (set-of-mark candidate selection on the occupancy map)
   compact_subgoals: false                  # -> VLN_COMPACT_SUBGOALS
-  filter_route_candidates: false           # -> VLN_FILTER_ROUTE_CANDIDATES
   structured_vlm_max_tokens: 192           # -> VLN_STRUCTURED_VLM_MAX_TOKENS
   vlm_image_max_pixels: 200704             # -> VLN_IMAGE_MAX_PIXELS (448*448)
   # frozen_plan_file: /path.json           # -> VLN_FROZEN_PLAN_FILE (replay a fixed subgoal plan)
 
+# Sensor geometry (camera height / pitch / FOV / resolution, depth range) is
+# hardware and lives in sensor_config.yaml (path relative to this file; the
+# file beside config.yaml is the default). Old ``runner.camera_pitch_deg`` /
+# ``runner.depth_hfov`` keys are still accepted and win over it.
+sensors: sensor_config.yaml
+
+robot:                                     # motion primitives -> Habitat + VLN_ROBOT_PARAMS
+  forward_step_m: 0.25                     # one FORWARD primitive; the agent's collision test scales with it
+  turn_angle_deg: 15                       # one LEFT/RIGHT primitive; must divide the actor's 45 deg turn request
+
+spatial_memory:                            # occupancy grid + route geometry -> VLN_SPATIAL_MEMORY_PARAMS
+  resolution_m: 0.10                       # cell size
+  extent_m: 60.0                           # map side length, centred on the first pose
+  max_range_m: 5.0                         # depth farther than this is not fused (floor or obstacle)
+  min_range_m: 0.25
+  floor_tolerance_m: 0.30                  # |height above floor| <= this counts as floor (when no floor mask)
+  obstacle_band_m: [0.30, 1.80]            # height band above the floor that marks OCCUPIED
+  pixel_stride: 3                          # depth subsampling for fusion
+  inflate_m: 0.25                          # obstacle inflation for A* and connectivity (wide pass)
+  route_inflate_m: [0.25, 0.15]            # inflations tried in order before a target is declared unreachable (0.15 = agent radius, keeps doorways open)
+  unknown_cost: 2.5                        # A* cost multiplier of UNKNOWN cells
+  clearance_m: 0.35                        # committed targets are snapped this far from OCCUPIED
+  snap_radius_m: 1.0                       # search radius for that snap
+  max_snap_m: 2.0                          # farthest a target may move to reachable floor
+  mark_radius_m: 0.15                      # disc radius of a collision mark
+  lookahead_m: 1.5                         # waypoint handed to the navmesh follower
+  deploy_lookahead_m: 0.5                  # waypoint handed to the turn-then-forward follower (no navmesh)
+  blind_zone_m: 1.0                        # floor the pitched camera cannot see; trusted straight ahead only
+  fov_half_deg: 40.0                       # unobserved floor inside this cone is walked, outside it is looked at first
+
+navigation:                                # agent constants -> VLN_NAV_PARAMS (protocol.py, lower-case names)
+  step_budget_s: 10.0                      # wall budget of one act(); the launcher's VLN_STEP_BUDGET_S export wins
+  max_floor_offset_m: 0.3                  # actor floor plane: pixels within this height of the floor are walkable
+  # collision recovery (deployment mode)
+  collision_translation_m: 0.05            # forward primitive advancing less than this along its heading = collision
+  collision_recovery_turns: 3              # 15 deg primitives per recovery when the map has no opinion
+  collision_repeat_window_steps: 12        # a collision within this many steps ...
+  collision_repeat_radius_m: 1.0           # ... and this close to the last one is the same wall: turn further
+  collision_max_recovery_turns: 12
+  # approach before STOP
+  final_approach_stop_m: 1.5               # stop when the confirmed endpoint is this close
+  final_approach_max_steps: 16
+  final_approach_nudge_steps: 3            # forward steps when the endpoint is confirmed in view but not located
+  # targets
+  spatial_target_max_age_steps: 12
+  spatial_target_stagnation_steps: 6
+  spatial_target_min_commit_m: 0.6
+  spatial_lookahead_m: 1.5                 # (same role as spatial_memory.lookahead_m; the agent passes it as the default)
+  committed_target_reached_m: 0.5
+  som_max_candidates: 5
+  som_target_max_age_steps: 24
+  som_max_target_distance_m: 3.0
+  preview_max_candidate_distance_m: 6.0
+  # motion-loop / stall detection
+  stall_evidence_frames: 4
+  stall_translation_limit_m: 0.2
+  turn_evidence_deg: 5.0
+  locked_target_turn_tolerance_deg: 20.0
+  recovery_lateral_distance_m: 1.5
+  stage_path_overrun_m: 10.0
+  behavior_history_size: 8
+  # turn stages
+  turn_alignment_deg: 60.0
+  turn_around_min_progress_deg: 175.0
+  turn_abandon_deg: 180.0
+  subgoal_generation_attempts: 3
+
 runner:                                    # run_habitat.py argparse defaults
-  camera_pitch_deg: -15                    # -15 measured best on the 40-set (docs/experiments 2026-08-30 §8)
   max_steps: 500
   waypoint_radius: 0.25
-  depth_hfov: 90.0
   actor: waypoint                          # waypoint | awarevln (serve_awarevln.py) | panohop (CWP look-around hops)
   record_video: false
+  # Habitat navmesh on/off (CLI: --navmesh / --no-navmesh).
+  #   true : agent gets a 6 m navmesh traversability window, waypoints run
+  #          through Habitat's ShortestPathFollower (40-set SR 0.200, 2026-09-10)
+  #   false: deployment mode, nothing a real robot lacks - agent answers
+  #          navigability from its own occupancy grid, waypoints run through a
+  #          turn-then-forward follower (40-set SR 0.050, 2026-09-11; the
+  #          follower still lacks collision recovery, see memory notes)
+  navmesh: false
   # cwp_candidates: 1                      # runner-side CWP candidates replace the actor's floor openings
   # panohop_mode: always                   # always | selective
 

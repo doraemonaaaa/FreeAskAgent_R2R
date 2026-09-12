@@ -1,17 +1,19 @@
 """Preview benchmark v2: points every ~1.5 m along the reference path, 8 views
 (every 45 deg incl. behind), per-view open-floor distance from depth, geodesic GT."""
 import os, sys, json, math
-sys.path.insert(0, "/data/pengyh/workspace/FreeAskAgent_R2R/integrations/v3")
+sys.path.insert(0, "/data/pengyh/workspace/FreeAskAgent_R2R")
 import numpy as np
 from PIL import Image
-import run_habitat as rh
+from integrations.v3.habitat_runner import settings as rh
+from integrations.v3.habitat_runner.sensors import motion_overrides, render_preview_views, sensor_overrides
 import habitat, habitat_sim
 from habitat_sim.utils.common import quat_from_angle_axis, quat_to_magnum
 
 OUT = sys.argv[1]; SPACING = 1.5
 ids = [l.split("#")[0].strip().split(",")[0] for l in open("/data/pengyh/workspace/FreeAskAgent_R2R/integrations/v3/eval_sets/val_unseen_40.txt") if l.split("#")[0].strip()]
 YAWS = [-135.0, -90.0, -45.0, 0.0, 45.0, 90.0, 135.0, 180.0]
-overrides = rh.R2R_CE_OVERRIDES + rh.DEPTH_SENSOR_OVERRIDES + [
+overrides = motion_overrides(rh.FORWARD_STEP_M, rh.TURN_ANGLE_DEG) + sensor_overrides(
+    rh.CAMERA, rh.CAMERA.width, rh.CAMERA.height, rh.CAMERA.hfov_deg, 0.0, 10.0, False) + [
     "habitat.dataset.split=val_unseen",
     "habitat.dataset.data_path='{}/datasets/vln/mp3d/r2r/v1/{{split}}/{{split}}.json.gz'".format(rh.HABITAT_DATA),
     "habitat.dataset.scenes_dir={}/scene_datasets".format(rh.HABITAT_DATA),
@@ -69,7 +71,7 @@ with habitat.Env(config=config) as env:
                 rotation = quat_from_angle_axis(math.atan2(-d[0], -d[2]), np.array([0.0, 1.0, 0.0]))
             sim.set_agent_state(pos.astype(np.float32), rotation, reset_sensors=True)
             yaw = yaw_of(sim.get_agent_state().rotation); gt = bearing(pos, yaw, nxt)
-            views = rh._preview_views(env, YAWS, 90.0, 1.0)
+            views = render_preview_views(env, YAWS, 90.0, 1.0)
             if any((v["rgb"].max(axis=2) < 8).mean() > 0.3 for v in views):
                 continue
             d = f"{OUT}/{ep.episode_id}/{kept:02d}"; os.makedirs(d, exist_ok=True)

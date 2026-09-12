@@ -43,19 +43,43 @@ CAPTIONER_ENV = {
 }
 # agent.<key> -> environment variable.
 AGENT_ENV = {
-    "spatial_memory": "VLN_SPATIAL_MEMORY",
     "som": "VLN_SOM",
     "compact_subgoals": "VLN_COMPACT_SUBGOALS",
-    "filter_route_candidates": "VLN_FILTER_ROUTE_CANDIDATES",
     "structured_vlm_max_tokens": "VLN_STRUCTURED_VLM_MAX_TOKENS",
     "vlm_image_max_pixels": "VLN_IMAGE_MAX_PIXELS",
     "frozen_plan_file": "VLN_FROZEN_PLAN_FILE",
 }
 # runner.<key> -> run_habitat.py argparse default of the same name.
+# camera_pitch_deg / depth_hfov are still accepted here for old configs and
+# then win over sensor_config.yaml.
 RUNNER_KEYS = (
     "camera_pitch_deg", "max_steps", "waypoint_radius", "depth_hfov", "actor",
-    "record_video", "cwp_candidates", "panohop_mode", "panohop_url", "panohop_model",
+    "record_video", "navmesh", "navmesh_candidates", "navmesh_follower", "panohop_mode", "panohop_url", "panohop_model",
 )
+# sensor_config.yaml <section>.<key> -> run_habitat.py argparse default.
+SENSOR_ARGS = {
+    ("camera", "height_m"): "camera_height_m",
+    ("camera", "pitch_deg"): "camera_pitch_deg",
+    ("camera", "hfov_deg"): "depth_hfov",
+    ("camera", "width"): "image_width",
+    ("camera", "height"): "image_height",
+    ("depth", "min_m"): "depth_min_m",
+    ("depth", "max_m"): "depth_max_m",
+    ("depth", "normalize"): "depth_normalize",
+    # Calibration (optional; mappings/lists are handed to argparse as JSON text)
+    ("camera", "intrinsics"): "camera_intrinsics",
+    ("camera", "distortion"): "camera_distortion",
+    ("camera", "extrinsics"): "camera_extrinsics",
+}
+# config.yaml robot.<key> -> run_habitat.py argparse default (motion primitives).
+ROBOT_KEYS = ("forward_step_m", "turn_angle_deg")
+# Whole sections exported to the agent as one JSON object each.
+JSON_SECTIONS = {
+    "spatial_memory": "VLN_SPATIAL_MEMORY_PARAMS",
+    "navigation": "VLN_NAV_PARAMS",
+    "robot": "VLN_ROBOT_PARAMS",
+}
+DEFAULT_SENSOR_CONFIG = ROOT / "integrations/v3/sensor_config.yaml"
 
 
 def _same_endpoint(a: dict | None, b: dict | None) -> bool:
@@ -69,9 +93,12 @@ def _env_value(value: Any) -> str:
 
 
 class RunConfig:
-    def __init__(self, data: dict, path: Path | None = None) -> None:
+    def __init__(self, data: dict, path: Path | None = None, sensors: dict | None = None,
+                 sensor_path: Path | None = None) -> None:
         self.path = path
         self.data = data or {}
+        self.sensors: dict = sensors or {}
+        self.sensor_path = sensor_path
         self.services: dict[str, dict] = dict(self.data.get("services") or {})
         self.roles: dict[str, dict] = {}
         self._resolve_roles()
@@ -83,7 +110,29 @@ class RunConfig:
         path = Path(path or os.environ.get("V3_CONFIG") or DEFAULT_CONFIG)
         with open(path) as handle:
             data = yaml.safe_load(handle) or {}
-        return cls(data, path)
+        sensor_path = cls.resolve_sensor_path(data, path)
+        sensors: dict = {}
+        if sensor_path is not None:
+            with open(sensor_path) as handle:
+                sensors = yaml.safe_load(handle) or {}
+        return cls(data, path, sensors, sensor_path)
+
+    @staticmethod
+    def resolve_sensor_path(data: dict, config_path: Path) -> Path | None:
+        """``sensors:`` (relative to the config file), else a sensor_config.yaml
+        beside the config file, else the repository default."""
+        named = (data or {}).get("sensors")
+        if named:
+            candidate = Path(named)
+            if not candidate.is_absolute():
+                candidate = config_path.parent / candidate
+            if not candidate.exists():
+                raise FileNotFoundError(f"{config_path}: sensors file {candidate} does not exist")
+            return candidate
+        sibling = config_path.parent / "sensor_config.yaml"
+        if sibling.exists():
+            return sibling
+        return DEFAULT_SENSOR_CONFIG if DEFAULT_SENSOR_CONFIG.exists() else None
 
     # -- model roles ---------------------------------------------------------
 
@@ -122,9 +171,6 @@ class RunConfig:
                 "kind": str(spec.get("kind") or service.get("kind") or "vllm"),
             }
 
-    def role(self, name: str) -> dict | None:
-        return self.roles.get(name)
-
     def role_url(self, name: str, rank: int = 0) -> str | None:
         spec = self.roles.get(name)
         if not spec:
@@ -149,6 +195,14 @@ class RunConfig:
         if model_path:
             defaults["model_path"] = model_path
             defaults["base_url"] = self.role_url("actor", rank)
+        for (section, key), arg in SENSOR_ARGS.items():
+            value = (self.sensors.get(section) or {}).get(key)
+            if value is not None:
+                defaults[arg] = json.dumps(value) if isinstance(value, (dict, list)) else value
+        robot = self.data.get("robot") or {}
+        for key in ROBOT_KEYS:
+            if robot.get(key) is not None:
+                defaults[key] = robot[key]
         runner = self.data.get("runner") or {}
         for key in RUNNER_KEYS:
             if runner.get(key) is not None:
@@ -181,6 +235,12 @@ class RunConfig:
             for key, env_key in mapping.items():
                 if values.get(key) is not None:
                     env[env_key] = _env_value(values[key])
+        for section, env_key in JSON_SECTIONS.items():
+            values = self.data.get(section)
+            if values:
+                if not isinstance(values, dict):
+                    raise ValueError(f"config.yaml {section}: must be a mapping")
+                env[env_key] = json.dumps(values, sort_keys=True)
         return env
 
     # -- what the launcher / serve scripts need ------------------------------
@@ -206,6 +266,9 @@ class RunConfig:
                     value = ",".join(str(v) for v in value)
                 lines.append(f"{prefix}EVAL_{key.upper()}={shlex.quote(str(value))}")
         runner = self.data.get("runner") or {}
+        pitch = (self.sensors.get("camera") or {}).get("pitch_deg")
+        if pitch is not None:
+            lines.append(f"{prefix}RUNNER_CAMERA_PITCH_DEG={shlex.quote(str(pitch))}")
         for key in ("max_steps", "camera_pitch_deg"):
             if runner.get(key) is not None:
                 lines.append(f"{prefix}RUNNER_{key.upper()}={shlex.quote(str(runner[key]))}")
@@ -257,6 +320,10 @@ class RunConfig:
             "captioner": dict(self.data.get("captioner") or {}),
             "agent": dict(self.data.get("agent") or {}),
             "runner": dict(self.data.get("runner") or {}),
+            "robot": dict(self.data.get("robot") or {}),
+            "spatial_memory": dict(self.data.get("spatial_memory") or {}),
+            "navigation": dict(self.data.get("navigation") or {}),
+            "sensors": {"path": str(self.sensor_path) if self.sensor_path else None, **self.sensors},
             "eval": self.eval_section(),
         }
 

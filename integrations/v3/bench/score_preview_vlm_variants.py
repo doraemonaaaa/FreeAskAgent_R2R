@@ -4,9 +4,9 @@ import sys, json, time, math, re, io
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from agentflow.agents.engine.remote_qwen3vl import RemoteQwen3VL
-from agentflow.agents.models_embodied_v2.data_models import Subgoal
-from agentflow.agents.models_embodied_v2.skiils.planning import parse_subgoal_plan, landmark_phrase
-from agentflow.agents.models_embodied_v2.skiils.protocol import SUBGOAL_PROMPT
+from agentflow.agents.vln.data_models import Subgoal
+from agentflow.agents.vln.planning import parse_subgoal_plan, landmark_phrase
+from agentflow.agents.vln.config import SUBGOAL_PROMPT
 
 bench, model, url = sys.argv[1], sys.argv[2], sys.argv[3]
 limit = int(sys.argv[4]) if len(sys.argv) > 4 else 10**9

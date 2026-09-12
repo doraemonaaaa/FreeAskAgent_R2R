@@ -5,7 +5,8 @@ from unittest.mock import Mock
 
 import numpy as np
 
-from integrations.v3.run_habitat import _navigable_window, WaypointActorProcess
+from integrations.v3.habitat_runner.actor_process import WaypointActorProcess
+from integrations.v3.habitat_runner.sensors import navigable_window
 from integrations.v3.vln_waypoint_worker import _decode_array
 
 
@@ -18,10 +19,10 @@ class NavmeshHeightTests(TestCase):
         )
         env = SimpleNamespace(sim=SimpleNamespace(pathfinder=pathfinder,
             get_agent_state=lambda: SimpleNamespace(position=(0., .15, 0.))))
-        old = _navigable_window(env, radius_m=.5, resolution_m=.5)
+        old = navigable_window(env, radius_m=.5, resolution_m=.5)
         pathfinder.snap_point.assert_not_called()
         self.assertNotIn("height_m", old)
-        new = _navigable_window(env, radius_m=.5, resolution_m=.5, include_heights=True)
+        new = navigable_window(env, radius_m=.5, resolution_m=.5, include_heights=True)
         np.testing.assert_array_equal(old["mask"], new["mask"])
         self.assertTrue(np.isnan(new["height_m"][:, 0]).all())
         np.testing.assert_allclose(new["height_m"][:, 1], .25)

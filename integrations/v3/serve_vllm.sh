@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Serve Qwen3-VL for the vln_agent_4 workers through vLLM's OpenAI API.
+# Serve Qwen3-VL for the VLN agent workers through vLLM's OpenAI API.
 #
 #   GPU=0 PORT=8100 integrations/v3/serve_vllm.sh
 #

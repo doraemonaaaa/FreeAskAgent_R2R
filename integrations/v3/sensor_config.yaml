@@ -1,0 +1,27 @@
+# Sensor geometry of the robot / simulated agent. Hardware only: everything the
+# method itself tunes lives in config.yaml. Loaded by run_config.py through
+# config.yaml's ``sensors:`` key (path relative to config.yaml; this file next
+# to config.yaml is the default).
+#
+# Consumers: run_habitat.py builds the Habitat sensor overrides from ``camera``
+# and ``depth``; the agent receives camera.height_m (floor plane of the actor
+# and the occupancy grid) and the intrinsics derived from width/height/hfov.
+
+camera:
+  height_m: 1.25          # camera centre above the floor (both RGB and depth share the frame)
+  pitch_deg: -15          # tilt about x, negative looks down; -15 measured best on the 40-set
+  hfov_deg: 90            # horizontal field of view; the same for RGB and depth
+  width: 640
+  height: 480
+  # --- calibration (real camera; leave out for the simulator) -------------
+  # intrinsics: {fx: 615.2, fy: 615.0, cx: 318.9, cy: 241.7}   # calibrated K at width x height;
+  #                                                             # replaces the hfov-derived pinhole, scaled to any image size
+  # distortion: [k1, k2, p1, p2, k3]                            # OpenCV coefficients; RGB and depth are rectified with K
+  # extrinsics:                                                 # base -> camera mount; replaces height_m + pitch_deg
+  #   xyz: [0.0, 1.25, 0.0]                                     #   metres in the agent frame (x right, y up, z backward)
+  #   rpy_deg: [0.0, -15.0, 0.0]                                #   roll (about z), pitch (about x), yaw (about y)
+
+depth:
+  min_m: 0.0              # simulator clip range of the raw depth image (metres)
+  max_m: 10.0
+  normalize: false        # raw metres, not [0, 1]
