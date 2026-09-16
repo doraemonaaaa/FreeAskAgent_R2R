@@ -63,6 +63,7 @@ captioner:                                 # TemporalMemory / Captioner switches
   # The Captioner always runs as JoyAI observer + separate decision model.
   inference_only_completion: true          # -> CAPTIONER_INFERENCE_ONLY_COMPLETION (isolated 2nd call before a stage advances)
   preview_candidates: true                 # -> CAPTIONER_PREVIEW_CANDIDATES
+  opening_look_around: true                # -> CAPTIONER_OPENING_LOOK_AROUND (step 0 renders the full preview ring)
   step_deadline_s: 30                      # -> CAPTIONER_STEP_DEADLINE_S
   # evidence_dir: /path                    # -> JOYAI_EVIDENCE_DIR (archive request images)
 
@@ -153,7 +154,11 @@ runner:                                    # run_habitat.py argparse defaults
   #          turn-then-forward follower (40-set SR 0.050, 2026-09-11; the
   #          follower still lacks collision recovery, see memory notes)
   navmesh: false
-  # cwp_candidates: 1                      # runner-side CWP candidates replace the actor's floor openings
+  # Headings (deg, right positive) rendered for every surrounding-view request.
+  # The model never picks a direction. Each view is 90 deg wide: the front five
+  # overlap by half, 180 closes the rear gap (6 views, a full ring).
+  preview_yaws: [0, -45, 45, -90, 90, 180]
+  preview_scale: 0.5                       # views are downscaled before crossing the pipe
   # panohop_mode: always                   # always | selective
 
 eval:                                      # consumed by the launcher scripts

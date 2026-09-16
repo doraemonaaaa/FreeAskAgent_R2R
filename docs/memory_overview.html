@@ -1,0 +1,227 @@
+<title>时序与空间记忆总览</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+:root {
+  --ground: #f3f6f5; --surface: #ffffff; --ink: #16212a; --ink-2: #4b5b66;
+  --rule: #d3dcdf; --rule-2: #9fb0b8;
+  --model: #b3561d; --model-bg: #fbeee4;
+  --geo: #2c5c7d; --geo-bg: #e7f0f6;
+  --time: #2f7a63; --time-bg: #e6f3ee;
+  --sans: "IBM Plex Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0e1418; --surface: #162029; --ink: #e3eaee; --ink-2: #9cadb7;
+    --rule: #26343d; --rule-2: #4a5d69;
+    --model: #eb9a5f; --model-bg: #2b1f17;
+    --geo: #88b6d8; --geo-bg: #142430;
+    --time: #7fcdb2; --time-bg: #13281f;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0e1418; --surface: #162029; --ink: #e3eaee; --ink-2: #9cadb7;
+  --rule: #26343d; --rule-2: #4a5d69;
+  --model: #eb9a5f; --model-bg: #2b1f17;
+  --geo: #88b6d8; --geo-bg: #142430;
+  --time: #7fcdb2; --time-bg: #13281f;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.7; }
+.page { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 36px 64px; display: grid; gap: 22px; }
+h1 { margin: 0; font-size: 28px; line-height: 1.25; font-weight: 700; text-wrap: balance; }
+.lede { margin: 0; max-width: 70ch; color: var(--ink-2); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.sw { width: 18px; height: 12px; border-radius: 3px; border: 1.5px solid; }
+.sw.time { background: var(--time-bg); border-color: var(--time); }
+.sw.geo { background: var(--geo-bg); border-color: var(--geo); }
+.sw.model { background: var(--model-bg); border-color: var(--model); }
+.sw.viz { background: var(--surface); border-color: var(--rule-2); border-style: dashed; }
+figure { margin: 0; display: grid; gap: 10px; }
+.scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 12px; }
+.scroll svg { display: block; width: 100%; min-width: 900px; height: auto; }
+figcaption { font-size: 13px; color: var(--ink-2); max-width: 78ch; }
+.notes { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; max-width: 80ch; }
+.notes li { padding-left: 16px; position: relative; }
+.notes li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 6px; height: 6px; border-radius: 2px; background: var(--rule-2); }
+.notes b { font-weight: 600; }
+
+svg text { font-family: var(--sans); }
+svg .band-time { fill: var(--time-bg); stroke: var(--time); stroke-width: 1.6; }
+svg .band-geo { fill: var(--geo-bg); stroke: var(--geo); stroke-width: 1.6; }
+svg .box { fill: var(--surface); stroke: var(--rule-2); stroke-width: 1.2; }
+svg .box-time { fill: var(--surface); stroke: var(--time); stroke-width: 1.2; }
+svg .box-geo { fill: var(--surface); stroke: var(--geo); stroke-width: 1.2; }
+svg .box-model { fill: var(--model-bg); stroke: var(--model); stroke-width: 1.2; }
+svg .box-agent { fill: var(--surface); stroke: var(--ink); stroke-width: 2; }
+svg .box-viz { fill: var(--surface); stroke: var(--rule-2); stroke-width: 1.2; stroke-dasharray: 5 4; }
+svg .title { fill: var(--ink); font-size: 16px; font-weight: 700; }
+svg .tag { fill: var(--ink-2); font-size: 13px; }
+svg .t { fill: var(--ink); font-size: 14px; font-weight: 600; }
+svg .tc { fill: var(--ink); font-size: 14px; font-weight: 600; text-anchor: middle; }
+svg .s { fill: var(--ink-2); font-size: 12px; }
+svg .sc { fill: var(--ink-2); font-size: 12px; text-anchor: middle; }
+svg .b { fill: var(--ink); font-size: 13px; }
+svg .dim { fill: var(--ink-2); }
+svg .l { fill: var(--ink-2); font-size: 12px; text-anchor: middle; }
+svg .edge { fill: none; stroke: var(--ink-2); stroke-width: 1.3; }
+svg .edge-m { fill: none; stroke: var(--model); stroke-width: 1.3; }
+svg .ah { fill: var(--ink-2); }
+svg .ahm { fill: var(--model); }
+</style>
+
+<main class="page">
+  <h1>时序与空间记忆总览</h1>
+  <p class="lede">一步之内,agent 把观测分别送进两块记忆:时序记忆判断当前子目标做完没有,空间记忆给出在哪、往哪走。agent 综合两边结果,输出一个决策。</p>
+  <div class="legend" aria-label="图例">
+    <span><i class="sw time"></i>时序记忆</span>
+    <span><i class="sw geo"></i>空间记忆</span>
+    <span><i class="sw model"></i>模型调用</span>
+    <span><i class="sw viz"></i>只用于日志和视频</span>
+  </div>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 1160 630" role="img" aria-label="总览:输入进入 agent;agent 把帧、运动和执行反馈写进时序记忆,时序记忆经 Captioner 调用 JoyAI 和 8B 得到判断结果并推进任务记忆;agent 把深度、位姿和目标点写进空间记忆,空间记忆给出路点、障碍和边界;agent 输出停止、转角或世界坐标点">
+        <defs>
+          <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ahm" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+
+        <!-- input / output -->
+        <rect class="box" x="24" y="60" width="150" height="190" rx="8"/>
+        <text class="t" x="40" y="88">输入 · 每步</text>
+        <text class="b" x="40" y="118">RGB 图</text>
+        <text class="b" x="40" y="142">深度图</text>
+        <text class="b" x="40" y="166">相机位姿</text>
+        <text class="b" x="40" y="190">上一步动作</text>
+        <text class="b dim" x="40" y="214">环视视图 · 有请求时</text>
+
+        <rect class="box" x="24" y="420" width="150" height="160" rx="8"/>
+        <text class="t" x="40" y="448">输出 · 三选一</text>
+        <text class="b" x="40" y="478">STOP</text>
+        <text class="b" x="40" y="502">转角 ±15° 的倍数</text>
+        <text class="b" x="40" y="526">世界坐标点</text>
+        <text class="b dim" x="40" y="556">另附:环视请求</text>
+
+        <!-- agent -->
+        <rect class="box-agent" x="210" y="40" width="190" height="560" rx="8"/>
+        <text class="tc" x="305" y="70">agent.py</text>
+        <text class="sc" x="305" y="90">VLNAgent.act()</text>
+        <text class="b" x="228" y="130">① 测量运动</text>
+        <text class="s" x="246" y="150">位移、转角、是否撞墙</text>
+        <text class="b" x="228" y="192">② 深度融合进地图</text>
+        <text class="b" x="228" y="236">③ 写执行反馈</text>
+        <text class="s" x="246" y="256">含当前目标点的距离方位</text>
+        <text class="b" x="228" y="298">④ 请求阶段判断</text>
+        <text class="b" x="228" y="344">⑤ 按优先级选点</text>
+        <text class="s" x="246" y="364">完成则先接近再停</text>
+        <text class="b" x="228" y="406">⑥ 输出决策</text>
+        <text class="s dim" x="228" y="560">只存本集控制状态</text>
+
+        <path class="edge" d="M174,155 H208" marker-end="url(#a)"/>
+        <path class="edge" d="M210,500 H176" marker-end="url(#a)"/>
+
+        <!-- ===== temporal band ===== -->
+        <rect class="band-time" x="520" y="24" width="616" height="276" rx="10"/>
+        <text class="title" x="540" y="52">TemporalMemory · 时序记忆</text>
+        <text class="tag" x="782" y="52">判断这一步做完没有</text>
+
+        <rect class="box-time" x="540" y="70" width="150" height="64" rx="6"/>
+        <text class="tc" x="615" y="96">8 帧窗口</text>
+        <text class="sc" x="615" y="116">RGB · 深度 · 位姿 · 运动</text>
+
+        <rect class="box-time" x="715" y="70" width="235" height="150" rx="6"/>
+        <text class="t" x="731" y="96">Captioner 会话</text>
+        <text class="b" x="731" y="122">短期:最近 8 帧与描述</text>
+        <text class="b" x="731" y="146">中期:每 8 帧一段摘要</text>
+        <text class="b" x="731" y="170">长期:每 5 段压缩追加</text>
+        <text class="b dim" x="731" y="196">运动与路线尝试历史</text>
+
+        <rect class="box-model" x="980" y="70" width="140" height="40" rx="6"/>
+        <text class="tc" x="1050" y="95">JoyAI 看图</text>
+        <rect class="box-model" x="980" y="122" width="140" height="40" rx="6"/>
+        <text class="tc" x="1050" y="147">8B 决策</text>
+        <rect class="box-model" x="980" y="174" width="140" height="40" rx="6"/>
+        <text class="tc" x="1050" y="199">8B 完成门</text>
+        <path class="edge-m" d="M950,90 H978" marker-end="url(#am)"/>
+        <path class="edge-m" d="M950,142 H978" marker-end="url(#am)"/>
+        <path class="edge-m" d="M950,194 H978" marker-end="url(#am)"/>
+
+        <rect class="box-time" x="540" y="160" width="150" height="60" rx="6"/>
+        <text class="tc" x="615" y="185">判断结果</text>
+        <text class="sc" x="615" y="205">完成 · 卡住 · 换路线</text>
+
+        <rect class="box-time" x="540" y="238" width="150" height="46" rx="6"/>
+        <text class="tc" x="615" y="258">环视请求</text>
+        <text class="sc" x="615" y="276">下一步由 runner 渲染</text>
+
+        <rect class="box" x="715" y="238" width="235" height="46" rx="6"/>
+        <text class="tc" x="832" y="258">任务记忆</text>
+        <text class="sc" x="832" y="276">判断为完成时子目标 +1</text>
+
+        <path class="edge" d="M690,102 H713" marker-end="url(#a)"/>
+        <path class="edge" d="M715,190 H692" marker-end="url(#a)"/>
+        <path class="edge" d="M615,220 V236" marker-end="url(#a)"/>
+        <path class="edge" d="M690,206 H702 V261 H713" marker-end="url(#a)"/>
+
+        <!-- agent <-> temporal -->
+        <path class="edge" d="M400,102 H538" marker-end="url(#a)"/>
+        <text class="l" x="460" y="94">帧 · 运动 · 反馈</text>
+        <path class="edge" d="M540,190 H402" marker-end="url(#a)"/>
+        <text class="l" x="460" y="182">判断结果</text>
+
+        <!-- ===== spatial band ===== -->
+        <rect class="band-geo" x="520" y="330" width="616" height="280" rx="10"/>
+        <text class="title" x="540" y="358">SpatialMemory · 空间记忆</text>
+        <text class="tag" x="770" y="358">回答在哪、往哪走</text>
+
+        <rect class="box-geo" x="540" y="386" width="180" height="64" rx="6"/>
+        <text class="tc" x="630" y="412">占据栅格 0.1 m</text>
+        <text class="sc" x="630" y="432">地面 ±0.30 m · 障碍 0.30–1.80 m</text>
+
+        <rect class="box-geo" x="745" y="386" width="180" height="64" rx="6"/>
+        <text class="tc" x="835" y="412">当前目标点</text>
+        <text class="sc" x="835" y="432">唯一 · 到达或停滞即释放</text>
+
+        <rect class="box-geo" x="950" y="386" width="170" height="64" rx="6"/>
+        <text class="tc" x="1035" y="412">A* 路线</text>
+        <text class="sc" x="1035" y="432">取 0.5 m 外的路点</text>
+
+        <rect class="box-geo" x="540" y="506" width="180" height="64" rx="6"/>
+        <text class="tc" x="630" y="532">前方被挡?开阔方向</text>
+        <text class="sc" x="630" y="552">避障与碰撞恢复</text>
+
+        <rect class="box-geo" x="745" y="506" width="180" height="64" rx="6"/>
+        <text class="tc" x="835" y="532">未探索边界</text>
+        <text class="sc" x="835" y="552">编号标记 · 边界兜底</text>
+
+        <rect class="box-viz" x="950" y="506" width="170" height="64" rx="6"/>
+        <text class="tc" x="1035" y="532">门口事件 · 轨迹</text>
+        <text class="sc" x="1035" y="552">只进日志和视频</text>
+
+        <path class="edge" d="M925,418 H948" marker-end="url(#a)"/>
+        <path class="edge" d="M630,386 V372 H1035 V384" marker-end="url(#a)"/>
+        <text class="l" x="1000" y="367">避开障碍</text>
+        <path class="edge" d="M630,450 V504" marker-end="url(#a)"/>
+        <path class="edge" d="M700,450 V486 H835 V504" marker-end="url(#a)"/>
+
+        <!-- agent <-> spatial -->
+        <path class="edge" d="M400,418 H538" marker-end="url(#a)"/>
+        <text class="l" x="460" y="410">深度 · 位姿 · 目标</text>
+        <path class="edge" d="M540,538 H402" marker-end="url(#a)"/>
+        <text class="l" x="460" y="530">路点 · 障碍 · 边界</text>
+      </svg>
+    </div>
+    <figcaption>两块记忆不直接互相调用。空间记忆里目标点的距离和方位由 agent 写进执行反馈,再交给时序记忆里的决策模型;时序记忆判定子目标完成后,空间记忆里属于旧阶段的目标点被释放,agent 重新选点。</figcaption>
+  </figure>
+
+  <ul class="notes">
+    <li><b>时序记忆最耗时。</b>每步 JoyAI 和 8B 各调用一次,提议完成时再加一次完成门,合计约 5 秒,占一步的绝大部分。</li>
+    <li><b>空间记忆决定大部分动作。</b>新代码全量跑里九成以上步的动作经过栅格或目标点,自身只要几十毫秒。</li>
+    <li><b>虚线框不参与决策。</b>门口穿越检测和轨迹只写进日志和视频面板。</li>
+  </ul>
+</main>

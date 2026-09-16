@@ -25,6 +25,7 @@ def test_repo_config_exposes_sensors_robot_and_method_sections():
     assert spatial["resolution_m"] == 0.1 and spatial["route_inflate_m"] == [0.25, 0.15]
     assert nav["collision_translation_m"] == 0.05 and nav["final_approach_stop_m"] == 1.5
     assert robot == {"forward_step_m": 0.25, "turn_angle_deg": 15}
+    assert env["CAPTIONER_OPENING_LOOK_AROUND"] == "1"
     manifest = config.manifest()
     assert manifest["sensors"]["camera"]["hfov_deg"] == 90 and "navigation" in manifest
 

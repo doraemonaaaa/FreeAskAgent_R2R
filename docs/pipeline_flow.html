@@ -1,0 +1,366 @@
+<title>无 navmesh 导航流水线</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+:root {
+  --ground: #f3f6f5;
+  --surface: #ffffff;
+  --ink: #16212a;
+  --ink-2: #4b5b66;
+  --rule: #d3dcdf;
+  --rule-2: #9fb0b8;
+  --model: #b3561d;
+  --model-bg: #fbeee4;
+  --geo: #2c5c7d;
+  --geo-bg: #e7f0f6;
+  --sans: "IBM Plex Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0e1418;
+    --surface: #162029;
+    --ink: #e3eaee;
+    --ink-2: #9cadb7;
+    --rule: #26343d;
+    --rule-2: #4a5d69;
+    --model: #eb9a5f;
+    --model-bg: #2b1f17;
+    --geo: #88b6d8;
+    --geo-bg: #142430;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0e1418;
+  --surface: #162029;
+  --ink: #e3eaee;
+  --ink-2: #9cadb7;
+  --rule: #26343d;
+  --rule-2: #4a5d69;
+  --model: #eb9a5f;
+  --model-bg: #2b1f17;
+  --geo: #88b6d8;
+  --geo-bg: #142430;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.page {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding-inline: 20px;
+  padding-block: 40px 72px;
+  display: grid;
+  gap: 44px;
+}
+header { display: grid; gap: 14px; }
+h1 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+.lede { margin: 0; max-width: 66ch; color: var(--ink-2); }
+.status {
+  display: flex; flex-wrap: wrap; gap: 8px 22px;
+  font-family: var(--mono); font-size: 13px; color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  padding-block: 10px;
+  border-block: 1px solid var(--rule);
+}
+.status b { color: var(--ink); font-weight: 500; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.swatch { width: 18px; height: 12px; border-radius: 3px; border: 1.5px solid; }
+.swatch.model { background: var(--model-bg); border-color: var(--model); }
+.swatch.geo { background: var(--geo-bg); border-color: var(--geo); }
+.swatch.plain { background: var(--surface); border-color: var(--rule-2); }
+
+section { display: grid; gap: 14px; }
+h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+h2 .tag {
+  font-family: var(--mono); font-weight: 500; font-size: 12px;
+  letter-spacing: 0.08em; color: var(--ink-2); margin-right: 10px;
+}
+.note { margin: 0; max-width: 66ch; color: var(--ink-2); }
+
+figure { margin: 0; display: grid; gap: 10px; }
+.scroll {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 12px;
+}
+.scroll svg { display: block; width: 100%; min-width: 760px; height: auto; color: var(--ink-2); }
+figcaption { font-size: 13px; color: var(--ink-2); max-width: 70ch; }
+
+/* diagram parts */
+svg .box rect { fill: var(--surface); stroke: var(--rule-2); stroke-width: 1.2; }
+svg .box.model rect { fill: var(--model-bg); stroke: var(--model); }
+svg .box.geo rect { fill: var(--geo-bg); stroke: var(--geo); }
+svg .box.focus rect { stroke: var(--ink); stroke-width: 2; }
+svg .dia { fill: var(--geo-bg); stroke: var(--geo); stroke-width: 1.2; }
+svg text { font-family: var(--sans); }
+svg .t { fill: var(--ink); font-size: 14px; font-weight: 600; text-anchor: middle; }
+svg .t.left, svg .s.left, svg .b { text-anchor: start; }
+svg .s { fill: var(--ink-2); font-size: 12px; text-anchor: middle; }
+svg .b { fill: var(--ink); font-size: 13px; }
+svg .b.dim { fill: var(--ink-2); }
+svg .l { fill: var(--ink-2); font-size: 12px; text-anchor: middle; }
+svg .l.start { text-anchor: start; }
+svg .l.end { text-anchor: end; }
+svg .edge { fill: none; stroke: var(--ink-2); stroke-width: 1.3; }
+svg .edge.m { stroke: var(--model); }
+svg .edge.dash { stroke-dasharray: 5 4; }
+svg .ah { fill: var(--ink-2); }
+svg .ah.m { fill: var(--model); }
+
+/* precedence ladder */
+.ladder { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); overflow: hidden; }
+.ladder li {
+  display: grid;
+  grid-template-columns: 44px minmax(150px, 0.9fr) minmax(220px, 2fr) 128px;
+  gap: 0 16px;
+  align-items: start;
+  padding: 14px 18px;
+  border-top: 1px solid var(--rule);
+}
+.ladder li:first-child { border-top: 0; }
+.ladder .rank { font-family: var(--mono); font-size: 13px; color: var(--ink-2); padding-top: 2px; font-variant-numeric: tabular-nums; }
+.ladder .when { font-weight: 600; }
+.ladder .what { color: var(--ink); }
+.ladder .what small { display: block; color: var(--ink-2); font-size: 13px; margin-top: 2px; }
+.ladder .out { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-start; }
+.ladder .head { background: var(--ground); font-size: 12px; letter-spacing: 0.06em; color: var(--ink-2); padding-block: 8px; }
+.ladder .head .when { font-weight: 500; }
+.chip {
+  font-size: 12px; line-height: 1; padding: 5px 8px; border-radius: 999px;
+  border: 1px solid var(--rule-2); color: var(--ink); white-space: nowrap; background: var(--surface);
+}
+.chip.model { border-color: var(--model); background: var(--model-bg); }
+.chip.stop { border-color: var(--ink); font-weight: 600; }
+.release { margin: 0; font-size: 13px; color: var(--ink-2); max-width: 70ch; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+th, td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--rule); vertical-align: top; }
+thead th { border-top: 0; background: var(--ground); font-size: 12px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink-2); }
+td.num, td code { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+td code { color: var(--ink-2); }
+
+@media (max-width: 720px) {
+  h1 { font-size: 24px; }
+  .ladder li { grid-template-columns: 32px 1fr; gap: 4px 12px; }
+  .ladder .what, .ladder .out { grid-column: 2; }
+  .ladder .head { display: none; }
+}
+</style>
+
+<main class="page">
+  <header>
+    <h1>无 navmesh 导航流水线</h1>
+    <p class="lede">每一步:两个模型判断当前子目标有没有完成,空间记忆从地图里挑一个世界坐标点,确定性控制器执行一个动作。下面四张图从一集的循环开始,逐层展开。</p>
+    <div class="status">
+      <span>代码 <b>agentflow/agents/vln</b></span>
+      <span>val_unseen 新代码 <b>551</b> 集</span>
+      <span>SR <b>0.201</b></span>
+      <span>OSR <b>0.312</b></span>
+      <span>SPL <b>0.153</b></span>
+      <span>DTG <b>8.98 m</b></span>
+    </div>
+    <div class="legend" aria-label="图例">
+      <span><i class="swatch model"></i>模型调用</span>
+      <span><i class="swatch geo"></i>几何计算,确定性</span>
+      <span><i class="swatch plain"></i>数据或组合步骤</span>
+    </div>
+  </header>
+
+  <section>
+    <h2><span class="tag">图 A</span>一集的循环</h2>
+    <figure>
+      <div class="scroll">
+        <svg viewBox="0 0 980 310" role="img" aria-label="一集的循环:指令经 8B 规划成子目标,之后每步 Habitat 给出观测,act 决策,控制器执行一个原语,直到 STOP 或满 500 步后计算指标">
+          <defs>
+            <marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+          </defs>
+          <!-- row 1 -->
+          <g class="box"><rect x="24" y="24" width="180" height="56" rx="6"/><text class="t" x="114" y="48">导航指令</text><text class="s" x="114" y="67">R2R 英文路线描述</text></g>
+          <g class="box model"><rect x="254" y="24" width="150" height="56" rx="6"/><text class="t" x="329" y="48">规划器 · 8B</text><text class="s" x="329" y="67">拆阶段,最多 3 次</text></g>
+          <g class="box"><rect x="444" y="24" width="200" height="56" rx="6"/><text class="t" x="544" y="48">子目标列表</text><text class="s" x="544" y="67">描述 | 完成标准</text></g>
+          <g class="box"><rect x="739" y="24" width="200" height="56" rx="6"/><text class="t" x="839" y="48">结束并评测</text><text class="s" x="839" y="67">SR · OSR · SPL · DTG</text></g>
+          <path class="edge" d="M204,52 H252" marker-end="url(#aA)"/>
+          <path class="edge" d="M404,52 H442" marker-end="url(#aA)"/>
+          <!-- row 2 -->
+          <g class="box"><rect x="24" y="170" width="250" height="64" rx="6"/><text class="t" x="149" y="196">Habitat 仿真器</text><text class="s" x="149" y="216">执行原语,渲染下一帧</text></g>
+          <g class="box focus"><rect x="439" y="170" width="210" height="64" rx="6"/><text class="t" x="544" y="196">act() 一步决策</text><text class="s" x="544" y="216">展开见图 B</text></g>
+          <g class="box geo"><rect x="739" y="170" width="200" height="64" rx="6"/><text class="t" x="839" y="196">控制器</text><text class="s" x="839" y="216">转向目标点,偏差 15° 内前进</text></g>
+          <path class="edge" d="M544,80 V168" marker-end="url(#aA)"/>
+          <text class="l end" x="534" y="130">当前子目标</text>
+          <path class="edge" d="M274,202 H437" marker-end="url(#aA)"/>
+          <text class="l" x="356" y="194">RGB-D 640×480 + 位姿</text>
+          <path class="edge" d="M649,202 H737" marker-end="url(#aA)"/>
+          <text class="l" x="694" y="194">目标或转角</text>
+          <path class="edge" d="M620,170 V130 H839 V82" marker-end="url(#aA)"/>
+          <text class="l" x="730" y="122">STOP 或满 500 步</text>
+          <path class="edge" d="M839,234 V274 H149 V236" marker-end="url(#aA)"/>
+          <text class="l" x="494" y="294">一个原语:前进 0.25 m,或左 / 右转 15°</text>
+        </svg>
+      </div>
+      <figcaption>规划只在开头调用一次。之后每一帧只产生一个原语,停止只能由 act() 发出;距目标 3 m 内停下算成功。</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="tag">图 B</span>act() 一步之内</h2>
+    <figure>
+      <div class="scroll">
+        <svg viewBox="0 0 980 650" role="img" aria-label="一步之内的五个阶段:测量运动,融合深度,阶段判断(JoyAI 观察、8B 决策、完成门),选目标点,输出决策;模型调用在右侧">
+          <defs>
+            <marker id="aB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+            <marker id="aBm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah m" d="M0,0 L10,5 L0,10 z"/></marker>
+          </defs>
+          <!-- spine -->
+          <g class="box geo"><rect x="24" y="20" width="400" height="58" rx="6"/><text class="t" x="224" y="45">① 测量运动</text><text class="s" x="224" y="65">位移 · 转角 · 沿朝向的前进量</text></g>
+          <g class="box geo"><rect x="24" y="112" width="400" height="58" rx="6"/><text class="t" x="224" y="137">② 融合深度</text><text class="s" x="224" y="157">占据栅格:地面 ±0.30 m,障碍 0.30–1.80 m</text></g>
+          <g class="box"><rect x="24" y="204" width="400" height="242" rx="6"/>
+            <text class="t left" x="44" y="232">③ 阶段判断</text>
+            <text class="b" x="44" y="266">输入:当前帧、最近 8 帧、实测运动、</text>
+            <text class="b" x="44" y="288">持有目标的距离与方位、整条路线</text>
+            <text class="b" x="44" y="322">输出:是否完成、是否卡住、</text>
+            <text class="b" x="44" y="344">是否换路线、是否要环视</text>
+            <text class="b dim" x="44" y="380">每步至少 2 次模型调用</text>
+            <text class="b dim" x="44" y="402">提议完成时再加 1 次完成门</text>
+          </g>
+          <g class="box geo"><rect x="24" y="478" width="400" height="58" rx="6"/><text class="t" x="224" y="503">④ 选目标点</text><text class="s" x="224" y="523">8 级优先级,第一个给出结果的生效 · 见图 D</text></g>
+          <g class="box focus"><rect x="24" y="570" width="400" height="58" rx="6"/><text class="t" x="224" y="595">⑤ 输出决策</text><text class="s" x="224" y="615">世界坐标点、转角或 STOP,交给控制器</text></g>
+          <path class="edge" d="M224,78 V110" marker-end="url(#aB)"/>
+          <path class="edge" d="M224,170 V202" marker-end="url(#aB)"/>
+          <path class="edge" d="M224,446 V476" marker-end="url(#aB)"/>
+          <path class="edge" d="M224,536 V568" marker-end="url(#aB)"/>
+          <!-- side column -->
+          <g class="box geo"><rect x="576" y="20" width="380" height="58" rx="6"/><text class="t" x="766" y="45">碰撞</text><text class="s" x="766" y="65">前进 &lt; 0.05 m:栅格前方标障碍,排定恢复转向</text></g>
+          <g class="box geo"><rect x="576" y="112" width="380" height="58" rx="6"/><text class="t" x="766" y="137">环视视图</text><text class="s" x="766" y="157">上一步请求过时,同位姿渲染 5 个朝向</text></g>
+          <g class="box model"><rect x="576" y="204" width="380" height="58" rx="6"/><text class="t" x="766" y="229">JoyAI 观察器</text><text class="s" x="766" y="249">只描述画面,不知道任务</text></g>
+          <g class="box model"><rect x="576" y="296" width="380" height="58" rx="6"/><text class="t" x="766" y="321">8B 决策</text><text class="s" x="766" y="341">受约束 JSON:完成 · 卡住 · 换路线 · 环视</text></g>
+          <g class="box model"><rect x="576" y="388" width="380" height="58" rx="6"/><text class="t" x="766" y="413">完成门 · 8B 独立调用</text><text class="s" x="766" y="433">展开见图 C</text></g>
+          <g class="box model"><rect x="576" y="478" width="380" height="58" rx="6"/><text class="t" x="766" y="503">8B 选点</text><text class="s" x="766" y="523">编号标记选一个;任务完成后定位终点</text></g>
+          <path class="edge dash" d="M424,49 H574" marker-end="url(#aB)"/>
+          <text class="l" x="500" y="42">若撞墙</text>
+          <path class="edge" d="M576,141 H426" marker-end="url(#aB)"/>
+          <text class="l" x="500" y="134">融合进地图</text>
+          <path class="edge" d="M766,170 V202" marker-end="url(#aB)"/>
+          <text class="l start" x="776" y="191">一并交给判断</text>
+          <path class="edge m" d="M424,233 H574" marker-end="url(#aBm)"/>
+          <text class="l" x="500" y="226">当前帧与近 8 帧</text>
+          <path class="edge m" d="M766,262 V294" marker-end="url(#aBm)"/>
+          <text class="l start" x="776" y="283">画面描述</text>
+          <path class="edge m" d="M576,325 H426" marker-end="url(#aBm)"/>
+          <text class="l" x="500" y="318">换路线 / 要环视</text>
+          <path class="edge m" d="M766,354 V386" marker-end="url(#aBm)"/>
+          <text class="l start" x="776" y="375">提议完成时</text>
+          <path class="edge m" d="M576,417 H426" marker-end="url(#aBm)"/>
+          <text class="l" x="500" y="410">通过:子目标 +1</text>
+          <path class="edge m dash" d="M424,507 H574" marker-end="url(#aBm)"/>
+          <text class="l" x="500" y="500">需要时</text>
+        </svg>
+      </div>
+      <figcaption>左列按执行顺序排列,右列是它们触发的调用。一步耗时约 3.2 s,绝大部分花在 ③ 的两次模型调用上;③ 的判断结果会改变 ④ 能走哪一级。</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="tag">图 C</span>完成门</h2>
+    <figure>
+      <div class="scroll">
+        <svg viewBox="0 0 980 370" role="img" aria-label="完成门:8B 提议完成后,先检查走够距离,最后阶段先要环视,然后由看不到后续路线的独立 8B 调用在完成与三种继续理由之间选择;到达探针也会主动请求环视">
+          <defs>
+            <marker id="aC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+          </defs>
+          <g class="box model"><rect x="24" y="40" width="180" height="56" rx="6"/><text class="t" x="114" y="64">8B 决策</text><text class="s" x="114" y="83">提议 COMPLETE</text></g>
+          <polygon class="dia" points="320,24 410,68 320,112 230,68"/>
+          <text class="t" x="320" y="73">走够了?</text>
+          <polygon class="dia" points="560,24 670,68 560,112 450,68"/>
+          <text class="t" x="560" y="73">末阶段且没环视?</text>
+          <g class="box model"><rect x="700" y="40" width="256" height="56" rx="6"/><text class="t" x="828" y="64">独立 8B 调用</text><text class="s" x="828" y="83">不给后续路线和先前结论</text></g>
+          <path class="edge" d="M204,68 H228" marker-end="url(#aC)"/>
+          <path class="edge" d="M410,68 H448" marker-end="url(#aC)"/>
+          <text class="l" x="430" y="60">是</text>
+          <path class="edge" d="M670,68 H698" marker-end="url(#aC)"/>
+          <text class="l" x="685" y="60">否</text>
+          <!-- row 2 -->
+          <g class="box"><rect x="240" y="200" width="160" height="56" rx="6"/><text class="t" x="320" y="224">继续本阶段</text><text class="s" x="320" y="243">下一步再判</text></g>
+          <g class="box geo"><rect x="480" y="200" width="160" height="56" rx="6"/><text class="t" x="560" y="224">请求 5 向环视</text><text class="s" x="560" y="243">下一步带图再进门</text></g>
+          <g class="box"><rect x="700" y="200" width="120" height="56" rx="6"/><text class="t" x="760" y="224">COMPLETE</text><text class="s" x="760" y="243">子目标 +1</text></g>
+          <g class="box"><rect x="836" y="200" width="120" height="56" rx="6"/><text class="t" x="896" y="224">CONTINUE</text><text class="s" x="896" y="243">三种理由之一</text></g>
+          <path class="edge" d="M320,112 V198" marker-end="url(#aC)"/>
+          <text class="l start" x="332" y="146">否</text>
+          <text class="l start" x="332" y="164">一般不足 0.75 m</text>
+          <text class="l start" x="332" y="182">长路线不足 3 m</text>
+          <path class="edge" d="M560,112 V198" marker-end="url(#aC)"/>
+          <text class="l start" x="572" y="160">是</text>
+          <path class="edge" d="M760,96 V198" marker-end="url(#aC)"/>
+          <path class="edge" d="M896,96 V198" marker-end="url(#aC)"/>
+          <text class="l start" x="772" y="130">当前帧满足</text>
+          <text class="l end" x="884" y="160">终点在前方</text>
+          <text class="l end" x="884" y="176">或未证实</text>
+          <!-- row 3 -->
+          <g class="box geo"><rect x="240" y="290" width="290" height="56" rx="6"/><text class="t" x="385" y="314">到达探针</text><text class="s" x="385" y="333">末阶段离路点 ≤0.8 m 且已走 ≥0.75 m</text></g>
+          <path class="edge" d="M530,318 H560 V258" marker-end="url(#aC)"/>
+          <text class="l start" x="572" y="300">主动要环视</text>
+        </svg>
+      </div>
+      <figcaption>8B 自己说完成并不算数:距离门挡住刚起步就喊完成,环视给最后阶段补上四周的证据,独立调用看不到路线里后面的动作,只能在四个固定答案里选。</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="tag">图 D</span>选目标点的优先级</h2>
+    <p class="note">从上往下检查,第一个给出结果的来源生效。持有目标点时直接沿路线走,不再问模型;只有前面几级都没有结果时才调用 8B 选点。</p>
+    <ol class="ladder">
+      <li class="head"><span class="rank">序</span><span class="when">条件</span><span class="what">做什么</span><span class="out">输出</span></li>
+      <li><span class="rank">1</span><span class="when">任务已完成</span><span class="what">先接近再停:8B 指出终点的地面位置,走到 1.5 m 内<small>最多 16 步;定位不到就前进 3 步</small></span><span class="out"><i class="chip model">8B</i><i class="chip">走向点</i><i class="chip stop">STOP</i></span></li>
+      <li><span class="rank">2</span><span class="when">正在碰撞恢复</span><span class="what">转向地图上最开阔的方向<small>同一面墙连续撞,转得越来越大</small></span><span class="out"><i class="chip">转角</i></span></li>
+      <li><span class="rank">3</span><span class="when">决策模型选了环视点</span><span class="what">点在地面上且可通行,才替换当前目标</span><span class="out"><i class="chip">走向点</i></span></li>
+      <li><span class="rank">4</span><span class="when">已持有目标点</span><span class="what">沿保留的 A* 路线取 0.5 m 外的路点<small>要走进没见过、又不在正前方的地面时,先转头看一眼</small></span><span class="out"><i class="chip">走向点</i><i class="chip">转角</i></span></li>
+      <li><span class="rank">5</span><span class="when">当前是转弯阶段</span><span class="what">按实测转角转,满 60° 结束<small>掉头要满 175°</small></span><span class="out"><i class="chip">转角</i></span></li>
+      <li><span class="rank">6</span><span class="when">以上都没有</span><span class="what">把地面开口和地图边界画成编号标记,另加左、右、后转,8B 选一个<small>远于 3 m 的点先只走到 3 m</small></span><span class="out"><i class="chip model">8B</i><i class="chip">走向点</i></span></li>
+      <li><span class="rank">7</span><span class="when">8B 没选出</span><span class="what">走向约 3 m 外的未探索边界</span><span class="out"><i class="chip">走向点</i></span></li>
+      <li><span class="rank">8</span><span class="when">兜底</span><span class="what">直行;前方 0.6 m 内有障碍就转向开阔方向</span><span class="out"><i class="chip">走向点</i><i class="chip">转角</i></span></li>
+    </ol>
+    <p class="release">目标点在四种情况下被释放重选:到达或走过,多步没有更近,原地打转或左右摆动,单个阶段累计走超过 10 m。</p>
+  </section>
+
+  <section>
+    <h2><span class="tag">预算</span>模型调用</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>调用</th><th>频率</th><th>模型</th><th>代码</th></tr></thead>
+        <tbody>
+          <tr><td>拆子目标</td><td>每集 1 次</td><td>Qwen3-VL-8B</td><td><code>vln/planning.py</code></td></tr>
+          <tr><td>观察画面</td><td>每步 1 次</td><td>JoyAI-VL-Interaction</td><td><code>temporal_memory/captioner.py</code></td></tr>
+          <tr><td>阶段决策</td><td>每步 1 次</td><td>Qwen3-VL-8B</td><td><code>temporal_memory/captioner.py</code></td></tr>
+          <tr><td>完成门</td><td>提议完成时</td><td>Qwen3-VL-8B</td><td><code>temporal_memory/inference_only_completion.py</code></td></tr>
+          <tr><td>编号选点</td><td>没有持有目标时</td><td>Qwen3-VL-8B</td><td><code>vln/agent.py</code></td></tr>
+          <tr><td>定位终点</td><td>任务完成后 1 次</td><td>Qwen3-VL-8B</td><td><code>vln/agent.py</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>

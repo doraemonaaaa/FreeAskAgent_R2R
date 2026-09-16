@@ -113,7 +113,11 @@ def caption_summary(decision):
 
 
 
-METRIC_NAMES = ("success", "spl", "distance_to_goal")
+# Habitat measurements, then the runner's own: oracle_success (came within
+# the 3 m success radius at any step), path_length (metres walked), steps, and
+# nDTW / SDTW against the dense reference path (path_metrics.py; only when the
+# split has a ``{split}_gt.json.gz``).
+METRIC_NAMES = ("success", "spl", "distance_to_goal", "oracle_success", "path_length", "steps", "ndtw", "sdtw")
 
 
 def empty_totals():

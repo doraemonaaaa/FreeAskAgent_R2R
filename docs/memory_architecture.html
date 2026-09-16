@@ -1,0 +1,335 @@
+<title>VLN 记忆架构</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+:root {
+  --ground: #f3f6f5;
+  --surface: #ffffff;
+  --ink: #16212a;
+  --ink-2: #4b5b66;
+  --rule: #d3dcdf;
+  --rule-2: #9fb0b8;
+  --model: #b3561d;
+  --model-bg: #fbeee4;
+  --geo: #2c5c7d;
+  --geo-bg: #e7f0f6;
+  --task: #5b5a8e;
+  --task-bg: #eeeef7;
+  --time: #2f7a63;
+  --time-bg: #e6f3ee;
+  --sans: "IBM Plex Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0e1418;
+    --surface: #162029;
+    --ink: #e3eaee;
+    --ink-2: #9cadb7;
+    --rule: #26343d;
+    --rule-2: #4a5d69;
+    --model: #eb9a5f;
+    --model-bg: #2b1f17;
+    --geo: #88b6d8;
+    --geo-bg: #142430;
+    --task: #b3b1e6;
+    --task-bg: #1e1f33;
+    --time: #7fcdb2;
+    --time-bg: #13281f;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0e1418;
+  --surface: #162029;
+  --ink: #e3eaee;
+  --ink-2: #9cadb7;
+  --rule: #26343d;
+  --rule-2: #4a5d69;
+  --model: #eb9a5f;
+  --model-bg: #2b1f17;
+  --geo: #88b6d8;
+  --geo-bg: #142430;
+  --task: #b3b1e6;
+  --task-bg: #1e1f33;
+  --time: #7fcdb2;
+  --time-bg: #13281f;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-inline: 20px;
+  padding-block: 40px 72px;
+  display: grid;
+  gap: 44px;
+}
+header { display: grid; gap: 14px; }
+h1 { margin: 0; font-size: 30px; line-height: 1.25; font-weight: 700; text-wrap: balance; }
+.lede { margin: 0; max-width: 68ch; color: var(--ink-2); }
+.status {
+  display: flex; flex-wrap: wrap; gap: 8px 22px;
+  font-family: var(--mono); font-size: 13px; color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  padding-block: 10px;
+  border-block: 1px solid var(--rule);
+}
+.status b { color: var(--ink); font-weight: 500; }
+
+section { display: grid; gap: 14px; }
+h2 { margin: 0; font-size: 19px; font-weight: 700; line-height: 1.4; text-wrap: balance; }
+.note { margin: 0; max-width: 68ch; color: var(--ink-2); }
+code, .mono { font-family: var(--mono); font-size: 0.9em; }
+
+figure { margin: 0; display: grid; gap: 10px; }
+.scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 12px; }
+.scroll svg { display: block; width: 100%; min-width: 860px; height: auto; color: var(--ink-2); }
+figcaption { font-size: 13px; color: var(--ink-2); max-width: 72ch; }
+
+svg text { font-family: var(--sans); }
+svg .region { fill: none; stroke: var(--rule-2); stroke-width: 1.2; stroke-dasharray: 6 5; }
+svg .card rect { fill: var(--surface); stroke: var(--rule-2); stroke-width: 1.2; }
+svg .card.task > rect { fill: var(--task-bg); stroke: var(--task); stroke-width: 1.6; }
+svg .card.time > rect { fill: var(--time-bg); stroke: var(--time); stroke-width: 1.6; }
+svg .card.space > rect { fill: var(--geo-bg); stroke: var(--geo); stroke-width: 1.6; }
+svg .card.model rect { fill: var(--model-bg); stroke: var(--model); }
+svg .card.agent rect { stroke: var(--ink); stroke-width: 2; }
+svg .inner { fill: var(--surface); stroke: var(--time); stroke-width: 1; }
+svg .t { fill: var(--ink); font-size: 15px; font-weight: 600; }
+svg .t.c { text-anchor: middle; font-size: 14px; }
+svg .s { fill: var(--ink-2); font-size: 12px; }
+svg .s.c { text-anchor: middle; }
+svg .b { fill: var(--ink); font-size: 13px; }
+svg .dim { fill: var(--ink-2); }
+svg .code { font-family: var(--mono); font-size: 11px; fill: var(--ink-2); }
+svg .l { fill: var(--ink-2); font-size: 12px; text-anchor: middle; }
+svg .l.start { text-anchor: start; }
+svg .edge { fill: none; stroke: var(--ink-2); stroke-width: 1.3; }
+svg .edge.m { stroke: var(--model); }
+svg .edge.dash { stroke-dasharray: 5 4; }
+svg .ah { fill: var(--ink-2); }
+svg .ah.m { fill: var(--model); }
+
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 11px 14px; border-top: 1px solid var(--rule); vertical-align: top; }
+thead th { border-top: 0; background: var(--ground); font-size: 12px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink-2); white-space: nowrap; }
+td.name { font-weight: 600; white-space: nowrap; }
+td.name small { display: block; font-weight: 400; font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+td.num { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink-2); }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; vertical-align: 0; border: 1.5px solid; }
+.dot.task { background: var(--task-bg); border-color: var(--task); }
+.dot.time { background: var(--time-bg); border-color: var(--time); }
+.dot.space { background: var(--geo-bg); border-color: var(--geo); }
+td code { color: var(--ink-2); }
+
+.steps { list-style: none; margin: 0; padding: 0; display: grid; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+.steps li { display: grid; grid-template-columns: 36px 1fr; gap: 0 12px; padding: 12px 18px; border-top: 1px solid var(--rule); }
+.steps li:first-child { border-top: 0; }
+.steps .n { font-family: var(--mono); font-size: 13px; color: var(--ink-2); padding-top: 2px; }
+.steps p { margin: 0; max-width: 78ch; }
+.steps .calls { display: block; margin-top: 3px; font-family: var(--mono); font-size: 12px; color: var(--ink-2); overflow-wrap: anywhere; }
+
+.rules { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.rules li { max-width: 78ch; padding-left: 18px; position: relative; }
+.rules li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 7px; height: 7px; border-radius: 2px; background: var(--rule-2); }
+.rules b { font-weight: 600; }
+.flag { border-left: 3px solid var(--model); padding: 10px 14px; background: var(--surface); border-radius: 0 6px 6px 0; max-width: 78ch; margin: 0; }
+</style>
+
+<main class="page">
+  <header>
+    <h1>VLN 记忆架构</h1>
+    <p class="lede">代码以三块记忆为核心组织:任务记忆回答"现在该做哪一步",时序记忆回答"这一步做完了没有",空间记忆回答"我在哪、往哪走"。<code>agent.py</code> 本身只存本集的控制状态,每一步在三块记忆之间读写数据,再把结果交给控制器。</p>
+    <div class="status">
+      <span>包 <b>agentflow/agents/vln</b></span>
+      <span>共 <b>8,011</b> 行</span>
+      <span>memory/ <b>5,011</b> 行</span>
+      <span>agent.py <b>1,464</b> 行</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>结构总览</h2>
+    <figure>
+      <div class="scroll">
+        <svg viewBox="0 0 1120 650" role="img" aria-label="结构总览:agent.py 在左,向任务记忆、时序记忆、空间记忆读写;时序记忆内含 Captioner 会话,调用 JoyAI 与 8B;时序记忆通过完成事件推进任务记忆;worker 读取三块记忆的诊断信息">
+          <defs>
+            <marker id="m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+            <marker id="m2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah m" d="M0,0 L10,5 L0,10 z"/></marker>
+          </defs>
+
+          <!-- memory region -->
+          <rect class="region" x="360" y="20" width="480" height="524" rx="10"/>
+          <text class="code" x="380" y="42">memory/</text>
+
+          <g class="card task"><rect x="380" y="56" width="440" height="92" rx="8"/>
+            <text class="t" x="400" y="82">TaskMemory · 任务记忆</text>
+            <text class="b" x="400" y="106">子目标列表和当前下标;完成事件让下标 +1</text>
+            <text class="b dim" x="400" y="128">最新一帧 RGB · 最近 8 条事件 · reset 代次</text>
+          </g>
+
+          <g class="card time"><rect x="380" y="178" width="440" height="222" rx="8"/>
+            <text class="t" x="400" y="204">TemporalMemory · 时序记忆</text>
+            <text class="b dim" x="400" y="226">8 帧窗口 · 本阶段里程与错误模式 · 环视请求</text>
+            <rect class="inner" x="400" y="244" width="400" height="140" rx="6"/>
+            <text class="b" x="418" y="268" style="font-weight:600">Captioner 会话</text>
+            <text class="b" x="418" y="292">短期:最近 8 帧与 JoyAI 描述</text>
+            <text class="b" x="418" y="314">中期:每 8 帧写一段摘要</text>
+            <text class="b" x="418" y="336">长期:每 5 段压缩后追加</text>
+            <text class="b dim" x="418" y="360">ExecutionHistory:实测运动、路线尝试</text>
+          </g>
+
+          <g class="card space"><rect x="380" y="430" width="440" height="96" rx="8"/>
+            <text class="t" x="400" y="456">SpatialMemory · 空间记忆</text>
+            <text class="b" x="400" y="480">OccupancyGrid:0.1 m 栅格,A* 路线,未探索边界</text>
+            <text class="b dim" x="400" y="502">CommittedTarget:唯一的当前目标点 · 门口事件</text>
+          </g>
+
+          <!-- internal links -->
+          <path class="edge" d="M520,178 V150" marker-end="url(#m1)"/>
+          <text class="code" x="530" y="168">publish_caption_event</text>
+          <path class="edge" d="M740,148 V176" marker-end="url(#m1)"/>
+          <text class="code" x="748" y="168">route_context</text>
+
+          <!-- agent -->
+          <g class="card agent"><rect x="24" y="56" width="180" height="470" rx="8"/>
+            <text class="t c" x="114" y="84">agent.py</text>
+            <text class="s c" x="114" y="104">VLNAgent · 编排</text>
+            <text class="b" x="44" y="146">测量运动</text>
+            <text class="b" x="44" y="176">转弯阶段进度</text>
+            <text class="b" x="44" y="206">碰撞恢复</text>
+            <text class="b" x="44" y="236">目标点优先级</text>
+            <text class="b" x="44" y="266">先接近再停</text>
+            <text class="b dim" x="44" y="306">只存本集控制状态,</text>
+            <text class="b dim" x="44" y="326">不存观测历史</text>
+          </g>
+
+          <!-- agent <-> task -->
+          <path class="edge" d="M204,92 H378" marker-end="url(#m1)"/>
+          <text class="code" x="292" y="85" text-anchor="middle">record_input(rgb)</text>
+          <path class="edge" d="M380,124 H206" marker-end="url(#m1)"/>
+          <text class="l" x="292" y="142">当前子目标 · 是否完成</text>
+
+          <!-- agent <-> temporal -->
+          <path class="edge" d="M204,216 H378" marker-end="url(#m1)"/>
+          <text class="l" x="292" y="208">运动 · 执行反馈 · 环视</text>
+          <path class="edge" d="M204,266 H398" marker-end="url(#m1)"/>
+          <text class="l" x="292" y="258">每步判断一次</text>
+          <path class="edge" d="M380,334 H206" marker-end="url(#m1)"/>
+          <text class="l" x="292" y="352">判断结果 · 最近帧</text>
+
+          <!-- agent <-> spatial -->
+          <path class="edge" d="M204,462 H378" marker-end="url(#m1)"/>
+          <text class="l" x="292" y="454">融合深度 · 提交目标</text>
+          <path class="edge" d="M380,498 H206" marker-end="url(#m1)"/>
+          <text class="l" x="292" y="516">下一路点 · 障碍 · 边界</text>
+
+          <!-- models -->
+          <g class="card model"><rect x="920" y="246" width="176" height="40" rx="6"/><text class="t c" x="1008" y="271">JoyAI 观察器</text></g>
+          <g class="card model"><rect x="920" y="300" width="176" height="40" rx="6"/><text class="t c" x="1008" y="325">8B 决策</text></g>
+          <g class="card model"><rect x="920" y="354" width="176" height="40" rx="6"/><text class="t c" x="1008" y="379">8B 完成门</text></g>
+          <path class="edge m" d="M800,266 H918" marker-end="url(#m2)"/>
+          <path class="edge m" d="M800,320 H918" marker-end="url(#m2)"/>
+          <path class="edge m" d="M800,374 H918" marker-end="url(#m2)"/>
+          <text class="l" x="1008" y="236">每步 2 次,提议完成时 3 次</text>
+
+          <!-- bottom row -->
+          <g class="card"><rect x="24" y="572" width="180" height="58" rx="6"/><text class="t c" x="114" y="597">planning.py</text><text class="s c" x="114" y="617">指令拆子目标,调 8B</text></g>
+          <g class="card"><rect x="224" y="572" width="180" height="58" rx="6"/><text class="t c" x="314" y="597">perception.py</text><text class="s c" x="314" y="617">像素反投影成地面点</text></g>
+          <g class="card"><rect x="424" y="572" width="180" height="58" rx="6"/><text class="t c" x="514" y="597">config.py</text><text class="s c" x="514" y="617">常量与提示词,各处读取</text></g>
+          <g class="card"><rect x="640" y="572" width="456" height="58" rx="6"/><text class="t c" x="868" y="597">vln_waypoint_worker.py</text><text class="s c" x="868" y="617">读三块记忆的 diagnostics() 写进 trace;转发环视请求</text></g>
+          <path class="edge" d="M114,526 V570" marker-end="url(#m1)"/>
+          <path class="edge" d="M180,526 V548 H314 V570" marker-end="url(#m1)"/>
+          <path class="edge dash" d="M760,544 V570" marker-end="url(#m1)"/>
+        </svg>
+      </div>
+      <figcaption>三块记忆彼此只有一条正式通道:时序记忆把判断结果作为事件发给任务记忆。空间记忆不直接和 Captioner 通信,当前目标点的距离和方位由 agent 写进执行反馈,再交给决策模型作几何参考。</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>三块记忆各管什么</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>记忆</th><th>回答的问题</th><th>保存什么</th><th>什么时候清空</th><th>规模</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="name"><i class="dot task"></i>任务记忆<small>memory/task_memory.py</small></td>
+            <td>现在该做哪一步?</td>
+            <td>导航指令、有序子目标、当前下标、最新一帧 RGB、最近 8 条判断事件</td>
+            <td>每集开始时重置,代次加一;判断为完成时下标加一,全部走完即任务完成</td>
+            <td class="num">154 行</td>
+          </tr>
+          <tr>
+            <td class="name"><i class="dot time"></i>时序记忆<small>memory/temporal_memory/</small></td>
+            <td>这一步做完了没有?</td>
+            <td>最近 8 帧及实测运动;本阶段里程、错误模式、环视请求;agent 写入的执行反馈。内部的 Captioner 会话再保存三级视频记忆、全部帧存档、完成门历史和 ExecutionHistory</td>
+            <td>发现任务记忆代次变了就整体重置并开新会话;换子目标只清本阶段状态,视频记忆保留</td>
+            <td class="num">3,025 行</td>
+          </tr>
+          <tr>
+            <td class="name"><i class="dot space"></i>空间记忆<small>memory/spatial_memory/</small></td>
+            <td>我在哪、往哪走?</td>
+            <td>60 m 见方的占据栅格、走过的轨迹、唯一的当前目标点、保留的 A* 路线、门口穿越事件、走过的边界;有 navmesh 时另存可通行窗口</td>
+            <td>每集开始时重置;目标点在到达、走过、多步没更近、超时或走超预算时释放</td>
+            <td class="num">1,809 行</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>一步之内记忆怎样被读写</h2>
+    <p class="note">按 <code>VLNAgent.act()</code> 的执行顺序。每行下方是实际调用的方法。</p>
+    <ol class="steps">
+      <li><span class="n">1</span><p>agent 算出这一步的位移和转角,连同上一步执行结果、转弯进度、当前目标点的距离与方位,写进时序记忆。<span class="calls">temporal.set_motion_evidence · temporal.set_execution_feedback · spatial.target</span></p></li>
+      <li><span class="n">2</span><p>上一步请求过环视时,把渲染好的视图挂到时序记忆上;没有 navmesh 时顺便把视图的深度融合进栅格。<span class="calls">temporal.stage_preview · spatial.fuse_view</span></p></li>
+      <li><span class="n">3</span><p>当前深度融合进空间记忆,更新轨迹、当前目标点状态和门口事件;若上一步前进被挡,就在栅格前方标障碍。<span class="calls">spatial.observe · spatial.mark_collision_ahead</span></p></li>
+      <li><span class="n">4</span><p>RGB 写进任务记忆,时序记忆取出这一帧放进 8 帧窗口,组装请求交给 Captioner。<span class="calls">task.record_input · temporal.update_from_task_memory · temporal.analyze · captioner.caption</span></p></li>
+      <li><span class="n">5</span><p>Captioner 读任务记忆里的整条路线,读自己的短、中、长期视频记忆和 ExecutionHistory,依次调用 JoyAI、8B 决策,必要时再调完成门。<span class="calls">task.get_route_context · observation_memory · decision_context · inference_only_completion</span></p></li>
+      <li><span class="n">6</span><p>时序记忆把结果存下来,生成事件发给任务记忆;判断为完成时下标加一,并把这一帧记为新阶段的起点帧。<span class="calls">temporal._store · task.publish_caption_event · captioner.record_subgoal_activation</span></p></li>
+      <li><span class="n">7</span><p>agent 读任务记忆决定是否进入"先接近再停",读空间记忆取下一路点、障碍和边界;新选的目标点写回空间记忆。<span class="calls">task.is_task_complete · spatial.active_target · spatial.next_waypoint · spatial.commit_target</span></p></li>
+      <li><span class="n">8</span><p>worker 读三块记忆的诊断写进 trace,把时序记忆里的环视请求交给 runner,下一步从第 2 行接回来。<span class="calls">task.diagnostics · temporal.diagnostics · spatial.diagnostics · temporal.preview_request</span></p></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>边界规则</h2>
+    <ul class="rules">
+      <li><b>观察器只读自己写的记忆。</b>JoyAI 的提示里只有它自己生成的摘要和长期记忆,决策模型的路线和结论不会进入。这样画面描述不会被任务目标带偏。</li>
+      <li><b>只有时序记忆能推进任务。</b>agent 不直接改下标,完成必须走"判断结果、事件、下标加一"这条路径,事件同时留作审计记录。</li>
+      <li><b>空间记忆不下动作。</b>它只提供路点、障碍、开阔方向和边界,由 agent 决定是走、转还是停。</li>
+      <li><b>同一时刻只有一个目标点。</b>编号选点、环视点、边界、直行和终点接近都写同一个 CommittedTarget,不存在第二套目标锁。</li>
+      <li><b>重置顺着依赖传播。</b>agent 重置任务记忆,时序记忆发现代次变化后自己重置并开新 Captioner 会话;换子目标只是会话里的一次转换。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>记忆之外的代码</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>文件</th><th>作用</th><th>规模</th></tr></thead>
+        <tbody>
+          <tr><td class="name">agent.py</td><td>编排:测量运动、转弯阶段、碰撞恢复、目标点优先级、先接近再停;只存本集控制状态</td><td class="num">1,464 行</td></tr>
+          <tr><td class="name">planning.py</td><td>调 8B 把指令拆成子目标并做规范化,结果装进任务记忆</td><td class="num">685 行</td></tr>
+          <tr><td class="name">perception.py</td><td>把图像像素反投影成地面上的世界坐标点,生成地面掩码</td><td class="num">327 行</td></tr>
+          <tr><td class="name">config.py</td><td>全部可调常量(config.yaml 的 navigation 段)、提示词、子目标格式校验</td><td class="num">309 行</td></tr>
+          <tr><td class="name">data_models.py</td><td>各模块共享的数据类型:子目标、帧、相机内参、导航点、环视视图、决策</td><td class="num">215 行</td></tr>
+          <tr><td class="name">temporal_memory/ 里的协议文件</td><td>captioner_models 请求与结果类型,native_protocol 决策输出格式,observation_memory 摘要格式,decision_context 决策输入打包,inference_only_completion 完成门,execution_history 实测运动,current_geometry 深度采样</td><td class="num">1,091 行</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="flag"><b>一处放错位置的代码。</b><code>preview_candidates.py</code> 和 <code>preview_execution_context.py</code> 放在 temporal_memory 下,但做的是环视视图里的地面标记和目标点投影,依赖的是空间记忆的候选生成和几何。按功能它们应归到空间记忆一侧,后续整理时可以移过去。</p>
+  </section>
+</main>

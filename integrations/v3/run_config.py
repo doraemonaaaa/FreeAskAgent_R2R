@@ -38,6 +38,7 @@ ROLE_FALLBACK = {"planner": "decision", "som": "actor"}
 CAPTIONER_ENV = {
     "inference_only_completion": "CAPTIONER_INFERENCE_ONLY_COMPLETION",
     "preview_candidates": "CAPTIONER_PREVIEW_CANDIDATES",
+    "opening_look_around": "CAPTIONER_OPENING_LOOK_AROUND",
     "step_deadline_s": "CAPTIONER_STEP_DEADLINE_S",
     "evidence_dir": "JOYAI_EVIDENCE_DIR",
 }
@@ -55,6 +56,7 @@ AGENT_ENV = {
 RUNNER_KEYS = (
     "camera_pitch_deg", "max_steps", "waypoint_radius", "depth_hfov", "actor",
     "record_video", "navmesh", "navmesh_candidates", "navmesh_follower", "panohop_mode", "panohop_url", "panohop_model",
+    "preview_yaws", "preview_scale",
 )
 # sensor_config.yaml <section>.<key> -> run_habitat.py argparse default.
 SENSOR_ARGS = {
@@ -206,7 +208,10 @@ class RunConfig:
         runner = self.data.get("runner") or {}
         for key in RUNNER_KEYS:
             if runner.get(key) is not None:
-                defaults[key] = runner[key]
+                value = runner[key]
+                if key == "preview_yaws" and isinstance(value, (list, tuple)):
+                    value = ",".join(str(v) for v in value)  # argparse takes a comma list
+                defaults[key] = value
         return defaults
 
     def agent_env(self, rank: int = 0) -> dict[str, str]:

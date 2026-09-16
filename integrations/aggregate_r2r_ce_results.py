@@ -25,10 +25,11 @@ def main():
     count = sum(result["count"] for result in results)
     if count == 0:
         raise SystemExit("No episodes were evaluated.")
-    totals = {
-        name: sum(result["totals"][name] for result in results)
-        for name in ("success", "spl", "distance_to_goal")
-    }
+    # Older rank files carry only the first three; a metric is averaged only
+    # when every rank reported it.
+    names = [name for name in ("success", "spl", "distance_to_goal", "oracle_success", "path_length", "steps", "ndtw", "sdtw")
+             if all(name in result["totals"] for result in results)]
+    totals = {name: sum(result["totals"][name] for result in results) for name in names}
     print("average_metrics={}".format({name: value / count for name, value in totals.items()}))
     print("episodes={}".format(count))
 

@@ -60,7 +60,6 @@ def _temporal_report(actor):
             "captioner_decision": result.decision,
             "captioner_error_evidence_frame_ids": list(result.error_evidence_frame_ids),
             "captioner_recovery_id": result.recovery_id,
-            "captioner_preview_direction": result.preview_direction,
             "captioner_route_action": result.route_action,
             "captioner_route_reason": result.route_reason,
         })
@@ -234,6 +233,9 @@ def main():
                     {"subgoal_id": s.subgoal_id, "description": s.description, "completion_criteria": s.completion_criteria}
                     for s in actor.prepare_task(request["instruction"])
                 ]}
+                # The opening look-around: Temporal Memory may already hold a
+                # surrounding-view request before the first observation.
+                response["preview_request"] = actor.temporal_memory.preview_request()
             elif operation == "act":
                 decision = actor.act(
                     _decode_rgb(request["rgb"]),

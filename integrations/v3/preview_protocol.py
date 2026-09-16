@@ -3,20 +3,14 @@
 import math
 
 
-def preview_headings(configured, direction):
-    """Use the requested half-space; keep broad coverage without a prior.
+def preview_headings(configured):
+    """Every configured heading, de-duplicated, in the configured order.
 
     Angles are camera-relative, not world bearings or episode-specific turns.
-    Explicit rear observations include 180 even with a front-only configuration.
+    The model never chooses a direction: a request always gets the whole set
+    (config.yaml runner.preview_yaws).
     """
-    headings = tuple(dict.fromkeys(float(y) for y in configured))
-    center = {"LEFT": -90.0, "RIGHT": 90.0, "BACK": 180.0}.get(direction)
-    if center is None:
-        return headings
-    if direction == "BACK" and 180.0 not in headings:
-        headings += (180.0,)
-    selected = tuple(y for y in headings if abs((y - center + 180) % 360 - 180) <= 90)
-    return selected or headings
+    return tuple(dict.fromkeys(float(y) for y in configured))
 
 
 def preview_headings_for_request(configured, request, camera_to_world):
@@ -27,7 +21,7 @@ def preview_headings_for_request(configured, request, camera_to_world):
     from the current position and must judge whether the old question still fits.
     Legacy requests without a source pose retain camera-relative behavior.
     """
-    headings = preview_headings(configured, request.get("direction"))
+    headings = preview_headings(configured)
     source = request.get("source_camera_to_world")
     if source is None:
         return headings

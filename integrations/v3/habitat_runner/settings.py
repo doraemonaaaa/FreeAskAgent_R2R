@@ -38,6 +38,8 @@ FORWARD_STEP_M = 0.25  # config.yaml robot.forward_step_m
 # number to tell floor pixels from wall pixels when it snaps a waypoint, so it
 # is defined once (sensor_config.yaml camera.height_m) and passed through.
 SENSOR_HEIGHT_M = 1.25
+# R2R-CE success radius; oracle success uses the same radius.
+SUCCESS_DISTANCE_M = 3.0
 # Nav camera model (intrinsics / distortion / mount).
 CAMERA = CameraModel(width=640, height=480, hfov_deg=90.0, height_m=SENSOR_HEIGHT_M)
 

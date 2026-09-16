@@ -22,7 +22,7 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from integrations.v3.habitat_runner import settings  # noqa: E402  (quiets logs, sets sys.path)
-from integrations.v3.habitat_runner.settings import AGENTFLOW_ROOT, HABITAT_DATA, HABITAT_ROOT, ROOT  # noqa: E402
+from integrations.v3.habitat_runner.settings import AGENTFLOW_ROOT, HABITAT_DATA, HABITAT_ROOT, ROOT, SUCCESS_DISTANCE_M  # noqa: E402
 from integrations.v3.habitat_runner.sensors import (  # noqa: E402
     camera_intrinsics, camera_to_world_matrix, motion_overrides, navigable_window,
     render_preview_views, semantic_region_id, sensor_overrides, unpack_observation,
@@ -39,6 +39,7 @@ from integrations.v3.habitat_runner.step_log import (  # noqa: E402
     empty_totals, step_line, write_rank_summary, write_step_trace,
 )
 from integrations.v3.habitat_runner.episodes import load_config, parse_episode_ids, select_episodes  # noqa: E402
+from integrations.v3.habitat_runner.path_metrics import DTW_METHOD, load_gt_locations, ndtw  # noqa: E402
 from integrations.v3.camera_model import CameraModel  # noqa: E402
 from integrations.v3.preview_protocol import execution_observation, preview_headings_for_request  # noqa: E402
 
@@ -126,12 +127,12 @@ def main():
     parser.add_argument(
         "--preview-yaws",
         type=str,
-        default="-90,-45,0,45,90",
+        default="0,-45,45,-90,90,180",
         help=(
-            "Comma-separated heading offsets in degrees rendered for a "
-            "PREVIEW decision; negative is left and positive is right. The "
-            "forward view is "
-            "rendered through the same path so all views share one scale."
+            "Comma-separated heading offsets in degrees rendered for every "
+            "surrounding-view request (config.yaml runner.preview_yaws); "
+            "negative is left, positive is right. All are rendered: the model "
+            "does not choose a direction."
         ),
     )
     parser.add_argument(
@@ -330,6 +331,13 @@ def main():
                 write_rank_summary(args.output_dir, args.rank, 0, empty_totals())
                 return
             totals = empty_totals()
+            reference_paths = load_gt_locations(args.split)
+            if reference_paths is None:
+                print("nDTW/SDTW off: no {}_gt.json.gz for this split".format(args.split), flush=True)
+                totals.pop("ndtw")
+                totals.pop("sdtw")
+            else:
+                print("nDTW/SDTW on: {} reference paths, {}".format(len(reference_paths), DTW_METHOD), flush=True)
             for index, episode in enumerate(episodes, start=1):
                 observation = env.reset()
                 # Habitat owns episode ordering; trust the environment over the
@@ -356,6 +364,10 @@ def main():
                 )
                 preparation = actor.prepare(instruction)
                 subgoals = preparation.get("subgoals", [])
+                # Opening look-around: render the surrounding ring for step 0
+                # when Temporal Memory asked for it at reset.
+                if args.actor == "waypoint":
+                    pending_preview = preparation.get("preview_request")
                 # Printed once per episode, so each subgoal gets its own lines:
                 # the completion criteria is what the Captioner judges against.
                 print(
@@ -396,6 +408,7 @@ def main():
                             flush=True,
                         )
                 positions = [env.sim.get_agent_state().position.copy()]
+                closest_to_goal = float(env.get_metrics().get("distance_to_goal", float("inf")))
                 goal_position = episode.goals[0].position if episode.goals else None
                 last_agent_map = None
                 # Requested waypoints accumulate over the episode so the
@@ -537,6 +550,7 @@ def main():
                     distance_after = float(
                         env.get_metrics().get("distance_to_goal", 0.0)
                     )
+                    closest_to_goal = min(closest_to_goal, distance_after)
                     write_step_trace(
                         trace_handle,
                         episode_id=episode.episode_id,
@@ -558,10 +572,25 @@ def main():
                     )
                     step_started = now
                     steps += 1
-                metrics = env.get_metrics()
+                metrics = dict(env.get_metrics())
+                metrics["oracle_success"] = float(closest_to_goal <= SUCCESS_DISTANCE_M)
+                metrics["path_length"] = float(sum(
+                    np.linalg.norm(np.asarray(b, dtype=np.float64) - np.asarray(a, dtype=np.float64))
+                    for a, b in zip(positions, positions[1:])))
+                metrics["steps"] = float(steps)
+                path_fields = ""
+                reference = (reference_paths or {}).get(str(episode.episode_id))
+                if reference:
+                    metrics["ndtw"] = ndtw(positions, reference)
+                    metrics["sdtw"] = float(metrics.get("success", 0.0)) * metrics["ndtw"]
+                    path_fields = " ndtw={:.3f} sdtw={:.3f}".format(metrics["ndtw"], metrics["sdtw"])
                 for name in totals:
                     totals[name] += float(metrics.get(name, 0.0))
-                print("rank={} [{}/{}] id={} steps={} success={:.3f} spl={:.3f} dtg={:.2f}".format(args.rank, index, len(episodes), episode.episode_id, steps, float(metrics.get("success", 0)), float(metrics.get("spl", 0)), float(metrics.get("distance_to_goal", 0))), flush=True)
+                # New fields go after dtg so existing log parsers keep matching.
+                print("rank={} [{}/{}] id={} steps={} success={:.3f} spl={:.3f} dtg={:.2f} osr={:.0f} path_length={:.2f}{}".format(
+                    args.rank, index, len(episodes), episode.episode_id, steps, float(metrics.get("success", 0)),
+                    float(metrics.get("spl", 0)), float(metrics.get("distance_to_goal", 0)),
+                    metrics["oracle_success"], metrics["path_length"], path_fields), flush=True)
                 if frames:
                     rgb, _, _ = unpack_observation(observation)
                     final_height = float(

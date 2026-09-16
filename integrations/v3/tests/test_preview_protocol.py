@@ -4,19 +4,10 @@ import math
 import pytest
 
 
-def test_directional_coverage_and_rear_request():
-    angles = (-90, -45, 0, 45, 90)
-    assert preview_headings(angles, "LEFT") == (-90, -45, 0)
-    assert preview_headings(angles, "RIGHT") == (0, 45, 90)
-    assert preview_headings(angles, "BACK") == (-90, 90, 180)
-    assert preview_headings(angles, "UNKNOWN") == angles
-    assert preview_headings(angles, "CENTER") == angles
-
-
-def test_custom_angles_are_preserved_not_replaced_with_scene_specific_views():
-    assert preview_headings((-70, -20, 10, 60), "LEFT") == (-70, -20)
-    assert preview_headings((20,), "LEFT") == (20,)
-
+def test_every_configured_heading_is_rendered_once_in_order():
+    angles = (0, -45, 45, -90, 90, 180)
+    assert preview_headings(angles) == (0.0, -45.0, 45.0, -90.0, 90.0, 180.0)
+    assert preview_headings((0, 90, 90, -90)) == (0.0, 90.0, -90.0)
 
 
 def test_execution_feedback_never_leaks_oracle_navigation_metrics():
@@ -36,17 +27,16 @@ def camera_pose(yaw, pitch=0, origin=(0, 1.5, 0)):
 
 
 @pytest.mark.parametrize("start,turn", [(0, 30), (120, -90), (170, 30), (-170, -45)])
-@pytest.mark.parametrize("direction", ["LEFT", "RIGHT", "BACK", "UNKNOWN"])
-def test_preview_bearings_survive_turns_translation_and_pitch(start, turn, direction):
-    configured = (-90, -45, 0, 45, 90)
-    request = {"direction": direction, "source_camera_to_world": camera_pose(start, 15)}
+def test_preview_bearings_survive_turns_translation_and_pitch(start, turn):
+    configured = (0, -45, 45, -90, 90, 180)
+    request = {"source_camera_to_world": camera_pose(start, 15)}
     actual = preview_headings_for_request(configured, request, camera_pose(start + turn, -10, (3, 2, -7)))
-    expected = tuple((v - turn + 180) % 360 - 180 for v in preview_headings(configured, direction))
+    expected = tuple((v - turn + 180) % 360 - 180 for v in preview_headings(configured))
     assert actual == pytest.approx(expected)
 
 
-def test_legacy_preview_without_pose_remains_supported():
-    assert preview_headings_for_request((0, 45, 90), {"direction": "RIGHT"}, camera_pose(30)) == (0, 45, 90)
+def test_preview_without_source_pose_keeps_camera_relative_headings():
+    assert preview_headings_for_request((0, 45, 90), {}, camera_pose(30)) == (0, 45, 90)
 
 
 def test_invalid_heading_fails_instead_of_rendering_a_different_direction():

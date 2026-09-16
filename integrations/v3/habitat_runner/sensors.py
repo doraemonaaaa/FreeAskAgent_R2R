@@ -12,7 +12,7 @@ def motion_overrides(forward_step_m, turn_angle_deg):
     return [
         "habitat.simulator.forward_step_size={}".format(float(forward_step_m)),
         "habitat.simulator.turn_angle={}".format(int(turn_angle_deg)),
-        "habitat.task.measurements.success.success_distance=3.0",
+        "habitat.task.measurements.success.success_distance={}".format(settings.SUCCESS_DISTANCE_M),
     ]
 
 
