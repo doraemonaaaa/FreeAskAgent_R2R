@@ -1,0 +1,14 @@
+{
+ "results": "/data/pengyh/workspace/Reproductions/AwareVLN/evaluation/eval_bench/awarevln/VLN-CE-v1/val_unseen_200_orig",
+ "n": 200,
+ "summary": {
+  "success": 0.625,
+  "oracle_success": 0.755,
+  "spl": 0.538054117510718,
+  "distance_to_goal": 3.8280617253109814,
+  "path_length": 13.08010879423138,
+  "steps_taken": 110.25,
+  "ndtw": 0.6485873051317179,
+  "sdtw": 0.5108372323959925
+ }
+}

@@ -1,0 +1,1144 @@
+{
+ "name": "val_unseen_200",
+ "split": "val_unseen",
+ "min_turn": 45.0,
+ "navmesh": true,
+ "flip_split": "val_unseen_200_flip",
+ "flip": {
+  "115": {
+   "k": 3,
+   "word": "left",
+   "turn_deg": -72.19327930329631,
+   "anchor_xyz": [
+    27.85195541381836,
+    0.12711000442504883,
+    -0.9179110527038574
+   ],
+   "incoming_xz": [
+    -0.8126971164685504,
+    0.5826863623628954
+   ],
+   "outgoing_xz": [
+    0.3062434591200129,
+    0.9519532256083851
+   ],
+   "mirrored_xz": [
+    -0.8033003705647185,
+    -0.59557410508734
+   ],
+   "original_text": "turn left and go into the bathroom.",
+   "instruction": "turn around and exit the closet. walk into the bedroom through the door on the right. turn right and go into the bathroom. "
+  },
+  "121": {
+   "k": 2,
+   "word": "left",
+   "turn_deg": -77.12788502972485,
+   "anchor_xyz": [
+    4.623350143432617,
+    0.12711000442504883,
+    0.6953169107437134
+   ],
+   "incoming_xz": [
+    0.035177231690003384,
+    0.9993810896603096
+   ],
+   "outgoing_xz": [
+    0.9821030063699273,
+    0.18834459078813645
+   ],
+   "mirrored_xz": [
+    -0.9664297424307583,
+    0.25693102760316466
+   ],
+   "original_text": "Turn left and exit the kitchen",
+   "instruction": "Walk straight into the kitchen area. Turn right and exit the kitchen and stop there. "
+  },
+  "142": {
+   "k": 2,
+   "word": "left",
+   "turn_deg": -84.00815812624212,
+   "anchor_xyz": [
+    0.3963176906108856,
+    0.15480518341064453,
+    -16.895248413085938
+   ],
+   "incoming_xz": [
+    -0.9961096068620966,
+    -0.0881229318454592
+   ],
+   "outgoing_xz": [
+    -0.1916222460280531,
+    0.9814687538720549
+   ],
+   "mirrored_xz": [
+    -0.016339254257251856,
+    -0.9998665054747643
+   ],
+   "original_text": "In the hallway take a left",
+   "instruction": "Walk forward with the cabinets on the left into the hallway. In the hallway take a right and walk past the console table on your right. Walk through the hallway until you enter the clearing, and stop just past the entry behind you. "
+  },
+  "150": {
+   "k": 2,
+   "word": "right",
+   "turn_deg": 71.82014868940598,
+   "anchor_xyz": [
+    -15.915399551391602,
+    0.3470049202442169,
+    10.10387897491455
+   ],
+   "incoming_xz": [
+    0.29883342341181335,
+    -0.954305289229802
+   ],
+   "outgoing_xz": [
+    0.9999043908781393,
+    -0.013827837958887824
+   ],
+   "mirrored_xz": [
+    -0.8134318379402441,
+    -0.5816602487923311
+   ],
+   "original_text": "At the end of the bed turn right",
+   "instruction": "Turn around and walk to the end of the bed. At the end of the bed turn left and walk to the hallway. Once at the entrance way, walk through the hallway to the next room. "
+  },
+  "228": {
+   "k": 3,
+   "word": "right",
+   "turn_deg": 63.915498231875645,
+   "anchor_xyz": [
+    -1.562903642654419,
+    3.2642593383789062,
+    8.5648832321167
+   ],
+   "incoming_xz": [
+    -0.994154846359803,
+    -0.10796361173708716
+   ],
+   "outgoing_xz": [
+    -0.3401590047561694,
+    -0.9403679340998885
+   ],
+   "mirrored_xz": [
+    -0.5340932943459231,
+    0.8454255454708705
+   ],
+   "original_text": "Turn right.",
+   "instruction": "Start at the bedroom door. Go out into the hallway. Turn left. Walk past a bathroom on the left. Go into the bedroom door at the end of the hallway on the left. "
+  },
+  "655": {
+   "k": 4,
+   "word": "left",
+   "turn_deg": -47.94986351844652,
+   "anchor_xyz": [
+    4.144443035125732,
+    0.17162801325321198,
+    -0.4739353358745575
+   ],
+   "incoming_xz": [
+    0.1788981892287568,
+    0.9838675916456807
+   ],
+   "outgoing_xz": [
+    0.850402298227641,
+    0.5261329976053074
+   ],
+   "mirrored_xz": [
+    -0.610757212124055,
+    0.7918179259390711
+   ],
+   "original_text": "Go left to the white couch.",
+   "instruction": "Leave the bedroom. Turn left into the hallway opposite the bookshelf. Go to the end of the hallway. Go right to the white couch. "
+  },
+  "676": {
+   "k": 2,
+   "word": "left",
+   "turn_deg": -74.18596423955447,
+   "anchor_xyz": [
+    0.13027086853981018,
+    0.15480518341064453,
+    5.847338676452637
+   ],
+   "incoming_xz": [
+    0.10962001655340112,
+    0.993973567038295
+   ],
+   "outgoing_xz": [
+    0.9862261273592172,
+    0.16540261701085918
+   ],
+   "mirrored_xz": [
+    -0.9264797206623088,
+    0.37634469200653026
+   ],
+   "original_text": "Take a left",
+   "instruction": "Travel to the end of the hallway where there is a vase on the table. Take a right and go forward until you reach the open doorway on the left. Move forward into the open doorway. "
+  },
+  "820": {
+   "k": 3,
+   "word": "left",
+   "turn_deg": -74.99999588397161,
+   "anchor_xyz": [
+    4.345717430114746,
+    0.17162801325321198,
+    -4.091221809387207
+   ],
+   "incoming_xz": [
+    -0.9983988513283529,
+    0.056566188365714636
+   ],
+   "outgoing_xz": [
+    -0.20376596542613687,
+    0.9790196276551121
+   ],
+   "mirrored_xz": [
+    -0.3130434477970062,
+    -0.949738806089002
+   ],
+   "original_text": "Turn left at the corner, and make another left inside the room that has the big black alphabet frame on the wall in the outside.",
+   "instruction": "Exit the bedroom, and walk forward. Turn right at the corner, and make another left inside the room that has the big black alphabet frame on the wall in the outside. Enter the room and stop there. "
+  },
+  "911": {
+   "k": 4,
+   "word": "right",
+   "turn_deg": 68.5358338247666,
+   "anchor_xyz": [
+    4.127872943878174,
+    0.17162801325321198,
+    -3.7651445865631104
+   ],
+   "incoming_xz": [
+    0.10321477168234276,
+    -0.9946590928084666
+   ],
+   "outgoing_xz": [
+    0.9634443777731381,
+    -0.26790843760010785
+   ],
+   "mirrored_xz": [
+    -0.887907833059364,
+    -0.4600213907981069
+   ],
+   "original_text": "and then turn right",
+   "instruction": "Go through the hallway, turn left at the intersection, go straight into middle room and then turn left and go straight into the dooryway and stop. "
+  },
+  "1537": {
+   "k": 5,
+   "word": "right",
+   "turn_deg": 74.99999512599874,
+   "anchor_xyz": [
+    0.01906226947903633,
+    0.15480518341064453,
+    -12.468180656433105
+   ],
+   "incoming_xz": [
+    -0.0605711254807201,
+    0.9981638837174981
+   ],
+   "outgoing_xz": [
+    -0.9798292180098565,
+    0.19983669216185826
+   ],
+   "mirrored_xz": [
+    0.948475286340337,
+    0.3168511183531091
+   ],
+   "original_text": "Turn right at the next opening and stop before the kitchen island on the right.",
+   "instruction": "Facing the toilet, walk through the door on the left. Make a right and walk through the doorway across the room. Make a left and walk down the hallway. Turn left at the next opening and stop before the kitchen island on the right. "
+  },
+  "1612": {
+   "k": 4,
+   "word": "left",
+   "turn_deg": -72.09208592960279,
+   "anchor_xyz": [
+    3.6766197681427,
+    0.17162801325321198,
+    -3.700629472732544
+   ],
+   "incoming_xz": [
+    -0.23929556442740813,
+    -0.9709467713759433
+   ],
+   "outgoing_xz": [
+    -0.9974868123618301,
+    -0.07085237585455427
+   ],
+   "mirrored_xz": [
+    0.850325756840915,
+    -0.526256693309382
+   ],
+   "original_text": "then turn left.",
+   "instruction": "With the door leading outside behind you, walk forward and turn left to go down the corridor with the eye chart towards your right. Continue past the half bath on your left and the kitchen on your right, then turn right. Enter the bedroom ahead of your though the leftmost door on the opposite wall. "
+  },
+  "1685": {
+   "k": 4,
+   "word": "right",
+   "turn_deg": 58.92630399461241,
+   "anchor_xyz": [
+    4.956815242767334,
+    0.17162801325321198,
+    -0.06813517212867737
+   ],
+   "incoming_xz": [
+    -0.999517601946329,
+    -0.03105742100464571
+   ],
+   "outgoing_xz": [
+    -0.4892903752864292,
+    -0.872120936941698
+   ],
+   "mirrored_xz": [
+    -0.542491994021584,
+    0.8400609718481663
+   ],
+   "original_text": "then take a right before reaching the front door and stop between the two doors to the side.",
+   "instruction": "Go through the living room and turn left in between the couches and the kitchen counter. Go down the hall then take a left before reaching the front door and stop between the two doors to the side. "
+  },
+  "1774": {
+   "k": 2,
+   "word": "right",
+   "turn_deg": 65.05810511232336,
+   "anchor_xyz": [
+    14.924556732177734,
+    0.17162801325321198,
+    -4.578990936279297
+   ],
+   "incoming_xz": [
+    -0.13723802620701167,
+    0.9905380982894113
+   ],
+   "outgoing_xz": [
+    -0.9560295922894412,
+    0.29327021442158907
+   ],
+   "mirrored_xz": [
+    0.8402833333804652,
+    0.5421475072736328
+   ],
+   "original_text": "and turn right.",
+   "instruction": "Walk out of the closet and turn left. Walk to the right of the wood and glass doors and stop just inside the doorway. "
+  },
+  "43": {
+   "k": 5,
+   "word": "left",
+   "turn_deg": -57.978296213541476,
+   "anchor_xyz": [
+    11.095804214477539,
+    0.12711000442504883,
+    4.675804615020752
+   ],
+   "incoming_xz": [
+    0.8034501320609693,
+    0.5953720561894144
+   ],
+   "outgoing_xz": [
+    0.9308063654885458,
+    -0.36551266731264415
+   ],
+   "mirrored_xz": [
+    -0.07876281584647571,
+    0.996893383888134
+   ],
+   "original_text": "Stop left of the tall lamp with a white lampshade.",
+   "instruction": "Go into the kitchen area. Turn left. Take the first right into the dining area. Walk past the dining table. Stop right of the tall lamp with a white lampshade. "
+  },
+  "75": {
+   "k": 3,
+   "word": "right",
+   "turn_deg": 93.71150547819084,
+   "anchor_xyz": [
+    12.840121269226074,
+    0.17162801325321198,
+    -0.4437941908836365
+   ],
+   "incoming_xz": [
+    0.17240145519063194,
+    0.9850267703205596
+   ],
+   "outgoing_xz": [
+    -0.9941208252365636,
+    0.10827642786393475
+   ],
+   "mirrored_xz": [
+    0.971800802960533,
+    -0.23580330651893672
+   ],
+   "original_text": "turn right by couch",
+   "instruction": "turn hard left toward dinning area. walk past kitchen towards the living room. turn left by couch and walk down hallway and turn left  and go into the lounge. "
+  },
+  "154": {
+   "k": 4,
+   "word": "left",
+   "turn_deg": -105.33689240094864,
+   "anchor_xyz": [
+    12.200044631958008,
+    0.17162801325321198,
+    -2.3258488178253174
+   ],
+   "incoming_xz": [
+    0.9999922103436424,
+    -0.003947056122774954
+   ],
+   "outgoing_xz": [
+    -0.26829849835411324,
+    -0.963335827103367
+   ],
+   "mirrored_xz": [
+    -0.2606855166627986,
+    0.9654237729630702
+   ],
+   "original_text": "and at the end of the kitchen take a left into the closet with the sink stopping next to the tall cabinet on the left.",
+   "instruction": "With the sink at your back walk out of the bathroom and into the hallway and into the pantry across from the bathroom and straight into the kitchen and at the end of the kitchen take a right into the closet with the sink stopping next to the tall cabinet on the left. "
+  },
+  "281": {
+   "k": 3,
+   "word": "right",
+   "turn_deg": 61.6994405041008,
+   "anchor_xyz": [
+    3.491152763366699,
+    0.10554151237010956,
+    3.039177894592285
+   ],
+   "incoming_xz": [
+    -0.06502078114516507,
+    -0.9978839100913857
+   ],
+   "outgoing_xz": [
+    0.8477834198034365,
+    -0.5303425997469845
+   ],
+   "mirrored_xz": [
+    -0.9094357092529523,
+    -0.4158445511673562
+   ],
+   "original_text": "Take a right",
+   "instruction": "Go to the left of the living area, and continue past it. Take a left and go to the pool table. "
+  },
+  "289": {
+   "k": 2,
+   "word": "left",
+   "turn_deg": -57.713693910961354,
+   "anchor_xyz": [
+    -4.848357677459717,
+    0.0985960066318512,
+    2.465574264526367
+   ],
+   "incoming_xz": [
+    0.995682284282378,
+    -0.09282665978169082
+   ],
+   "outgoing_xz": [
+    0.45336931862754304,
+    -0.8913227591210701
+   ],
+   "mirrored_xz": [
+    0.6103186895881975,
+    0.7921559803090205
+   ],
+   "original_text": "and turn left.",
+   "instruction": "Go right around the counter and turn right. Continue until you are at the end of the second orange couch. "
+  },
+  "485": {
+   "k": 3,
+   "word": "right",
+   "turn_deg": 68.32923682171374,
+   "anchor_xyz": [
+    3.4688005447387695,
+    0.0945739820599556,
+    3.006692409515381
+   ],
+   "incoming_xz": [
+    -0.15305169838394364,
+    -0.9882181832074284
+   ],
+   "outgoing_xz": [
+    0.8618542358131184,
+    -0.5071560669172613
+   ],
+   "mirrored_xz": [
+    -0.9748898307109606,
+    -0.2226877140220237
+   ],
+   "original_text": "and turn right.",
+   "instruction": "Go toward the two brown daybeds. Continue past them and turn left. Go past the daybeds again to the pool table. "
+  },
+  "549": {
+   "k": 2,
+   "word": "right",
+   "turn_deg": 60.30552972389501,
+   "anchor_xyz": [
+    31.49017333984375,
+    0.00952601432800293,
+    2.379058837890625
+   ],
+   "incoming_xz": [
+    0.0981662534186989,
+    0.995170029035107
+   ],
+   "outgoing_xz": [
+    -0.8158545407327789,
+    0.5782571818539799
+   ],
+   "mirrored_xz": [
+    0.9131127234917533,
+    0.4077071917411721
+   ],
+   "original_text": "Turn right at the painting.",
+   "instruction": "Head towards the painting of the woman in a white dress. Turn left at the painting.  Follow the red path until you are standing next to two red and white chairs. "
+  },
+  "929": {
+   "k": 2,
+   "word": "left",
+   "turn_deg": -52.410904504648244,
+   "anchor_xyz": [
+    2.677438735961914,
+    3.4244003295898438,
+    -2.679043769836426
+   ],
+   "incoming_xz": [
+    0.26348919837191653,
+    0.9646623462856445
+   ],
+   "outgoing_xz": [
+    0.9251309176446229,
+    0.3796482387921984
+   ],
+   "mirrored_xz": [
+    -0.6036770653250221,
+    0.7972289513060655
+   ],
+   "original_text": "Turn left and turn left again",
+   "instruction": "Turn left and walk into the bedroom. Turn right and turn left again and turn right into the bathroom after the white rug. "
+  },
+  "1035": {
+   "k": 2,
+   "word": "right",
+   "turn_deg": 110.46764217272302,
+   "anchor_xyz": [
+    12.496722221374512,
+    0.17162801325321198,
+    -2.6752190589904785
+   ],
+   "incoming_xz": [
+    0.3968977253485144,
+    0.9178628413947126
+   ],
+   "outgoing_xz": [
+    -0.9987045321753499,
+    0.0508847463628895
+   ],
+   "mirrored_xz": [
+    0.7211314572830307,
+    -0.6927982544123886
+   ],
+   "original_text": "Turn right and cross through the kitchen.",
+   "instruction": "Turn around and go to the left. Turn left and cross through the kitchen. At the end of the hallway stop. "
+  },
+  "1382": {
+   "k": 3,
+   "word": "left",
+   "turn_deg": -62.50697499758737,
+   "anchor_xyz": [
+    22.66570472717285,
+    0.12711000442504883,
+    -1.0737392902374268
+   ],
+   "incoming_xz": [
+    0.43534954734180553,
+    0.9002615018033844
+   ],
+   "outgoing_xz": [
+    0.9995673426042097,
+    0.029413051510487394
+   ],
+   "mirrored_xz": [
+    -0.597617265678104,
+    0.8017815187215446
+   ],
+   "original_text": "Walk to the left of the bed and into the closet",
+   "instruction": "Walk toward the cock and go left past the mirror. Walk to the right of the bed and into the closet and stop. "
+  },
+  "1455": {
+   "k": 2,
+   "word": "right",
+   "turn_deg": 53.21574579959593,
+   "anchor_xyz": [
+    10.556303024291992,
+    0.12711000442504883,
+    2.215331554412842
+   ],
+   "incoming_xz": [
+    0.3214708403719649,
+    -0.9469194785146954
+   ],
+   "outgoing_xz": [
+    0.9508818581447792,
+    -0.3095540208931748
+   ],
+   "mirrored_xz": [
+    -0.5658861152306409,
+    -0.8244834168066535
+   ],
+   "original_text": "and turn right.",
+   "instruction": "Walk into the hall and turn left. Walk through the entryway on the left and across the atrium. Walk up to the tenth step and stop. "
+  },
+  "181": {
+   "k": 4,
+   "word": "left",
+   "turn_deg": -51.92645114447799,
+   "anchor_xyz": [
+    2.811215877532959,
+    3.4244003295898438,
+    -2.6091983318328857
+   ],
+   "incoming_xz": [
+    0.40598777088568705,
+    0.9138785093716073
+   ],
+   "outgoing_xz": [
+    0.9697847551456118,
+    0.24396214601278984
+   ],
+   "mirrored_xz": [
+    -0.46906175704566444,
+    0.8831653684770673
+   ],
+   "original_text": "Turn left and enter closet.",
+   "instruction": "Walk up stairs. At top of stairs turn right. Walk straight to bedroom. Turn left and walk to bed lamp.Turn right and enter closet. Stop at rug. "
+  },
+  "377": {
+   "k": 2,
+   "word": "right",
+   "turn_deg": 48.32131025295824,
+   "anchor_xyz": [
+    6.517718315124512,
+    0.024399995803833008,
+    -3.6586554050445557
+   ],
+   "incoming_xz": [
+    -0.6859032059659534,
+    0.727692786858319
+   ],
+   "outgoing_xz": [
+    -0.9995963551061383,
+    -0.028409978150699382
+   ],
+   "mirrored_xz": [
+    0.08741010318421782,
+    0.996172411714621
+   ],
+   "original_text": "and take a right.",
+   "instruction": "Leave the bathroom and take a left. Walk down the hallway into the entry way and stop next to the console table on the right, and the banister to the stairs on the right. "
+  },
+  "451": {
+   "k": 3,
+   "word": "right",
+   "turn_deg": 139.5462242006633,
+   "anchor_xyz": [
+    2.5263168811798096,
+    0.024399995803833008,
+    -0.1951390504837036
+   ],
+   "incoming_xz": [
+    -0.6361358775921706,
+    0.7715770507473889
+   ],
+   "outgoing_xz": [
+    -0.016571045251755134,
+    -0.9998626908027243
+   ],
+   "mirrored_xz": [
+    0.9846803717030819,
+    -0.17436904995635005
+   ],
+   "original_text": "Turn right.",
+   "instruction": "Turn left. Walk to the table. Turn left. Walk out the double doors. Turn left. Walk to the stairs. Walk up two stairs. "
+  },
+  "653": {
+   "k": 2,
+   "word": "right",
+   "turn_deg": 63.915498231875645,
+   "anchor_xyz": [
+    -1.562903642654419,
+    3.2642593383789062,
+    8.5648832321167
+   ],
+   "incoming_xz": [
+    -0.994154846359803,
+    -0.10796361173708716
+   ],
+   "outgoing_xz": [
+    -0.3401590047561694,
+    -0.9403679340998885
+   ],
+   "mirrored_xz": [
+    -0.5340932943459231,
+    0.8454255454708705
+   ],
+   "original_text": "and turn right to walk down the hall.",
+   "instruction": "Walk out of the room and turn left to walk down the hall.  Walk along the staircase and continue through the door of the bedroom straight ahead.  Stop inside the door. "
+  },
+  "654": {
+   "k": 2,
+   "word": "right",
+   "turn_deg": 84.21065368271303,
+   "anchor_xyz": [
+    -1.562903642654419,
+    3.2642593383789062,
+    8.5648832321167
+   ],
+   "incoming_xz": [
+    -0.994154846359803,
+    -0.10796361173708716
+   ],
+   "outgoing_xz": [
+    0.007131244208056256,
+    -0.99997457235474
+   ],
+   "mirrored_xz": [
+    -0.20769463862444779,
+    0.9781937114327919
+   ],
+   "original_text": "follow hallway to the right passed stairs and into bedroom. stop just inside doorway.",
+   "instruction": "exit room to hallway, follow hallway to the left passed stairs and into bedroom. stop just inside doorway. "
+  },
+  "736": {
+   "k": 3,
+   "word": "left",
+   "turn_deg": -150.28007351394913,
+   "anchor_xyz": [
+    -0.03646460175514221,
+    3.009996175765991,
+    2.0314524173736572
+   ],
+   "incoming_xz": [
+    0.1212935494409199,
+    0.9926166807302924
+   ],
+   "outgoing_xz": [
+    0.3867618809397893,
+    -0.9221796177816534
+   ],
+   "mirrored_xz": [
+    -0.597438866614311,
+    -0.8019144596891915
+   ],
+   "original_text": "Step on the rug with the doorway on the left. Stop here.",
+   "instruction": "Walk up the stairs to the second landing. At the top take a right and enter the room. Step on the rug with the doorway on the right. Stop here. "
+  },
+  "792": {
+   "k": 2,
+   "word": "right",
+   "turn_deg": 51.45689136136313,
+   "anchor_xyz": [
+    1.9015355110168457,
+    3.5168709754943848,
+    -9.600083351135254
+   ],
+   "incoming_xz": [
+    0.7155967830384006,
+    0.6985135962206406
+   ],
+   "outgoing_xz": [
+    -0.10044441259440112,
+    0.9949426717045388
+   ],
+   "mirrored_xz": [
+    0.9922258252579956,
+    -0.12445043869383898
+   ],
+   "original_text": "and turn right.",
+   "instruction": "Walk into the bedroom and turn left. Walk out of the bedroom and to the top of the stairs. Step to the third step down and stop. "
+  },
+  "1349": {
+   "k": 2,
+   "word": "left",
+   "turn_deg": -45.46397132027217,
+   "anchor_xyz": [
+    -5.8769211769104,
+    1.0461080074310303,
+    -1.4079983234405518
+   ],
+   "incoming_xz": [
+    0.4174923432744537,
+    0.9086804406980519
+   ],
+   "outgoing_xz": [
+    0.9405275488016771,
+    0.33971742661380927
+   ],
+   "mirrored_xz": [
+    -0.3549046669624458,
+    0.9349024961825034
+   ],
+   "original_text": "Turn left, go down the steps and through the double doors ahead.",
+   "instruction": "Exit the stairway area through the single door. Turn right, go down the steps and through the double doors ahead. Continue forward down another set of steps. Wait by the reception desk. "
+  },
+  "1713": {
+   "k": 4,
+   "word": "left",
+   "turn_deg": -83.57741428362402,
+   "anchor_xyz": [
+    2.5965285301208496,
+    0.024399995803833008,
+    -3.8021864891052246
+   ],
+   "incoming_xz": [
+    -0.9999654982108859,
+    -0.008306767593644257
+   ],
+   "outgoing_xz": [
+    -0.12011143610303679,
+    0.9927604156679828
+   ],
+   "mirrored_xz": [
+    -0.10360216909997175,
+    -0.9946188167121014
+   ],
+   "original_text": "Make a left and walk through the doorway with the double glass doors that is to the left of the top of the staircase. Stop in front of the small table with the red leather chairs in that room.",
+   "instruction": "Step out into the hallway and turn left.  Walk down the hallway.  Make a right and walk through the doorway with the double glass doors that is to the left of the top of the staircase.  Stop in front of the small table with the red leather chairs in that room. "
+  },
+  "1727": {
+   "k": 3,
+   "word": "left",
+   "turn_deg": -82.50000856988278,
+   "anchor_xyz": [
+    -0.07338108122348785,
+    0.07120370864868164,
+    0.0981602668762207
+   ],
+   "incoming_xz": [
+    0.16564020703718524,
+    -0.986186251076681
+   ],
+   "outgoing_xz": [
+    -0.9561289493011181,
+    -0.2929461252659608
+   ],
+   "mirrored_xz": [
+    0.9993696711807422,
+    0.035500145409495865
+   ],
+   "original_text": "and turn left at stairs.",
+   "instruction": "Exit room and turn left. Walk towards counter top and turn right at stairs. Go up 2 sets of stairs and turn right at doorway. "
+  },
+  "96": {
+   "k": 2,
+   "word": "left",
+   "turn_deg": -68.3380152431046,
+   "anchor_xyz": [
+    -8.362263679504395,
+    0.06430531293153763,
+    -12.362198829650879
+   ],
+   "incoming_xz": [
+    0.29627646755795256,
+    0.9551022221581214
+   ],
+   "outgoing_xz": [
+    0.9970152907339401,
+    0.07720433953293489
+   ],
+   "mirrored_xz": [
+    -0.7782861045060876,
+    0.6279098179935866
+   ],
+   "original_text": "and turn left.",
+   "instruction": "Walk towards the french doors and turn right. Walk past the kitchen area. Go to the end of the hallway and wait in the archway near the painting. "
+  },
+  "247": {
+   "k": 3,
+   "word": "left",
+   "turn_deg": -46.12282418697147,
+   "anchor_xyz": [
+    4.263433933258057,
+    0.17162801325321198,
+    -0.48530155420303345
+   ],
+   "incoming_xz": [
+    0.1918484081267956,
+    0.9814245708658483
+   ],
+   "outgoing_xz": [
+    0.8404105589881511,
+    0.5419502674058049
+   ],
+   "mirrored_xz": [
+    -0.5744646412815315,
+    0.8185293983219427
+   ],
+   "original_text": "end of hallway turn slight left and enter living room. Stop at couch.",
+   "instruction": "walk straight to hallway on right. turn right and follow hallway, at the end of hallway turn slight right and enter living room. Stop at couch. "
+  },
+  "356": {
+   "k": 2,
+   "word": "left",
+   "turn_deg": -51.07149682305295,
+   "anchor_xyz": [
+    2.321746349334717,
+    3.4689090251922607,
+    -3.6879220008850098
+   ],
+   "incoming_xz": [
+    0.6963891247436511,
+    0.7176643971514621
+   ],
+   "outgoing_xz": [
+    0.9958693369734553,
+    -0.09079792770790907
+   ],
+   "mirrored_xz": [
+    -0.12071693465338074,
+    0.9926869706447705
+   ],
+   "original_text": "bedroom, walk towards the night stand on the left side of the bed,",
+   "instruction": "Go upstairs, turn right, walk into the bedroom, walk towards the night stand on the right side of the bed, turn left, walk towards the white rug, while facing the closet turn right into  the second door, stop in front of the toilet. "
+  },
+  "512": {
+   "k": 3,
+   "word": "right",
+   "turn_deg": 99.3365505980968,
+   "anchor_xyz": [
+    2.441103219985962,
+    0.12711000442504883,
+    6.463823318481445
+   ],
+   "incoming_xz": [
+    -0.24839953384531538,
+    0.9686576648049764
+   ],
+   "outgoing_xz": [
+    -0.9155266148569394,
+    -0.4022574020308306
+   ],
+   "mirrored_xz": [
+    0.996123982619099,
+    0.08796028223616026
+   ],
+   "original_text": "Turn right and turn right again past the table.",
+   "instruction": "Exit the kitchen and go towards the small table set. Turn left and turn right again past the table. Wait by the white couches in the next room. "
+  },
+  "634": {
+   "k": 2,
+   "word": "right",
+   "turn_deg": 93.93136650812534,
+   "anchor_xyz": [
+    -3.4101028442382812,
+    -0.535740852355957,
+    17.012298583984375
+   ],
+   "incoming_xz": [
+    -0.9974171096784874,
+    -0.07182694007551799
+   ],
+   "outgoing_xz": [
+    0.14004229851680802,
+    -0.9901455219441884
+   ],
+   "mirrored_xz": [
+    -0.003273548890455724,
+    0.9999946419244764
+   ],
+   "original_text": "Continue past the TV on the right.",
+   "instruction": "Turn right and enter through the sliding door. Continue past the TV on the left. Enter the kitchen and wait beside the fridge. "
+  },
+  "779": {
+   "k": 4,
+   "word": "right",
+   "turn_deg": 52.4109279393251,
+   "anchor_xyz": [
+    4.8942413330078125,
+    0.12711000442504883,
+    1.0011323690414429
+   ],
+   "incoming_xz": [
+    -0.9451132183662299,
+    -0.32674302512743425
+   ],
+   "outgoing_xz": [
+    -0.3176002969639318,
+    -0.9482246840113487
+   ],
+   "mirrored_xz": [
+    -0.8354265647745636,
+    0.5496020877589278
+   ],
+   "original_text": "Turn right through the entryway before the ovens. Stop once you are facing the long hallway.",
+   "instruction": "Walk across the room to the other end of the table. Walk out the 2 small wood doors in front of you. Once out turn left and walk down the hallway. Turn left through the entryway before the ovens. Stop once you are facing the long hallway. "
+  },
+  "936": {
+   "k": 3,
+   "word": "left",
+   "turn_deg": -103.92257396317393,
+   "anchor_xyz": [
+    12.899025917053223,
+    0.17162801325321198,
+    -4.212989807128906
+   ],
+   "incoming_xz": [
+    -0.9909169552080171,
+    0.13447523147878337
+   ],
+   "outgoing_xz": [
+    0.3689495863500907,
+    0.9294494083768611
+   ],
+   "mirrored_xz": [
+    0.10790041496491692,
+    -0.9941617073949282
+   ],
+   "original_text": "Make a hard left, then another. Wait by the long table.",
+   "instruction": "Walk towards the mirror, and take a right. Walk straight through the open door in front of you. Make a hard right, then another. Wait by the long table. "
+  },
+  "956": {
+   "k": 2,
+   "word": "right",
+   "turn_deg": 90.01151361811318,
+   "anchor_xyz": [
+    5.91041374206543,
+    0.17162801325321198,
+    -2.380122661590576
+   ],
+   "incoming_xz": [
+    -0.9999395330941259,
+    0.010996824791808166
+   ],
+   "outgoing_xz": [
+    -0.01079588617709389,
+    -0.999941722722705
+   ],
+   "mirrored_xz": [
+    0.011197762962458323,
+    0.9999373030868667
+   ],
+   "original_text": "Turn right and then another right to enter into the bedroom. Wait in the bedroom doorway.",
+   "instruction": "Turn around and exit the kitchen. Turn left and then another right to enter into the bedroom. Wait in the bedroom doorway. "
+  },
+  "1498": {
+   "k": 3,
+   "word": "left",
+   "turn_deg": -77.10799333316722,
+   "anchor_xyz": [
+    4.818108081817627,
+    0.12711000442504883,
+    0.77937912940979
+   ],
+   "incoming_xz": [
+    0.12512292066396216,
+    0.992141247365777
+   ],
+   "outgoing_xz": [
+    0.9950483694827644,
+    0.09939186279415396
+   ],
+   "mirrored_xz": [
+    -0.9392149875794656,
+    0.34332958961631055
+   ],
+   "original_text": "turn left.",
+   "instruction": "Exit the bathroom. Turn right and go down hallway until you get to the kitchen then turn right. Wait there. "
+  },
+  "1503": {
+   "k": 3,
+   "word": "right",
+   "turn_deg": 73.30468580873573,
+   "anchor_xyz": [
+    15.886175155639648,
+    0.17162801325321198,
+    -4.641706466674805
+   ],
+   "incoming_xz": [
+    -0.09526598622046151,
+    0.9954518531146762
+   ],
+   "outgoing_xz": [
+    -0.9808577892431156,
+    0.19472544076495923
+   ],
+   "mirrored_xz": [
+    0.9261213477941252,
+    0.3772257270653645
+   ],
+   "original_text": "Walk to the right of the mirrored closet",
+   "instruction": "Walk into the bedroom and turn right. Walk to the left of the mirrored closet and stop in the hallway. "
+  },
+  "1585": {
+   "k": 2,
+   "word": "right",
+   "turn_deg": 55.265400192262724,
+   "anchor_xyz": [
+    8.303869247436523,
+    0.198889821767807,
+    -3.4038498401641846
+   ],
+   "incoming_xz": [
+    -0.45879837234942655,
+    0.8885404062447115
+   ],
+   "outgoing_xz": [
+    -0.9916148612926767,
+    0.12922835162419088
+   ],
+   "mirrored_xz": [
+    0.4687903535398381,
+    0.8833094613033382
+   ],
+   "original_text": "Head straight until you see a door on the right.",
+   "instruction": "Exit the room using the second door on you right. Head straight until you see a door on the left. Wait near that door. "
+  },
+  "1682": {
+   "k": 2,
+   "word": "left",
+   "turn_deg": -70.51448933804171,
+   "anchor_xyz": [
+    12.415367126464844,
+    0.17162801325321198,
+    -2.0461747646331787
+   ],
+   "incoming_xz": [
+    -0.2388420191541748,
+    -0.9710584379358211
+   ],
+   "outgoing_xz": [
+    -0.9951120830031033,
+    -0.09875192282292537
+   ],
+   "mirrored_xz": [
+    0.8357717505822617,
+    -0.5490770264076452
+   ],
+   "original_text": "and turn left. Walk into the kitchen past the stove and refrigerator",
+   "instruction": "Walk toward the kitchen counter and turn right. Walk into the kitchen past the stove and refrigerator and stop in front of the sink. "
+  },
+  "1775": {
+   "k": 2,
+   "word": "right",
+   "turn_deg": 65.05810511232336,
+   "anchor_xyz": [
+    14.924556732177734,
+    0.17162801325321198,
+    -4.578990936279297
+   ],
+   "incoming_xz": [
+    -0.13723802620701167,
+    0.9905380982894113
+   ],
+   "outgoing_xz": [
+    -0.9560295922894412,
+    0.29327021442158907
+   ],
+   "mirrored_xz": [
+    0.8402833333804652,
+    0.5421475072736328
+   ],
+   "original_text": "Turn right.",
+   "instruction": "Exit the closet. Turn left. Go straight and then when you get to the double doors turn right. Wait near the sink. "
+  }
+ },
+ "rejected": {
+  "no_word": 58,
+  "k1_only": 51,
+  "weak_turn": 81,
+  "wrong_sign": 10,
+  "not_navigable": 9
+ }
+}

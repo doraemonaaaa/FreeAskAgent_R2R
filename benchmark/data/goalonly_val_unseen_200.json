@@ -1,0 +1,1225 @@
+{
+ "name": "val_unseen_200",
+ "split": "val_unseen",
+ "goalonly_split": "val_unseen_200_goalonly",
+ "goalonly": {
+  "31": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Go to the table.",
+   "goal_text": "Go to the table.",
+   "removed_text": "Go to the plant\r\nGo to the rope\r\nGo to the steamroom door"
+  },
+  "108": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Walk over the floor rug and into the doorway leading to the closet.",
+   "goal_text": "Walk over the floor rug and into the doorway leading to the closet.",
+   "removed_text": "Walk into the bedroom and turn around the corner through the door with a hanging letter \"B\" near the door. Walk into the hallway and walk along the banister rail into the room on the right that has a human figured coat rack."
+  },
+  "115": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Turn left and go into the bathroom.",
+   "goal_text": "turn left and go into the bathroom.",
+   "removed_text": "turn around and exit the closet. walk into the bedroom through the door on the right."
+  },
+  "121": {
+   "K": 3,
+   "kept_chunks": 2,
+   "instruction": "Turn left and exit the kitchen and stop there.",
+   "goal_text": "and stop there.",
+   "removed_text": "Walk straight into the kitchen area."
+  },
+  "136": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Continue straight until the door is in your path.",
+   "goal_text": "Continue straight until the door is in your path.",
+   "removed_text": "Turn left and head towards the hall way."
+  },
+  "141": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Turn right again. Go forward and stop.",
+   "goal_text": "Turn right again. Go forward and stop.",
+   "removed_text": "Turn right. Go forward. Turn right at doorway. Go forward."
+  },
+  "142": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Walk through the hallway until you enter the clearing, and stop just past the entry behind you.",
+   "goal_text": "Walk through the hallway until you enter the clearing, and stop just past the entry behind you.",
+   "removed_text": "Walk forward with the cabinets on the left into the hallway. In the hallway take a left and walk past the console table on your right."
+  },
+  "149": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "TO THE NEXT OPEN DOORWAY, WALK THROUGH THE DOOR AND INTO THE CLOSET.",
+   "goal_text": "AND TO THE NEXT OPEN DOORWAY, WALK THROUGH THE DOOR AND INTO THE CLOSET.",
+   "removed_text": "TURN RIGHT TO FACE THE END OF THE BED AND WALK TOWARDS THE CHAIR, TURN RIGHT AND WALK TOWARDS THE OPEN DOOR AND THE HALLWAY, WALK ACROSS THE HALLWAY"
+  },
+  "150": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Once at the entrance way, walk through the hallway to the next room.",
+   "goal_text": "Once at the entrance way, walk through the hallway to the next room.",
+   "removed_text": "Turn around and walk to the end of the bed. At the end of the bed turn right and walk to the hallway."
+  },
+  "162": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Walk towards three sets of doors, and stop before reaching them.",
+   "goal_text": "Walk towards three sets of doors, and stop before reaching them.",
+   "removed_text": "Go towards a dining area passing an area open to the outside to your right, and pass the dining table."
+  },
+  "177": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Take a left into the bathroom and a right into the work out room stopping in front of the door on your right.",
+   "goal_text": "and take a left into the bathroom and a right into the work out room stopping in front of the door on your right.",
+   "removed_text": "With the bench on your left walk forward in the hall and take a right into the kitchen area"
+  },
+  "228": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Go into the bedroom door at the end of the hallway on the left.",
+   "goal_text": "Go into the bedroom door at the end of the hallway on the left.",
+   "removed_text": "Start at the bedroom door. Go out into the hallway. Turn right. Walk past a bathroom on the left."
+  },
+  "300": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Go into that room and enter into the bathroom on the left hand side.",
+   "goal_text": "Go into that room and enter into the bathroom on the left hand side.",
+   "removed_text": "Exit the bedroom and go down the hall slightly. Make a left into the last room down the hall."
+  },
+  "386": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Sink.",
+   "goal_text": "and sink.",
+   "removed_text": "Turn and walk out of the bathroom into the hallway. Walk through the door into the room with shelves and a sink. Continue through the room into the kitchen area and walk past the stove"
+  },
+  "450": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Continue to the open arched entry at the end of the hall.",
+   "goal_text": "Continue to the open arched entry at the end of the hall.",
+   "removed_text": "Walk into the arched hallway near the native american paintings on the wall. Walk past the doorway to the laundry room and down the hall past the candles on the wall."
+  },
+  "496": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop when you are just inside this hallway and standing just underneath the archway.",
+   "goal_text": "Stop when you are just inside this hallway and standing just underneath the archway.",
+   "removed_text": "Turn slightly left and walk forwards past the table and straight past the double doors that lead outside. Proceed straight through the right side arched passageway that leads into the kitchen. Walk past the kitchen island and towards the oven. Turn right at the oven and take the first left through the arched passageway that leads to the long hallway."
+  },
+  "561": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Continue forward through the next room until just before the carpet path splits off at a forty-five degree angle to the left and a ninety degree angle to the right.",
+   "goal_text": "and continue forward through the next room until just before the carpet path splits off at a forty-five degree angle to the left and a ninety degree angle to the right.",
+   "removed_text": "Staying on the red carpet, go through the ornate doors next to you"
+  },
+  "569": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Continue down the hallway until it opens to the left and the right.",
+   "goal_text": "Continue down the hallway until it opens to the left and the right.",
+   "removed_text": "Exit the bedroom through the opening to the right of the head of the bed."
+  },
+  "574": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Exit the doorway of the next room and stop.",
+   "goal_text": "Exit the doorway of the next room and stop.",
+   "removed_text": "Follow the pink carpet out of the room you are in, and through the next room."
+  },
+  "655": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Go left to the white couch.",
+   "goal_text": "Go left to the white couch.",
+   "removed_text": "Leave the bedroom. Turn left into the hallway opposite the bookshelf. Go to the end of the hallway."
+  },
+  "676": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Go forward until you reach the open doorway on the left. Move forward into the open doorway.",
+   "goal_text": "and go forward until you reach the open doorway on the left. Move forward into the open doorway.",
+   "removed_text": "Travel to the end of the hallway where there is a vase on the table. Take a left"
+  },
+  "715": {
+   "K": 4,
+   "kept_chunks": 2,
+   "instruction": "Immediately left again and walk through doorway to bedroom and stop.",
+   "goal_text": "and stop.",
+   "removed_text": "walk through kitchen, turn right at bathroom,"
+  },
+  "716": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Veer right and enter the bedroom at the end of the office. Stop after you pass the door.",
+   "goal_text": "Veer right and enter the bedroom at the end of the office. Stop after you pass the door.",
+   "removed_text": "Walk forward through the kitchen and pantry."
+  },
+  "724": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Go to the back door.",
+   "goal_text": "and go to the back door.",
+   "removed_text": "Go down the hallway"
+  },
+  "805": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Stop just inside the entryway.",
+   "goal_text": "Stop just inside the entryway.",
+   "removed_text": "Walk out of the closet and into the hallway. Walk through the hallway entrance on the left."
+  },
+  "820": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Enter the room and stop there.",
+   "goal_text": "Enter the room and stop there.",
+   "removed_text": "Exit the bedroom, and walk forward. Turn left at the corner, and make another left inside the room that has the big black alphabet frame on the wall in the outside."
+  },
+  "869": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Stop between the back of the sofa and the white kitchen counter.",
+   "goal_text": "Stop between the back of the sofa and the white kitchen counter.",
+   "removed_text": "Go past the dink and out the door, towards the big sofa."
+  },
+  "911": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Go straight into the dooryway and stop.",
+   "goal_text": "and go straight into the dooryway and stop.",
+   "removed_text": "Go through the hallway, turn left at the intersection, go straight into middle room and then turn right"
+  },
+  "1040": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Stop outside the closet door.",
+   "goal_text": "Stop outside the closet door.",
+   "removed_text": "Walk past the kitchen and through the first door on the right."
+  },
+  "1136": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Cross from the counter to the patio and stop.",
+   "goal_text": "Cross from the counter to the patio and stop.",
+   "removed_text": "Turn around and exit the pantry."
+  },
+  "1160": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Stop after going through these doors.",
+   "goal_text": "Stop after going through these doors.",
+   "removed_text": "Walk forward with the entryway to outside on your left. Go through the far door in this room (the back right corner), and then through the far double wooden doors in the next room."
+  },
+  "1192": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Just passed the doorway straight ahead.",
+   "goal_text": "just passed the doorway straight ahead.",
+   "removed_text": "Turn left and stop"
+  },
+  "1196": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Walk across the hall into the bedroom on the left.",
+   "goal_text": "and walk across the hall into the bedroom on the left.",
+   "removed_text": "Turn around, walk out the door on the right,"
+  },
+  "1197": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Walk into the door into the next bedroom.",
+   "goal_text": "Walk into the door into the next bedroom.",
+   "removed_text": "Walk out of the bedroom and down the hallway past the little living area on the right."
+  },
+  "1228": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Go down the hall straight. Go until you get to the violin mounted on the wall on your right.",
+   "goal_text": "Go down the hall straight. Go until you get to the violin mounted on the wall on your right.",
+   "removed_text": "Exit the room into the house."
+  },
+  "1272": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Walk straight again entering the living room.",
+   "goal_text": "then walk straight again entering the living room.",
+   "removed_text": "walk forward then turn left"
+  },
+  "1297": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Stop under the door frame.",
+   "goal_text": "Stop under the door frame.",
+   "removed_text": "Walk down the red carpet and turn right at the bed."
+  },
+  "1311": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Keep walking forward and exit out the last door on the left and stop.",
+   "goal_text": "Keep walking forward and exit out the last door on the left and stop.",
+   "removed_text": "Walk forward and turn right when you pass the sign on the wall and to the right of the large painting of a man."
+  },
+  "1537": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Turn right at the next opening and stop before the kitchen island on the right.",
+   "goal_text": "Turn right at the next opening and stop before the kitchen island on the right.",
+   "removed_text": "Facing the toilet, walk through the door on the left. Make a right and walk through the doorway across the room. Make a left and walk down the hallway."
+  },
+  "1544": {
+   "K": 3,
+   "kept_chunks": 2,
+   "instruction": "Walk into the closet and stop immediatly.",
+   "goal_text": "and stop immediatly.",
+   "removed_text": "Walk past the bathtub, through the doorway, and turn at your first doorway on your right."
+  },
+  "1612": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Enter the bedroom ahead of your though the leftmost door on the opposite wall.",
+   "goal_text": "Enter the bedroom ahead of your though the leftmost door on the opposite wall.",
+   "removed_text": "With the door leading outside behind you, walk forward and turn left to go down the corridor with the eye chart towards your right. Continue past the half bath on your left and the kitchen on your right, then turn left."
+  },
+  "1619": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Walk straight and stop left of the table and chairs.",
+   "goal_text": "Walk straight and stop left of the table and chairs.",
+   "removed_text": "Go around the roped area and through the door on the left."
+  },
+  "1685": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Take a right before reaching the front door and stop between the two doors to the side.",
+   "goal_text": "then take a right before reaching the front door and stop between the two doors to the side.",
+   "removed_text": "Go through the living room and turn left in between the couches and the kitchen counter. Go down the hall"
+  },
+  "1741": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Enter the hallway and stop.",
+   "goal_text": "Enter the hallway and stop.",
+   "removed_text": "Walk in the direction of the refrigerator, and take a left. Exit through the door next to the refrigerator."
+  },
+  "1772": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop after entering the room.",
+   "goal_text": "and stop after entering the room.",
+   "removed_text": "Walk past the foot of the bed and out the door on the other side of the room.  After passing through a small hallway, you will see two doors to bedrooms next to each other.  Enter the bedroom on the right"
+  },
+  "1774": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop just inside the doorway.",
+   "goal_text": "and stop just inside the doorway.",
+   "removed_text": "Walk out of the closet and turn right. Walk to the right of the wood and glass doors"
+  },
+  "35": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Straight past the potted plant in the hallway.",
+   "goal_text": "straight past the potted plant in the hallway.",
+   "removed_text": "Walk over to the master bedroom with the large sun burst mirror, its"
+  },
+  "43": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Stop left of the tall lamp with a white lampshade.",
+   "goal_text": "Stop left of the tall lamp with a white lampshade.",
+   "removed_text": "Go into the kitchen area. Turn left. Take the first right into the dining area. Walk past the dining table."
+  },
+  "45": {
+   "K": 6,
+   "kept_chunks": 1,
+   "instruction": "Stop nest to the edge of the couch  behind the end table.",
+   "goal_text": "and stop nest to the edge of the couch  behind the end table.",
+   "removed_text": "Walk down the hallway and walk into the kitchen and take a left at the island counter into the hallway and take a right into the dining room and walk through the dining room into the living room"
+  },
+  "67": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Walk past them towards a large dining table  Turn to the sitting area and stop.",
+   "goal_text": "and walk past them towards a large dining table  Turn to the sitting area and stop.",
+   "removed_text": "Face the walkway with a kitchen counter with bar stools on the right and large windows on the other side"
+  },
+  "75": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Go into the lounge.",
+   "goal_text": "and go into the lounge.",
+   "removed_text": "turn hard left toward dinning area. walk past kitchen towards the living room. turn right by couch and walk down hallway and turn left"
+  },
+  "146": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Continue passed the hanging art piece that looks like an eye exam test.",
+   "goal_text": "and continue passed the hanging art piece that looks like an eye exam test.",
+   "removed_text": "Walk along the backside of the couches passed the hanging wall clock into the next room. Continue down the hallway passing the shelf with decorations below a mirror. Turn the corner"
+  },
+  "154": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "At the end of the kitchen take a left into the closet with the sink stopping next to the tall cabinet on the left.",
+   "goal_text": "and at the end of the kitchen take a left into the closet with the sink stopping next to the tall cabinet on the left.",
+   "removed_text": "With the sink at your back walk out of the bathroom and into the hallway and into the pantry across from the bathroom and straight into the kitchen"
+  },
+  "161": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Go to the electrical receptacle.",
+   "goal_text": "Go to the electrical receptacle.",
+   "removed_text": "Go to the 4 panel window\r\nGo to the gold rug\r\nGo to the white rug\r\nGo to the third chair on the left"
+  },
+  "208": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Walk through to the next room and stop when you're at the rug in front of the dining set.",
+   "goal_text": "Walk through to the next room and stop when you're at the rug in front of the dining set.",
+   "removed_text": "Walk to the left, going towards the right arch at the back of the room."
+  },
+  "248": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Go towards the living room where you will see a photo frame of the nyc skyline.",
+   "goal_text": "then go towards the living room where you will see a photo frame of the nyc skyline.",
+   "removed_text": "go straight and make a sharp left"
+  },
+  "281": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Go to the pool table.",
+   "goal_text": "and go to the pool table.",
+   "removed_text": "Go to the left of the living area, and continue past it. Take a right"
+  },
+  "289": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Continue until you are at the end of the second orange couch.",
+   "goal_text": "Continue until you are at the end of the second orange couch.",
+   "removed_text": "Go right around the counter and turn left."
+  },
+  "419": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Stop when you get to a long dining table.",
+   "goal_text": "Stop when you get to a long dining table.",
+   "removed_text": "Go down the hall towards the eye chart.  Keep walking past it on your left, and a sitting area on your right."
+  },
+  "485": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Go past the daybeds again to the pool table.",
+   "goal_text": "Go past the daybeds again to the pool table.",
+   "removed_text": "Go toward the two brown daybeds. Continue past them and turn right."
+  },
+  "503": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Go to the glass jug.",
+   "goal_text": "Go to the glass jug.",
+   "removed_text": "Go to the ottoman. Go to the bed. Go to the wardrobe."
+  },
+  "527": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Your destination is a room with a bed that has a large wooden trunk at the end of it.",
+   "goal_text": "Your destination is a room with a bed that has a large wooden trunk at the end of it.",
+   "removed_text": "Turn and follow the path of the rugs laid out on the floor past the bathroom."
+  },
+  "549": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Follow the red path until you are standing next to two red and white chairs.",
+   "goal_text": "Follow the red path until you are standing next to two red and white chairs.",
+   "removed_text": "Head towards the painting of the woman in a white dress. Turn right at the painting."
+  },
+  "649": {
+   "K": 3,
+   "kept_chunks": 2,
+   "instruction": "Once you reach the end make a right and stop.",
+   "goal_text": "and stop.",
+   "removed_text": "Turn right and head towards the end."
+  },
+  "657": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Go to the footstool.",
+   "goal_text": "Go to the footstool.",
+   "removed_text": "Go to the painting. Go to the electrical receptacle. Go to the NQHG painting. Go to the couch."
+  },
+  "782": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Stop when you reach the wood bench in the middle of the room. You should be facing the TV.",
+   "goal_text": "Stop when you reach the wood bench in the middle of the room. You should be facing the TV.",
+   "removed_text": "Turn to your left and walk past the sports items on display."
+  },
+  "929": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Turn right into the bathroom after the white rug.",
+   "goal_text": "and turn right into the bathroom after the white rug.",
+   "removed_text": "Turn left and walk into the bedroom. Turn left and turn left again"
+  },
+  "954": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Turn left, turn right, and stop before the display and dining room.",
+   "goal_text": "turn left, turn right, and stop before the display and dining room.",
+   "removed_text": "Go between the counters,"
+  },
+  "1008": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Go to the dining table.",
+   "goal_text": "Go to the dining table.",
+   "removed_text": "Go through the hall to the right side of the big clock. Go to the circular tile on the floor. Go through the hallway next to the wooden chair."
+  },
+  "1023": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Stop just inside next room.",
+   "goal_text": "Stop just inside next room.",
+   "removed_text": "Head straight into the kitche. Go past the island and cabinets."
+  },
+  "1035": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "At the end of the hallway stop.",
+   "goal_text": "At the end of the hallway stop.",
+   "removed_text": "Turn around and go to the left. Turn right and cross through the kitchen."
+  },
+  "1149": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Walk straight at the island table.",
+   "goal_text": "then walk straight at the island table.",
+   "removed_text": "walk around the sofa"
+  },
+  "1191": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Cross to the other side of the hallway beside the entryway.",
+   "goal_text": "and cross to the other side of the hallway beside the entryway.",
+   "removed_text": "Go towards the dining room table. Go out on the entryway"
+  },
+  "1208": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Turn right into butler's pantry.",
+   "goal_text": "turn right into butler's pantry.",
+   "removed_text": "Walk down hall, at the end of the hall"
+  },
+  "1266": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Turn left, walk down the hall, and stop when you reach the sofa.",
+   "goal_text": "Turn left, walk down the hall, and stop when you reach the sofa.",
+   "removed_text": "Walk past the dining table, then turn right into the hall way."
+  },
+  "1382": {
+   "K": 4,
+   "kept_chunks": 2,
+   "instruction": "Walk to the left of the bed and into the closet and stop.",
+   "goal_text": "and stop.",
+   "removed_text": "Walk toward the cock and go left past the mirror."
+  },
+  "1432": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Walk past the microwave out of the room and stop.",
+   "goal_text": "Walk past the microwave out of the room and stop.",
+   "removed_text": "Walk past the couch and left through the room into the hallway."
+  },
+  "1455": {
+   "K": 5,
+   "kept_chunks": 2,
+   "instruction": "Walk up to the tenth step and stop.",
+   "goal_text": "and stop.",
+   "removed_text": "Walk into the hall and turn right. Walk through the entryway on the left and across the atrium."
+  },
+  "1581": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Continue into the next room.",
+   "goal_text": "and continue into the next room.",
+   "removed_text": "Turn right and go down the hall, turn left at the circle"
+  },
+  "1583": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Walk again then left at the corner then walk again and turn left.",
+   "goal_text": "walk again then left at the corner then walk again and turn left.",
+   "removed_text": "walk forward then turn left,"
+  },
+  "1731": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Continue straight until you get to a round table and chairs.",
+   "goal_text": "Continue straight until you get to a round table and chairs.",
+   "removed_text": "Go straight and out the room. Turn right and go straight. Pass the bar with the stools/chairs and the couches."
+  },
+  "1765": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Walk straight until you get to a table with chairs then stop.",
+   "goal_text": "Walk straight until you get to a table with chairs then stop.",
+   "removed_text": "Go straight. Pass the bar with the stools."
+  },
+  "58": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop right between the bottom of the first stair and the console table on the left.",
+   "goal_text": "and stop right between the bottom of the first stair and the console table on the left.",
+   "removed_text": "In the entry way go up the stairs and in the hallway at the top take a left and go past the dining room into the entry way with the stairs on the right side"
+  },
+  "170": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop in the doorway to bedroom.",
+   "goal_text": "stop in the doorway to bedroom.",
+   "removed_text": "Exit dining room, walk towards the front door, go up stair case, turn right,"
+  },
+  "181": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Stop at rug.",
+   "goal_text": "Stop at rug.",
+   "removed_text": "Walk up stairs. At top of stairs turn right. Walk straight to bedroom. Turn left and walk to bed lamp.Turn left and enter closet."
+  },
+  "196": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Wait in the doorway of the bathroom.",
+   "goal_text": "and wait in the doorway of the bathroom.",
+   "removed_text": "Walk down the stairs and go to the room on the right"
+  },
+  "229": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Walk through the first door on the right, stop right before the table.",
+   "goal_text": "and walk through the first door on the right, stop right before the table.",
+   "removed_text": "Walk through doorway towards the tub, turn left and walk towards the bar, right before the bar turn left, walk up the stairs"
+  },
+  "295": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Turn slight right and stop at stairs.",
+   "goal_text": "turn slight right and stop at stairs.",
+   "removed_text": "walk from dining room to living room turning slightly right before lounge chairs, walk straight following cabinet."
+  },
+  "316": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Stop next to the recliner that is next to the fireplace.",
+   "goal_text": "Stop next to the recliner that is next to the fireplace.",
+   "removed_text": "Walk up the stairs and go straight."
+  },
+  "371": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Wait by the door at the top of the stairs.",
+   "goal_text": "Wait by the door at the top of the stairs.",
+   "removed_text": "Walk through the dining room and kitchen air to the short flight of stairs. Walk up the short flight of stairs."
+  },
+  "377": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop next to the console table on the right, and the banister to the stairs on the right.",
+   "goal_text": "and stop next to the console table on the right, and the banister to the stairs on the right.",
+   "removed_text": "Leave the bathroom and take a right. Walk down the hallway into the entry way"
+  },
+  "451": {
+   "K": 6,
+   "kept_chunks": 1,
+   "instruction": "Walk up two stairs.",
+   "goal_text": "Walk up two stairs.",
+   "removed_text": "Turn left. Walk to the table. Turn right. Walk out the double doors. Turn left. Walk to the stairs."
+  },
+  "543": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Stop on the rug close to the window on the right.",
+   "goal_text": "Stop on the rug close to the window on the right.",
+   "removed_text": "Go up the stairs. At the top of the stairs step on the rug."
+  },
+  "590": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Turn left and go in the bathroom. Stop at sink.",
+   "goal_text": "Turn left and go in the bathroom. Stop at sink.",
+   "removed_text": "Exit bedroom and go straight passed stairs and into bedroom."
+  },
+  "617": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Wait right at the top of the steps that go down.",
+   "goal_text": "and wait right at the top of the steps that go down.",
+   "removed_text": "Pass the fridge on the right and go up the steps then turn right"
+  },
+  "619": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Stop in the second bedroom next to the bathroom door.",
+   "goal_text": "and stop in the second bedroom next to the bathroom door.",
+   "removed_text": "Walk past the stairs, down the walkway"
+  },
+  "639": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "When you get to the fireplace wait there.",
+   "goal_text": "and when you get to the fireplace wait there.",
+   "removed_text": "Go down the stairs and turn right. Head toward the pool table"
+  },
+  "644": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Walk across the lobby area to enter the pool room and wait near the pool table.",
+   "goal_text": "Walk across the lobby area to enter the pool room and wait near the pool table.",
+   "removed_text": "At the foot of the stairs, turn left to walk into lobby area."
+  },
+  "653": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Continue through the door of the bedroom straight ahead.  Stop inside the door.",
+   "goal_text": "and continue through the door of the bedroom straight ahead. Stop inside the door.",
+   "removed_text": "Walk out of the room and turn right to walk down the hall.  Walk along the staircase"
+  },
+  "654": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Follow hallway to the right passed stairs and into bedroom. stop just inside doorway.",
+   "goal_text": "follow hallway to the right passed stairs and into bedroom. stop just inside doorway.",
+   "removed_text": "exit room to hallway,"
+  },
+  "681": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Wait under the stairs that lead downstairs.",
+   "goal_text": "Wait under the stairs that lead downstairs.",
+   "removed_text": "Walk across the large room to the stairs."
+  },
+  "736": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Step on the rug with the doorway on the left. Stop here.",
+   "goal_text": "Step on the rug with the doorway on the left. Stop here.",
+   "removed_text": "Walk up the stairs to the second landing. At the top take a right and enter the room."
+  },
+  "775": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Wait by the doorway next to the wooden bench.",
+   "goal_text": "Wait by the doorway next to the wooden bench.",
+   "removed_text": "Go down the wooden stairs."
+  },
+  "792": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Step to the third step down and stop.",
+   "goal_text": "Step to the third step down and stop.",
+   "removed_text": "Walk into the bedroom and turn right. Walk out of the bedroom and to the top of the stairs."
+  },
+  "831": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Wait in the bedroom on the right.",
+   "goal_text": "and wait in the bedroom on the right.",
+   "removed_text": "Walk down the long hallway next to the stairs, past the wine cellar"
+  },
+  "970": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Turn left. Wait under the stairs.",
+   "goal_text": "turn left. Wait under the stairs.",
+   "removed_text": "Walk past the long rectangular dining table to the left, then"
+  },
+  "991": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Stop in the kitchen.",
+   "goal_text": "and stop in the kitchen.",
+   "removed_text": "Turn right passed the stairs and pass the couch. Enter the dining room. Continue down the hall"
+  },
+  "1065": {
+   "K": 6,
+   "kept_chunks": 1,
+   "instruction": "Go up the first step and then stop.",
+   "goal_text": "Go up the first step and then stop.",
+   "removed_text": "Leave the bedroom and walk straight.  When you get to the glass wine room, turn left and walk through the doorway past it.  Go down the hallway to the right and turn left at the stairs."
+  },
+  "1072": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop on the second stair up from the landing.",
+   "goal_text": "Stop on the second stair up from the landing.",
+   "removed_text": "Walk away from the fireplace, past the table. Go through the door and up the stairs. Go past the first landing."
+  },
+  "1187": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Fridge, up 5 stairs and stop at the top.",
+   "goal_text": "fridge, up 5 stairs and stop at the top.",
+   "removed_text": "walk straight past Tv, past"
+  },
+  "1223": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Go up the steps of the porch and into the house using the glass double doors. Wait near the tv.",
+   "goal_text": "Go up the steps of the porch and into the house using the glass double doors. Wait near the tv.",
+   "removed_text": "Walk straight until you get to a porch."
+  },
+  "1232": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Turn right and wait near the lamp before you get to the stairs.",
+   "goal_text": "Turn right and wait near the lamp before you get to the stairs.",
+   "removed_text": "Turn right and walk toward the stairs."
+  },
+  "1236": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Wait at the top.",
+   "goal_text": "Wait at the top.",
+   "removed_text": "Go straight up the stairs."
+  },
+  "1243": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Stop at the very bottom.",
+   "goal_text": "and stop at the very bottom.",
+   "removed_text": "Go down the stairs"
+  },
+  "1252": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Stop before you reach the steps.",
+   "goal_text": "Stop before you reach the steps.",
+   "removed_text": "Turn around and walk up onto the patio. Walk into the door to the left and enter the sitting room. Walk across the sitting room and into the kitchen."
+  },
+  "1349": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Wait by the reception desk.",
+   "goal_text": "Wait by the reception desk.",
+   "removed_text": "Exit the stairway area through the single door. Turn left, go down the steps and through the double doors ahead. Continue forward down another set of steps."
+  },
+  "1404": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Turn left. Wait at the bottom of the stairs.",
+   "goal_text": "and turn left. Wait at the bottom of the stairs.",
+   "removed_text": "Exit the kitchen"
+  },
+  "1413": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Wait in that floor with the long blue carpet.",
+   "goal_text": "Wait in that floor with the long blue carpet.",
+   "removed_text": "Go straight and up the stairs. Turn left and continue up the stairs."
+  },
+  "1447": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop near the bench at the bottom next to a closed door.",
+   "goal_text": "and stop near the bench at the bottom next to a closed door.",
+   "removed_text": "Walk into the hall ahead. Walk down the flight of stairs with an iron railing. Continue to the bottom of the stairs"
+  },
+  "1452": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop once you reach the table.",
+   "goal_text": "Stop once you reach the table.",
+   "removed_text": "Turn around and exit out the door on the left. Walk all the way down until you reach the green steps. At the steps, turn right and enter the door to the left."
+  },
+  "1469": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Walk down one set of steps.  Wait by door.",
+   "goal_text": "and walk down one set of steps. Wait by door.",
+   "removed_text": "Walk out the door left of the bed.  Walk to staircase"
+  },
+  "1494": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop after a few steps closer to the middle of the room.",
+   "goal_text": "and stop after a few steps closer to the middle of the room.",
+   "removed_text": "Stand with the bed behind you and walk straight down the red carpet.  Go into the room with the tile floor"
+  },
+  "1552": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Wait beside the support pillar for the stairs.",
+   "goal_text": "Wait beside the support pillar for the stairs.",
+   "removed_text": "Go up the stairs."
+  },
+  "1569": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Stop in the bedroom.",
+   "goal_text": "Stop in the bedroom.",
+   "removed_text": "Walk through door way into the next room.Turn left and walk forward past the railing. Turn right and walk to the front of the stairs.Turn left and walk into the bedroom."
+  },
+  "1571": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Room with the TV and stop a few feet in front of the table in the middle of the room.",
+   "goal_text": "room with the TV and stop a few feet in front of the table in the middle of the room.",
+   "removed_text": "Go up the stairs and keep walking straight until you reach a wooden door.  Turn right into the"
+  },
+  "1577": {
+   "K": 3,
+   "kept_chunks": 2,
+   "instruction": "Go down one step on the next set of stairs and stop.",
+   "goal_text": "and stop.",
+   "removed_text": "Go down the stairs to the next floor."
+  },
+  "1596": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Walk to the massage table, and stop.",
+   "goal_text": "Walk to the massage table, and stop.",
+   "removed_text": "Walk forward up the two set of three stairs.  Enter the room at the end of the hallway."
+  },
+  "1713": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Make a left and walk through the doorway with the double glass doors that is to the left of the top of the staircase.  Stop in front of the small table with the red leather chairs in that room.",
+   "goal_text": "Make a left and walk through the doorway with the double glass doors that is to the left of the top of the staircase. Stop in front of the small table with the red leather chairs in that room.",
+   "removed_text": "Step out into the hallway and turn left.  Walk down the hallway."
+  },
+  "1727": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Go up 2 sets of stairs and turn right at doorway.",
+   "goal_text": "Go up 2 sets of stairs and turn right at doorway.",
+   "removed_text": "Exit room and turn left. Walk towards counter top and turn left at stairs."
+  },
+  "1825": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Wait in the room with the red carpet and book shelves.",
+   "goal_text": "Wait in the room with the red carpet and book shelves.",
+   "removed_text": "Turn around and  walk up the stairs."
+  },
+  "56": {
+   "K": 6,
+   "kept_chunks": 2,
+   "instruction": "Enter the room and wait there.",
+   "goal_text": "and wait there.",
+   "removed_text": "Walk through the kitchen and walk out the door into the hallway. Turn right and then left and enter the door closest to the table."
+  },
+  "57": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop in the door of the second bedroom.",
+   "goal_text": "then stop in the door of the second bedroom.",
+   "removed_text": "Turn left and walk across the kitchen hallway. When you get to a more open area, turn slight right and walk past the bedroom,"
+  },
+  "82": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Continue straight stop beside the bed.",
+   "goal_text": "continue straight stop beside the bed.",
+   "removed_text": "Turn right, walk straight through the arched door way,"
+  },
+  "96": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Go to the end of the hallway and wait in the archway near the painting.",
+   "goal_text": "Go to the end of the hallway and wait in the archway near the painting.",
+   "removed_text": "Walk towards the french doors and turn left. Walk past the kitchen area."
+  },
+  "247": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "End of hallway turn slight left and enter living room. Stop at couch.",
+   "goal_text": "end of hallway turn slight left and enter living room. Stop at couch.",
+   "removed_text": "walk straight to hallway on right. turn right and follow hallway, at the"
+  },
+  "250": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "In the right bedroom door and wait.",
+   "goal_text": "and in the right bedroom door and wait.",
+   "removed_text": "Go past the eye chart"
+  },
+  "262": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Stop in the doorway to the bathroom.",
+   "goal_text": "Stop in the doorway to the bathroom.",
+   "removed_text": "Leave the bedroom and take a right in the hallway Go down the hall and enter the bathroom first on your left."
+  },
+  "356": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Turn left, walk towards the white rug, while facing the closet turn right into  the second door, stop in front of the toilet.",
+   "goal_text": "turn left, walk towards the white rug, while facing the closet turn right into  the second door, stop in front of the toilet.",
+   "removed_text": "Go upstairs, turn right, walk into the bedroom, walk towards the night stand on the left side of the bed,"
+  },
+  "361": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop next to the door.",
+   "goal_text": "Stop next to the door.",
+   "removed_text": "Walk into the kitchen and go to the left once you pass the counters. Go straight into the small room with the sink."
+  },
+  "365": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Wait in threshold of laundry room.",
+   "goal_text": "Wait in threshold of laundry room.",
+   "removed_text": "Walk to end of hallway."
+  },
+  "411": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Stop next to the end table next to the couch with the bookshelf on your right.",
+   "goal_text": "Stop next to the end table next to the couch with the bookshelf on your right.",
+   "removed_text": "Walk to the living room on the far side of the counter."
+  },
+  "493": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Enter the bathroom and stop by the first sink.",
+   "goal_text": "Enter the bathroom and stop by the first sink.",
+   "removed_text": "Go through the doorway to the bedroom and walk past the bed to the door on the right."
+  },
+  "512": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Wait by the white couches in the next room.",
+   "goal_text": "Wait by the white couches in the next room.",
+   "removed_text": "Exit the kitchen and go towards the small table set. Turn right and turn right again past the table."
+  },
+  "610": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Wait in the bedroom.",
+   "goal_text": "and wait in the bedroom.",
+   "removed_text": "Walk to the far end of the room, through the double doors"
+  },
+  "634": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Wait beside the fridge.",
+   "goal_text": "and wait beside the fridge.",
+   "removed_text": "Turn right and enter through the sliding door. Continue past the TV on the right. Enter the kitchen"
+  },
+  "697": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop at the nightstand with the round clock and the lamp by the bed.",
+   "goal_text": "Stop at the nightstand with the round clock and the lamp by the bed.",
+   "removed_text": "Exit and the bathroom and turn left.  Walk past the white rug and into the bedroom."
+  },
+  "759": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Proceed to the exiting doorway and wait there.",
+   "goal_text": "Proceed to the exiting doorway and wait there.",
+   "removed_text": "Walk past the bathroom and turn right into the next room."
+  },
+  "778": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Turn left and go down the hall. Make a right after the light switches and stop in the archway.",
+   "goal_text": "Turn left and go down the hall. Make a right after the light switches and stop in the archway.",
+   "removed_text": "Had past the wooden table and towards the two archways.  Walk through the archway on the left."
+  },
+  "779": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Turn right through the entryway before the ovens. Stop once you are facing the long hallway.",
+   "goal_text": "Turn right through the entryway before the ovens. Stop once you are facing the long hallway.",
+   "removed_text": "Walk across the room to the other end of the table. Walk out the 2 small wood doors in front of you. Once out turn left and walk down the hallway."
+  },
+  "903": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Stop on the other side of the white table facing the yard and the brick wall.",
+   "goal_text": "Stop on the other side of the white table facing the yard and the brick wall.",
+   "removed_text": "Turn around and walk across the patio to the other side."
+  },
+  "925": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Wait by bed.",
+   "goal_text": "wait by bed.",
+   "removed_text": "Exit bathroom, make hard left into bedroom,"
+  },
+  "936": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Make a hard left, then another. Wait by the long table.",
+   "goal_text": "Make a hard left, then another. Wait by the long table.",
+   "removed_text": "Walk towards the mirror, and take a right. Walk straight through the open door in front of you."
+  },
+  "956": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Turn right and then another right to enter into the bedroom. Wait in the bedroom doorway.",
+   "goal_text": "Turn right and then another right to enter into the bedroom. Wait in the bedroom doorway.",
+   "removed_text": "Turn around and exit the kitchen."
+  },
+  "1017": {
+   "K": 4,
+   "kept_chunks": 2,
+   "instruction": "Go into the doorway to the right of the painting and wait.",
+   "goal_text": "and wait.",
+   "removed_text": "Go straight past the oven. Turn left and enter the doorway."
+  },
+  "1052": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Turn left and walk straight toward the pool. Wait near the pool.",
+   "goal_text": "Turn left and walk straight toward the pool. Wait near the pool.",
+   "removed_text": "Exit the room."
+  },
+  "1088": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Walk through the room past the sink and microwaves.  Stop after passing through the last doorway of the room with the microwaves and into the hall.",
+   "goal_text": "Walk through the room past the sink and microwaves. Stop after passing through the last doorway of the room with the microwaves and into the hall.",
+   "removed_text": "Stand with the wooden door behind you.  Walk straight, past the oven and through the door to the next room."
+  },
+  "1119": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Wait by the coffee table.",
+   "goal_text": "and wait by the coffee table.",
+   "removed_text": "Walk forward, pass the swimming pool,"
+  },
+  "1162": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Walk forward, and stop at the other door.",
+   "goal_text": "Walk forward, and stop at the other door.",
+   "removed_text": "Walk all the way forward towards the door, and turn left."
+  },
+  "1190": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Walk over one doormat, stop on the second doormat.",
+   "goal_text": "walk over one doormat, stop on the second doormat.",
+   "removed_text": "walk towards yellow chair and turn right, walk past couch and straight through doorway towards dining table, walk on left side of dining table through double doors,"
+  },
+  "1214": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Stop near the mantle.",
+   "goal_text": "Stop near the mantle.",
+   "removed_text": "Turn around and go through the archway. Turn left and take the extreme left."
+  },
+  "1283": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop in the doorway.",
+   "goal_text": "Stop in the doorway.",
+   "removed_text": "Leave the fitness room and go down the hall on the left of the wine rack. Enter the TV room on the left."
+  },
+  "1329": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Wait near the ledge with the vase and white flowers.",
+   "goal_text": "Wait near the ledge with the vase and white flowers.",
+   "removed_text": "Turn right and go straight past the bar with the stool/chairs."
+  },
+  "1339": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Wait in the hallway.",
+   "goal_text": "and wait in the hallway.",
+   "removed_text": "Turn around and walk through the small archway, turn hard right, then stop"
+  },
+  "1441": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Into the room on the right. Wait there.",
+   "goal_text": "and into the room on the right. Wait there.",
+   "removed_text": "Go around the bed"
+  },
+  "1462": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Go all the way down the hall until you get to a room on the right. Wait there.",
+   "goal_text": "Go all the way down the hall until you get to a room on the right. Wait there.",
+   "removed_text": "Go straight and then turn right into the hallway."
+  },
+  "1478": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "After you pass that turn left and wait near the two white couches and the coffee table.",
+   "goal_text": "After you pass that turn left and wait near the two white couches and the coffee table.",
+   "removed_text": "Walk past the table and chairs. Walk past the bar with the stools."
+  },
+  "1498": {
+   "K": 4,
+   "kept_chunks": 2,
+   "instruction": "Turn left. Wait there.",
+   "goal_text": "Wait there.",
+   "removed_text": "Exit the bathroom. Turn right and go down hallway until you get to the kitchen then"
+  },
+  "1503": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop in the hallway.",
+   "goal_text": "and stop in the hallway.",
+   "removed_text": "Walk into the bedroom and turn right. Walk to the right of the mirrored closet"
+  },
+  "1582": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Stop behind the first podium.",
+   "goal_text": "Stop behind the first podium.",
+   "removed_text": "Walk around the pews on the right, then go straight. Take a left at the wall."
+  },
+  "1584": {
+   "K": 2,
+   "kept_chunks": 1,
+   "instruction": "Stop once you reach the wooden barrier on the opposite corner.",
+   "goal_text": "and stop once you reach the wooden barrier on the opposite corner.",
+   "removed_text": "Go left around the wooden barrier"
+  },
+  "1585": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Wait near that door.",
+   "goal_text": "Wait near that door.",
+   "removed_text": "Exit the room using the second door on you right. Head straight until you see a door on the right."
+  },
+  "1682": {
+   "K": 3,
+   "kept_chunks": 1,
+   "instruction": "Stop in front of the sink.",
+   "goal_text": "and stop in front of the sink.",
+   "removed_text": "Walk toward the kitchen counter and turn left. Walk into the kitchen past the stove and refrigerator"
+  },
+  "1775": {
+   "K": 4,
+   "kept_chunks": 1,
+   "instruction": "Wait near the sink.",
+   "goal_text": "Wait near the sink.",
+   "removed_text": "Exit the closet. Turn right. Go straight and then when you get to the double doors turn right."
+  },
+  "1830": {
+   "K": 5,
+   "kept_chunks": 1,
+   "instruction": "Turn left at door and wait there.",
+   "goal_text": "turn left at door and wait there.",
+   "removed_text": "Exit bathroom and turn left, go through door and turn left, walk through door and go past rails,"
+  }
+ }
+}
