@@ -1,0 +1,156 @@
+{
+ "generator": "Claude Opus 5",
+ "batch": 7,
+ "episodes": {
+  "56": {
+   "A1": ["Go through the kitchen", "and head out through the door into the hallway.", "Turn right and then left", "and go in through the door nearest the table.", "Go into the room", "and wait there."],
+   "A2": ["Through the kitchen.", "Out the door into the hallway.", "Right, then left.", "In the door closest to the table.", "Into the room.", "Wait."],
+   "A3": ["So head on through the kitchen,", "and then go out through the door and into the hallway.", "Turn right and then turn left,", "and go in through whichever door is closest to the table.", "Head on into that room,", "and just wait there."],
+   "A4": ["Go through the cooking area", "and head out through the panel into the long narrow passage.", "Turn right and then left", "and go in through the opening nearest the flat-topped surface.", "Go into the space", "and wait there."]
+  },
+  "57": {
+   "A1": ["Turn left and cross the kitchen hallway.", "Once you reach a more open area, turn slightly right", "and go past the bedroom,", "then halt in the door of the second bedroom."],
+   "A2": ["Left, across the kitchen hallway.", "At a more open area, slightly right.", "Past the bedroom.", "Halt in the door of the second bedroom."],
+   "A3": ["So turn left and walk across the kitchen hallway.", "When you get to a more open area, turn a bit to the right,", "and then walk on past the bedroom,", "and you'll stop in the door of the second bedroom."],
+   "A4": ["Turn left and cross the passage by the cooking area.", "Once you reach a more open space, turn slightly right", "and go past the sleeping quarters,", "then halt in the opening of the second sleeping space."]
+  },
+  "82": {
+   "A1": ["Turn right, then carry straight on through the arched doorway,", "keep going straight and halt beside the bed."],
+   "A2": ["Right. Straight through the arched doorway.", "Straight on. Halt beside the bed."],
+   "A3": ["So turn right and then walk straight on through the arched doorway,", "and just keep going straight and stop next to the bed."],
+   "A4": ["Turn right, then carry straight on through the curved opening,", "keep going straight and halt beside the sleeping platform."]
+  },
+  "96": {
+   "A1": ["Head toward the french doors", "and turn left.", "Go past the kitchen area.", "Continue to the far end of the hallway and wait in the archway near the painting."],
+   "A2": ["Toward the french doors.", "Left.", "Past the kitchen area.", "To the end of the hallway. Wait in the archway near the painting."],
+   "A3": ["So head over toward the french doors,", "and then turn left.", "Walk on past the kitchen area.", "Keep going to the end of the hallway and wait in the archway, the one near the painting."],
+   "A4": ["Head toward the glazed garden panels", "and turn left.", "Go past the cooking area.", "Continue to the far end of the long narrow passage and wait in the curved opening near the framed artwork."]
+  },
+  "99": {
+   "A1": ["Go through the kitchen and into the hallway on the left beside the refrigerator. Then wait in the room across the hall."],
+   "A2": ["Through the kitchen, into the hallway on the left by the refrigerator. Wait in the room across the hall."],
+   "A3": ["So walk on through the kitchen and into the hallway that's on the left next to the refrigerator, and then wait in the room that's across the hall from there."],
+   "A4": ["Go through the cooking area and into the long narrow passage on the left beside the cold food cabinet. Then wait in the space across that passage."]
+  },
+  "247": {
+   "A1": ["carry straight on to the hallway on the right.", "turn right and follow the hallway, and at the", "far end of the hallway turn slightly left and go into the living room. Halt at the couch."],
+   "A2": ["Straight to the hallway on the right.", "Right, along the hallway. At the", "hallway's end, slightly left into the living room. Halt at the couch."],
+   "A3": ["So just go straight on to the hallway that's on the right.", "Then turn right and follow that hallway along, and once you're at the", "end of the hallway turn slightly left and head into the living room, and stop at the couch."],
+   "A4": ["carry straight on to the long narrow passage on the right.", "turn right and follow it, and at the", "far end of it turn slightly left and go into the main lounging space. Halt at the upholstered seating."]
+  },
+  "250": {
+   "A1": ["Go past the eye chart", "and in through the right bedroom door, then wait."],
+   "A2": ["Past the eye chart.", "In the right bedroom door. Wait."],
+   "A3": ["So walk on past the eye chart,", "and then go in through the right bedroom door and wait there."],
+   "A4": ["Go past the vision-testing poster", "and in through the right sleeping-quarters opening, then wait."]
+  },
+  "262": {
+   "A1": ["Head out of the bedroom", "and take a right into the hallway.", "Continue along the hall", "and go into the bathroom, the first one on your left.", "Halt in the doorway to the bathroom."],
+   "A2": ["Out of the bedroom.", "Right into the hallway.", "Down the hall.", "Into the bathroom, first on your left.", "Halt in the bathroom doorway."],
+   "A3": ["So head on out of the bedroom,", "and take a right once you're in the hallway.", "Walk on down the hall,", "and go into the bathroom, which is the first one on your left.", "And you'll stop in the doorway to the bathroom."],
+   "A4": ["Head out of the sleeping quarters", "and take a right into the long narrow passage.", "Continue along it", "and go into the washroom, the first one on your left.", "Halt in its opening."]
+  },
+  "356": {
+   "A1": ["Head upstairs, turn right, then go into the", "bedroom, and head toward the night stand on the left side of the bed,", "turn left, head toward the white rug, and while facing the closet turn right into the second door, then halt in front of the toilet."],
+   "A2": ["Upstairs, right, into the", "bedroom, toward the night stand on the left side of the bed,", "left, toward the white rug, facing the closet turn right into the second door, halt in front of the toilet."],
+   "A3": ["Okay so head upstairs, turn right, and then go on into the", "bedroom, and make your way toward the night stand that's on the left side of the bed,", "then turn left and head toward the white rug, and while you're facing the closet turn right into the second door, and stop in front of the toilet."],
+   "A4": ["Head to the upper level, turn right, then go into the", "sleeping quarters, and head toward the bedside cabinet on the left side of the sleeping platform,", "turn left, head toward the pale floor covering, and while facing the clothes-storage nook turn right into the second panel, then halt in front of the lavatory."]
+  },
+  "361": {
+   "A1": ["Head into the kitchen", "and go to the left once you have passed the counters.", "Carry straight on into the small room that has the sink.", "Halt beside the door."],
+   "A2": ["Into the kitchen.", "Left once past the counters.", "Straight into the small room with the sink.", "Halt by the door."],
+   "A3": ["So head on into the kitchen,", "and once you've gone past the counters go to the left.", "Then carry straight on into that small room, the one with the sink in it.", "And stop next to the door."],
+   "A4": ["Head into the cooking area", "and go to the left once you have passed the work surfaces.", "Carry straight on into the small space that has the basin.", "Halt beside the panel."]
+  },
+  "365": {
+   "A1": ["Head to the far end of the hallway.", "Wait in the threshold of the laundry room."],
+   "A2": ["To the end of the hallway.", "Wait in the laundry room threshold."],
+   "A3": ["So walk on down to the end of the hallway.", "And then wait in the threshold of the laundry room."],
+   "A4": ["Head to the far end of the long narrow passage.", "Wait in the doorway of the washing room."]
+  },
+  "411": {
+   "A1": ["Head to the living room on the far side of the counter.", "Halt beside the end table that sits next to the couch, with the bookshelf on your right."],
+   "A2": ["To the living room beyond the counter.", "Halt by the end table next to the couch, bookshelf on your right."],
+   "A3": ["So make your way to the living room, the one on the far side of the counter.", "And you'll stop next to the end table that's beside the couch, and the bookshelf will be on your right."],
+   "A4": ["Head to the main lounging space on the far side of the work surface.", "Halt beside the small side surface that sits next to the upholstered seating, with the shelving for books on your right."]
+  },
+  "493": {
+   "A1": ["Go through the doorway into the bedroom", "and head past the bed to the door on the right.", "Go into the bathroom and halt beside the first sink."],
+   "A2": ["Through the doorway into the bedroom.", "Past the bed, to the door on the right.", "Into the bathroom. Halt by the first sink."],
+   "A3": ["So go through the doorway and into the bedroom,", "and then walk past the bed over to the door that's on the right.", "Head into the bathroom and stop by the first sink."],
+   "A4": ["Go through the opening into the sleeping quarters", "and head past the sleeping platform to the panel on the right.", "Go into the washroom and halt beside the first basin."]
+  },
+  "501": {
+   "A1": ["Turn left and carry straight on. Wait at the far end of the hallway."],
+   "A2": ["Left. Straight on. Wait at the hallway's end."],
+   "A3": ["So turn left and then just keep going straight, and wait once you're at the end of the hallway."],
+   "A4": ["Turn left and carry straight on. Wait at the far end of the long narrow passage."]
+  },
+  "512": {
+   "A1": ["Head out of the kitchen", "and make your way toward the small table set.", "Turn right, then turn right again once past the table.", "Wait beside the white couches in the next room."],
+   "A2": ["Out of the kitchen.", "Toward the small table set.", "Right, then right again past the table.", "Wait by the white couches in the next room."],
+   "A3": ["So head on out of the kitchen,", "and go over toward that small table set.", "Turn right, and then turn right one more time once you're past the table.", "And wait next to the white couches in the next room."],
+   "A4": ["Head out of the cooking area", "and make your way toward the small dining set.", "Turn right, then turn right again once past it.", "Wait beside the pale sofas in the next space."]
+  },
+  "610": {
+   "A1": ["Head to the far end of the room and through the double doors", "and wait in the bedroom."],
+   "A2": ["To the far end of the room, through the double doors.", "Wait in the bedroom."],
+   "A3": ["So walk to the far end of the room and go through the double doors,", "and then wait in the bedroom."],
+   "A4": ["Head to the far end of the space and through the paired panels", "and wait in the sleeping quarters."]
+  },
+  "634": {
+   "A1": ["Turn right and go in through the sliding door.", "Carry on past the TV on the right.", "Go into the kitchen", "and wait beside the fridge."],
+   "A2": ["Right, in through the sliding door.", "Past the TV on the right.", "Into the kitchen.", "Wait by the fridge."],
+   "A3": ["So turn right and head in through the sliding door.", "Then keep going past the TV, it'll be on the right.", "Go into the kitchen from there,", "and wait next to the fridge."],
+   "A4": ["Turn right and go in through the panel that slides aside.", "Carry on past the screen on the right.", "Go into the cooking area", "and wait beside the cold food cabinet."]
+  },
+  "697": {
+   "A1": ["Head out and the bathroom", "and turn left.", "Go past the white rug and on into the bedroom.", "Halt at the nightstand that has the round clock and the lamp beside the bed."],
+   "A2": ["Out and the bathroom.", "Left.", "Past the white rug, into the bedroom.", "Halt at the nightstand with the round clock and the lamp by the bed."],
+   "A3": ["So head out and the bathroom,", "and then turn left.", "Walk past the white rug and on into the bedroom.", "You'll stop at the nightstand, the one with the round clock and the lamp on it, by the bed."],
+   "A4": ["Head out and the washroom", "and turn left.", "Go past the pale floor covering and on into the sleeping quarters.", "Halt at the bedside cabinet that has the circular timepiece and the light fixture beside the sleeping platform."]
+  },
+  "759": {
+   "A1": ["Go past the bathroom", "and turn right into the next room.", "Carry on to the exiting doorway and wait there."],
+   "A2": ["Past the bathroom.", "Right into the next room.", "On to the exiting doorway. Wait."],
+   "A3": ["So walk on past the bathroom,", "and then turn right, which takes you into the next room.", "Carry on over to the exiting doorway and wait there."],
+   "A4": ["Go past the washroom", "and turn right into the next space.", "Carry on to the outward opening and wait there."]
+  },
+  "773": {
+   "A1": ["Carry straight on until you come to a large door on your left with two large black vases on either side, and wait there."],
+   "A2": ["Straight on to a large door on your left with two large black vases on each side. Wait."],
+   "A3": ["So just head straight on until you get to a large door on your left, the one that's got two large black vases on each side of it, and wait there."],
+   "A4": ["Carry straight on until you come to a large panel on your left with two tall dark vessels on either side, and wait there."]
+  },
+  "778": {
+   "A1": ["Had past the wooden table and toward the two archways.", "Go through the archway on the left.", "Turn left and continue along the hall. Make a right after the light switches and halt in the archway."],
+   "A2": ["Past the wooden table, toward the two archways.", "Through the archway on the left.", "Left, down the hall. Right after the light switches. Halt in the archway."],
+   "A3": ["So had on past the wooden table and head toward those two archways.", "Then go through the archway that's on the left.", "Turn left and walk on down the hall, and make a right after the light switches, and you'll stop in the archway."],
+   "A4": ["Had past the timber surface and toward the two curved openings.", "Go through the curved opening on the left.", "Turn left and continue along the corridor. Make a right after the lighting controls and halt in the curved opening."]
+  },
+  "779": {
+   "A1": ["Cross the room to the other end of the table.", "Head out through the 2 small wood doors in front of you. Once outside, turn left", "and continue along the hallway.", "Turn right through the entryway before the ovens. Halt once you are facing the long hallway."],
+   "A2": ["Across the room to the table's other end.", "Out the 2 small wood doors ahead. Once out, left.", "Down the hallway.", "Right through the entryway before the ovens. Halt facing the long hallway."],
+   "A3": ["So walk across the room to the other end of the table.", "Then head out through those 2 small wood doors in front of you, and once you're out turn left,", "and walk on down the hallway.", "Turn right and go through the entryway that's before the ovens, and stop once you're facing the long hallway."],
+   "A4": ["Cross the space to the other end of the flat-topped surface.", "Head out through the 2 small timber panels in front of you. Once outside, turn left", "and continue along the long narrow passage.", "Turn right through the threshold before the baking appliances. Halt once you are facing that long passage."]
+  },
+  "785": {
+   "A1": ["Once you are out of the bathroom and the bedroom, wait in the hall just outside the doorway, beside the glass case with the dolls."],
+   "A2": ["After the bathroom and bedroom, wait in the hall just outside the doorway, by the glass case with the dolls."],
+   "A3": ["So after you've made your way out of the bathroom and the bedroom, you want to wait in the hall just outside the doorway, next to that glass case with the dolls in it."],
+   "A4": ["Once you are out of the washroom and the sleeping quarters, wait in the corridor just outside the opening, beside the glazed cabinet with the figurines."]
+  },
+  "903": {
+   "A1": ["Turn around and cross the patio to the far side.", "Halt on the far side of the white table, facing the yard and the brick wall."],
+   "A2": ["About-face. Across the patio to the other side.", "Halt on the other side of the white table, facing the yard and the brick wall."],
+   "A3": ["So turn yourself around and walk across the patio over to the other side.", "You'll stop on the other side of the white table, and you should be facing the yard and the brick wall."],
+   "A4": ["Turn around and cross the outdoor terrace to the far side.", "Halt on the far side of the pale outdoor surface, facing the lawn and the masonry partition."]
+  },
+  "925": {
+   "A1": ["Head out of the bathroom, make a hard left into the bedroom,", "and wait beside the bed."],
+   "A2": ["Out of the bathroom, hard left into the bedroom.", "Wait by the bed."],
+   "A3": ["So head on out of the bathroom and make a hard left, which takes you into the bedroom,", "and then wait next to the bed."],
+   "A4": ["Head out of the washroom, make a hard left into the sleeping quarters,", "and wait beside the sleeping platform."]
+  }
+ }
+}

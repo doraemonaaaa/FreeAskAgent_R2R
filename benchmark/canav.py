@@ -28,7 +28,7 @@ import json
 import re
 from pathlib import Path
 
-from .common import DATA_DIR, dump_json, load_json
+from .common import DEFAULT_SET, DIRECTION, data_path, dump_json, load_json, write_runner_run
 
 CANAV = Path("/data/pengyh/workspace/Reproductions/CA-Nav-code")
 CANAV_DATASET = CANAV / "data/datasets/R2R_VLNCE_v1-3_preprocessed/val_unseen/val_unseen.json.gz"
@@ -63,24 +63,49 @@ def locate(text, fragment, cursor=0):
     return None if start is None else (start, end)
 
 
-def drop_reply(reply, text, span):
-    """Remove the sub-instructions overlapping ``span`` and renumber the reply."""
-    keep, dropped = [], []
+def _walk(reply, text, span):
+    """Walk the reply's sub-instructions once, reporting which ones cover ``span``.
+
+    ``locate`` is cursor-driven, so the three rewriters below must advance the
+    cursor identically or they would disagree about where a sub-instruction
+    sits. Sharing the walk is what guarantees that.
+
+    Yields (index, sub, located, covers_span); ``located`` is None when the
+    sub-instruction could not be found in the text, and covers_span is then False.
+    """
     cursor = 0
     for index, sub in enumerate(reply["sub-instructions"]):
         located = locate(text, sub, cursor)
         if located is None:
-            keep.append(index)
+            yield index, sub, None, False
             continue
         cursor = located[1]
         overlap = max(0, min(located[1], span[1]) - max(located[0], span[0]))
-        (dropped if overlap >= 0.5 * (located[1] - located[0]) else keep).append(index)
-    if not dropped or not keep:
-        return None, dropped
+        yield index, sub, located, overlap >= 0.5 * (located[1] - located[0])
+
+
+def _renumbered(reply, keep):
+    """Reply with only the sub-instructions in ``keep``, renumbered 0..len(keep)-1.
+
+    state-constraints and decisions are keyed by the sub-instruction index as a
+    string, so dropping one means rewriting every later key -- done in one place
+    because getting it wrong silently misaligns constraints with instructions.
+    """
     out = dict(reply)
     out["sub-instructions"] = [reply["sub-instructions"][i] for i in keep]
     out["state-constraints"] = {str(n): reply["state-constraints"][str(i)] for n, i in enumerate(keep)}
     out["decisions"] = {str(n): reply["decisions"][str(i)] for n, i in enumerate(keep)}
+    return out
+
+
+def drop_reply(reply, text, span):
+    """Remove the sub-instructions overlapping ``span`` and renumber the reply."""
+    keep, dropped = [], []
+    for index, sub, located, covers in _walk(reply, text, span):
+        (dropped if covers else keep).append(index)
+    if not dropped or not keep:
+        return None, dropped
+    out = _renumbered(reply, keep)
     remaining = [c[1] for i in keep for c in reply["state-constraints"][str(i)]]
     dropped_objects = [c[1] for i in dropped for c in reply["state-constraints"][str(i)]]
     if reply["destination"] in dropped_objects and reply["destination"] not in remaining and remaining:
@@ -88,7 +113,7 @@ def drop_reply(reply, text, span):
     return out, dropped
 
 
-FLIP_WORD = re.compile(r"\b(left|right)\b", re.IGNORECASE)
+FLIP_WORD = DIRECTION
 
 
 def _flip_words(text):
@@ -98,14 +123,9 @@ def _flip_words(text):
 def flip_reply(reply, text, span):
     """Flip left/right in the GPT sub-instructions overlapping ``span`` (text, constraints, decisions)."""
     out = json.loads(json.dumps(reply))
-    cursor, flipped = 0, []
-    for index, sub in enumerate(reply["sub-instructions"]):
-        located = locate(text, sub, cursor)
-        if located is None:
-            continue
-        cursor = located[1]
-        overlap = max(0, min(located[1], span[1]) - max(located[0], span[0]))
-        if overlap >= 0.5 * (located[1] - located[0]) and FLIP_WORD.search(sub):
+    flipped = []
+    for index, sub, located, covers in _walk(reply, text, span):
+        if covers and FLIP_WORD.search(sub):
             out["sub-instructions"][index] = _flip_words(sub)
             out["state-constraints"][str(index)] = [[c[0], _flip_words(c[1]) if c[0] == "direction constraint" else c[1]]
                                                     for c in reply["state-constraints"][str(index)]]
@@ -117,27 +137,15 @@ def flip_reply(reply, text, span):
 
 def keep_last_reply(reply, text, last_span):
     """Keep only the sub-instructions overlapping the last FGR2R chunk; renumber."""
-    keep, cursor = [], 0
-    for index, sub in enumerate(reply["sub-instructions"]):
-        located = locate(text, sub, cursor)
-        if located is None:
-            continue
-        cursor = located[1]
-        overlap = max(0, min(located[1], last_span[1]) - max(located[0], last_span[0]))
-        if overlap >= 0.5 * (located[1] - located[0]):
-            keep.append(index)
+    keep = [index for index, sub, located, covers in _walk(reply, text, last_span) if covers]
     if not keep:
         keep = [len(reply["sub-instructions"]) - 1]
     if len(keep) == len(reply["sub-instructions"]):
         return None
-    out = dict(reply)
-    out["sub-instructions"] = [reply["sub-instructions"][i] for i in keep]
-    out["state-constraints"] = {str(n): reply["state-constraints"][str(i)] for n, i in enumerate(keep)}
-    out["decisions"] = {str(n): reply["decisions"][str(i)] for n, i in enumerate(keep)}
-    return out
+    return _renumbered(reply, keep)
 
 
-def write_split(name, base, gt, texts):
+def write_canav_split(name, base, gt, texts):
     directory = CANAV_BENCH / name
     directory.mkdir(parents=True, exist_ok=True)
     data = dict(base)
@@ -210,7 +218,7 @@ def build(args):
         if not texts:
             continue
         split = "{}_{}".format(args.name, name)
-        directory = write_split(split, base, gt, texts)
+        directory = write_canav_split(split, base, gt, texts)
         dump_json(table, directory / "llm_reply.json")
         dump_json(sorted(texts, key=int), directory / "episode_ids.json")
         print("{}: {} episodes -> {}".format(split, len(texts), directory))
@@ -225,26 +233,7 @@ def import_run(args):
     stats = {}
     for fn in glob.glob(str(exp / "stats_ep_ckpt_*.json")):
         stats.update(load_json(fn))
-    seen = set()
-    with open(out / "rank_0_trace.jsonl", "w") as trace, open(out / "rank_0.log", "w") as log:
-        for fn in sorted(glob.glob(str(exp / "traj_*.jsonl"))):
-            for line in open(fn):
-                rec = json.loads(line)
-                eid = rec["episode_id"]
-                if eid in seen:
-                    continue
-                seen.add(eid)
-                pos, dist = rec["positions"], rec["distances"]
-                for step in range(1, len(pos)):
-                    # sort_keys: benchmark.common.load_run parses the record from its
-                    # "distance_to_goal_after" key onwards, like the runner's own traces
-                    trace.write(json.dumps(dict(episode_id=eid, step=step - 1, position_before=pos[step - 1],
-                                                position_after=pos[step], distance_to_goal_before=dist[step - 1],
-                                                distance_to_goal_after=dist[step]), sort_keys=True) + "\n")
-                m = rec["metric"]
-                log.write("rank=0 id={} steps={} success={:.3f} spl={:.3f} dtg={:.2f} osr={:.0f} path_length={:.2f} ndtw={:.3f} sdtw={:.3f}\n".format(
-                    eid, int(m["steps_taken"]), m["success"], m["spl"], m["distance_to_goal"], m["oracle_success"],
-                    m["path_length"], m["ndtw"], m["sdtw"]))
+    seen = write_runner_run(glob.glob(str(exp / "traj_*.jsonl")), out)
     keys = ["success", "oracle_success", "spl", "distance_to_goal", "path_length", "steps_taken", "ndtw", "sdtw"]
     rows = [stats[e] for e in seen if e in stats]
     summary = {k: sum(r[k] for r in rows) / len(rows) for k in keys} if rows else {}
@@ -258,11 +247,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="cmd", required=True)
     b = sub.add_parser("build")
-    b.add_argument("--subgoals", default=str(DATA_DIR / "subgoals_val_unseen_200.json"))
-    b.add_argument("--variants", default=str(DATA_DIR / "variants_val_unseen_200.json"))
-    b.add_argument("--name", default="val_unseen_200")
-    b.add_argument("--flip", default=str(DATA_DIR / "flip_val_unseen_200.json"), help="flip json from build_flip ('' to skip)")
-    b.add_argument("--goalonly", default=str(DATA_DIR / "goalonly_val_unseen_200.json"), help="goal-only json ('' to skip)")
+    b.add_argument("--subgoals", default=str(data_path("subgoals")))
+    b.add_argument("--variants", default=str(data_path("swap_drop")))
+    b.add_argument("--name", default=DEFAULT_SET)
+    b.add_argument("--flip", default=str(data_path("flip")), help="flip json from build_flip ('' to skip)")
+    b.add_argument("--goalonly", default=str(data_path("goalonly")), help="goal-only json ('' to skip)")
     i = sub.add_parser("import")
     i.add_argument("--exp", required=True, help="CA-Nav experiment name under data/checkpoints/")
     i.add_argument("--out", required=True)

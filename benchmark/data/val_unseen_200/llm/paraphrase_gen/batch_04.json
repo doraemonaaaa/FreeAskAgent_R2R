@@ -1,0 +1,156 @@
+{
+ "generator": "Claude Opus 5",
+ "batch": 4,
+ "episodes": {
+  "781": {
+   "A1": ["Move ahead between the bar and the table to reach the chair."],
+   "A2": ["Ahead between bar and table, to the chair."],
+   "A3": ["So just move on ahead, going in between the bar and the table, and head over to the chair."],
+   "A4": ["Move ahead between the high drinks counter and the flat-topped surface to reach the single seat."]
+  },
+  "782": {
+   "A1": ["Turn to your left", "and go past the sports items on display.", "Halt once you reach the wood bench in the middle of the room. You should be facing the TV."],
+   "A2": ["Turn left.", "Past the sports items on display.", "Halt at the wood bench in the middle of the room, facing the TV."],
+   "A3": ["Okay so turn to your left,", "and then just walk on past those sports items that are on display.", "You'll stop when you get to the wood bench in the middle of the room, and at that point you should be facing the TV."],
+   "A4": ["Turn to your left", "and go past the athletic memorabilia on show.", "Halt once you reach the timber seat in the middle of the space. You should be facing the screen."]
+  },
+  "929": {
+   "A1": ["Turn left and head into the bedroom.", "Turn left, then turn left again", "and turn right into the bathroom just after the white rug."],
+   "A2": ["Left, into the bedroom.", "Left, then left again.", "Right into the bathroom after the white rug."],
+   "A3": ["So turn left and head on into the bedroom.", "Then turn left, and turn left one more time,", "and then turn right into the bathroom, which comes just after the white rug."],
+   "A4": ["Turn left and head into the sleeping quarters.", "Turn left, then turn left again", "and turn right into the washroom just after the pale floor covering."]
+  },
+  "954": {
+   "A1": ["Head between the counters,", "turn left, turn right, and halt before the display and the dining room."],
+   "A2": ["Between the counters.", "Left, right, halt before the display and dining room."],
+   "A3": ["So go on in between the counters,", "and then turn left, then turn right, and stop before you get to the display and the dining room."],
+   "A4": ["Head between the work surfaces,", "turn left, turn right, and halt before the exhibit case and the eating room."]
+  },
+  "1008": {
+   "A1": ["Head through the hall to the right side of the big clock.", "Head to the circular tile on the floor.", "Head through the hallway beside the wooden chair.", "Head to the dining table."],
+   "A2": ["Through the hall to the right side of the big clock.", "To the circular tile on the floor.", "Through the hallway beside the wooden chair.", "To the dining table."],
+   "A3": ["Okay so go on through the hall and over to the right side of the big clock.", "Then head to that circular tile on the floor.", "From there go through the hallway that's next to the wooden chair.", "And finally make your way to the dining table."],
+   "A4": ["Head through the corridor to the right side of the large timepiece.", "Head to the round floor piece.", "Head through the passage beside the timber seat.", "Head to the long eating surface."]
+  },
+  "1023": {
+   "A1": ["Head straight into the kitche.", "Go past the island and the cabinets.", "Halt just inside the next room."],
+   "A2": ["Straight into the kitche.", "Past the island and cabinets.", "Halt just inside the next room."],
+   "A3": ["So just head straight on into the kitche.", "Then walk past the island and the cabinets,", "and you'll stop once you're just inside the next room."],
+   "A4": ["Head straight into the kitche.", "Go past the freestanding counter and the storage units.", "Halt just inside the next space."]
+  },
+  "1035": {
+   "A1": ["Turn around and head to the left.", "Turn right and go through the kitchen.", "Halt at the far end of the hallway."],
+   "A2": ["About-face. To the left.", "Right, through the kitchen.", "Halt at the hallway's end."],
+   "A3": ["So turn yourself around and then head over to the left.", "From there turn right and cross on through the kitchen.", "And once you're at the end of the hallway, that's where you stop."],
+   "A4": ["Turn around and head to the left.", "Turn right and go through the cooking area.", "Halt at the far end of the long narrow passage."]
+  },
+  "1117": {
+   "A1": ["Head alongside the pool toward the bar directly in front of you."],
+   "A2": ["Alongside the pool, toward the bar directly ahead."],
+   "A3": ["So just walk along beside the pool and head toward the bar that's straight in front of you."],
+   "A4": ["Head alongside the swimming basin toward the high drinks counter directly in front of you."]
+  },
+  "1149": {
+   "A1": ["go around the sofa", "then head straight toward the island table."],
+   "A2": ["Around the sofa.", "Straight at the island table."],
+   "A3": ["So just make your way around the sofa,", "and then head straight on toward the island table."],
+   "A4": ["go around the upholstered seating", "then head straight toward the freestanding counter surface."]
+  },
+  "1191": {
+   "A1": ["Head toward the dining room table.", "Head out onto the entryway", "and cross to the far side of the hallway beside the entryway."],
+   "A2": ["Toward the dining room table.", "Out onto the entryway.", "Across to the far side of the hallway beside it."],
+   "A3": ["Okay so head over in the direction of the dining room table.", "Then go on out onto the entryway,", "and cross over to the other side of the hallway, the part that's next to the entryway."],
+   "A4": ["Head toward the long eating surface.", "Head out onto the threshold area", "and cross to the far side of the long narrow passage beside it."]
+  },
+  "1208": {
+   "A1": ["Head along the hall, and at the far end of it", "turn right into the butler's pantry."],
+   "A2": ["Down the hall. At its end,", "right into the butler's pantry."],
+   "A3": ["So walk on down the hall, and once you're at the end of it,", "turn right and that puts you in the butler's pantry."],
+   "A4": ["Head along the corridor, and at the far end of it", "turn right into the servant's food store."]
+  },
+  "1266": {
+   "A1": ["Go past the dining table,", "then turn right into the hallway.", "Turn left, continue along the hall, and halt once you reach the sofa."],
+   "A2": ["Past the dining table.", "Right into the hallway.", "Left, down the hall, halt at the sofa."],
+   "A3": ["So walk on past the dining table,", "and then turn right, which takes you into the hallway.", "From there turn left and head down the hall, and stop when you get to the sofa."],
+   "A4": ["Go past the long eating surface,", "then turn right into the long narrow passage.", "Turn left, continue along it, and halt once you reach the upholstered seating."]
+  },
+  "1305": {
+   "A1": ["Go past the table and the cabinet. Halt just beyond the chairs."],
+   "A2": ["Past the table and cabinet. Halt just past the chairs."],
+   "A3": ["So head on past the table and the cabinet, and you'll stop just after you've gone by the chairs."],
+   "A4": ["Go past the flat-topped surface and the storage unit. Halt just beyond the seats."]
+  },
+  "1382": {
+   "A1": ["Head toward the cock", "and go left past the mirror.", "Go to the left of the bed and on into the closet", "and halt."],
+   "A2": ["Toward the cock.", "Left past the mirror.", "To the left of the bed, into the closet.", "Halt."],
+   "A3": ["Okay so head over toward the cock,", "and then go left, past the mirror.", "Make your way to the left of the bed and on into the closet,", "and that's where you stop."],
+   "A4": ["Head toward the cock", "and go left past the reflective glass.", "Go to the left of the sleeping platform and on into the small storage nook", "and halt."]
+  },
+  "1432": {
+   "A1": ["Go past the couch", "and left across the room into the hallway.", "Go past the microwave, out of the room, and halt."],
+   "A2": ["Past the couch.", "Left across the room into the hallway.", "Past the microwave, out of the room. Halt."],
+   "A3": ["So walk on past the couch,", "and then go left through the room and into the hallway.", "From there head past the microwave, out of the room, and stop."],
+   "A4": ["Go past the upholstered seating", "and left across the space into the long narrow passage.", "Go past the countertop oven, out of the space, and halt."]
+  },
+  "1455": {
+   "A1": ["Head into the hall", "and turn right.", "Go through the entryway on the left and across the atrium.", "Go up to the tenth step", "and halt."],
+   "A2": ["Into the hall.", "Right.", "Through the entryway on the left, across the atrium.", "Up to the tenth step.", "Halt."],
+   "A3": ["Okay so head on into the hall,", "and then turn right.", "Go through that entryway on the left and make your way across the atrium.", "Then go up as far as the tenth step,", "and stop there."],
+   "A4": ["Head into the corridor", "and turn right.", "Go through the threshold on the left and across the skylit court.", "Go up to the tenth tread of the staircase", "and halt."]
+  },
+  "1581": {
+   "A1": ["Turn right and head along the hall,", "turn left at the circle", "and carry on into the next room."],
+   "A2": ["Right, down the hall.", "Left at the circle.", "On into the next room."],
+   "A3": ["So turn right and head on down the hall,", "and when you get to the circle turn left,", "and then just carry on into the next room."],
+   "A4": ["Turn right and head along the corridor,", "turn left at the round marking", "and carry on into the next space."]
+  },
+  "1583": {
+   "A1": ["move forward then turn left,", "go on again, then left at the corner, then go on again and turn left."],
+   "A2": ["Forward, then left.", "On again, left at the corner, on again, then left."],
+   "A3": ["So move forward for a bit and then turn left,", "then carry on walking, take a left when you reach the corner, then keep going again and turn left one more time."],
+   "A4": ["move forward then turn left,", "go on again, then left at the angle where the walls meet, then go on again and turn left."]
+  },
+  "1659": {
+   "A1": ["Turn around, head to the far end of the ropes, and halt just beyond the white line."],
+   "A2": ["About-face. To the end of the ropes. Halt just past the white line."],
+   "A3": ["So turn yourself around, go all the way to the end of the ropes, and stop just over the white line there."],
+   "A4": ["Turn around, head to the far end of the cordons, and halt just beyond the pale stripe."]
+  },
+  "1718": {
+   "A1": ["Turn left and continue straight until you reach a large table."],
+   "A2": ["Left. Straight to a large table."],
+   "A3": ["So turn left and then just keep going straight on until you get to a large table."],
+   "A4": ["Turn left and continue straight until you reach a large flat-topped surface."]
+  },
+  "1731": {
+   "A1": ["Continue straight and out of the room.", "Turn right and carry straight on.", "Go past the bar with the stools/chairs and the couches.", "Keep going straight until you reach a round table and chairs."],
+   "A2": ["Straight, out of the room.", "Right, then straight.", "Past the bar with the stools/chairs and the couches.", "Straight to a round table and chairs."],
+   "A3": ["Okay so go straight ahead and out of the room.", "Then turn right and carry on straight.", "You'll go past the bar that's got the stools and chairs, and the couches as well.", "Just keep going straight until you come to a round table with chairs."],
+   "A4": ["Continue straight and out of the space.", "Turn right and carry straight on.", "Go past the high drinks counter with its high seats and the upholstered seating.", "Keep going straight until you reach a circular surface and seats."]
+  },
+  "1765": {
+   "A1": ["Carry straight on.", "Go past the bar with the stools.", "Continue straight until you reach a table with chairs, then halt."],
+   "A2": ["Straight.", "Past the bar with the stools.", "Straight to a table with chairs. Halt."],
+   "A3": ["So just head straight on.", "You'll go past the bar that's got the stools by it.", "Then keep going straight until you get to a table with chairs around it, and stop there."],
+   "A4": ["Carry straight on.", "Go past the high drinks counter with its high seats.", "Continue straight until you reach a flat-topped surface with seats, then halt."]
+  },
+  "1766": {
+   "A1": ["With the large mirror on your left, move forward, going past the kitchen on your left, and halt level with the corner of the dining table that has eight chairs around it."],
+   "A2": ["Large mirror on your left. Forward, past the kitchen on your left. Halt level with the corner of the dining table with eight chairs."],
+   "A3": ["Okay so you've got that large mirror over on your left, and from there just move forward, you'll pass the kitchen which is also on your left, and you want to stop once you're even with the corner of the dining table, the one that's got eight chairs around it."],
+   "A4": ["With the large reflective glass on your left, move forward, going past the cooking area on your left, and halt level with the corner of the long eating surface that has eight seats around it."]
+  },
+  "1777": {
+   "A1": ["Go in front of the seats across the room and halt before the 6th seat from the left."],
+   "A2": ["In front of the seats across the room. Halt before the 6th seat from the left."],
+   "A3": ["So walk in front of the seats that are across the room, and you want to stop before you reach the 6th seat counting from the left."],
+   "A4": ["Go in front of the row of chairs across the space and halt before the 6th one from the left."]
+  },
+  "1784": {
+   "A1": ["Go left through the kitchen, then straight into the room in front of you that has a table with a scale on top of it, and halt."],
+   "A2": ["Left through the kitchen. Straight into the room ahead with the table that has a scale on it. Halt."],
+   "A3": ["So go left and head through the kitchen, then carry straight on into the room in front of you, the one that's got a table with a scale sitting on top of it, and that's where you stop."],
+   "A4": ["Go left through the cooking area, then straight into the space in front of you that has a flat-topped surface with a weighing device on top of it, and halt."]
+  }
+ }
+}

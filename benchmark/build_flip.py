@@ -17,28 +17,19 @@ Selection (per episode, one segment k >= 2):
 When several segments qualify the one with the largest turn is used.
 
 Outputs
-  benchmark/data/flip_<set>.json                 per-episode k, word, angle, flipped text, anchor point
+  benchmark/data/<set>/flip.json                 per-episode k, word, angle, flipped text, anchor point
   <habitat r2r>/<set>_flip/<set>_flip.json.gz    split for the v19 runner (+ gt copy, + ids file)
   CA-Nav / AwareVLN splits are written by benchmark.canav / benchmark.awarevln ``build --flip``.
 """
 import argparse
-import math
 import re
 
 import numpy as np
 
-from .common import DATA_DIR, R2R_DIR, dump_json, load_episodes, load_gt, load_json
+from .common import variant_parser, DEFAULT_SET, DIRECTION, R2R_DIR, data_path, ids_path, signed_angle, write_split, xz, dump_json, load_episodes, load_gt, load_json
 
-WORD = re.compile(r"\b(left|right)\b", re.IGNORECASE)
+WORD = DIRECTION
 OPPOSITE = {"left": "right", "right": "left"}
-
-
-def xz(p):
-    return np.asarray(p, dtype=np.float64)[[0, 2]]
-
-
-def signed_angle(a, b):
-    return math.degrees(math.atan2(a[0] * b[1] - a[1] * b[0], a[0] * b[0] + a[1] * b[1]))
 
 
 def incoming_direction(pts, i, dist=1.5):
@@ -93,13 +84,9 @@ def navigable(pathfinders, scene_id, point, tol=0.75):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--subgoals", default=str(DATA_DIR / "subgoals_val_unseen_200.json"))
-    parser.add_argument("--name", default="val_unseen_200")
-    parser.add_argument("--split", default="val_unseen")
+    parser = variant_parser(__doc__)
     parser.add_argument("--min-turn", type=float, default=45.0)
     parser.add_argument("--no-navmesh", action="store_true")
-    parser.add_argument("--no-splits", action="store_true")
     args = parser.parse_args()
 
     subgoals = load_json(args.subgoals)["episodes"]
@@ -145,23 +132,21 @@ def main():
                             instruction=flip_text(rec["instruction"], s["span"], word))
         if best:
             out[eid] = best
-        elif had_word and had_k1 and not had_word:
-            pass
         elif not had_word:
             rejected["no_word"] += 1
         elif had_k1:
             rejected["k1_only"] += 1
     meta = dict(name=args.name, split=args.split, min_turn=args.min_turn, navmesh=not args.no_navmesh,
+                provenance="rule-based minimal pair: exactly one left/right word replaced, everything else byte-identical",
                 flip_split="{}_flip".format(args.name), flip=out, rejected=rejected)
-    path = DATA_DIR / "flip_{}.json".format(args.name)
+    path = data_path("flip", args.name)
     dump_json(meta, path)
     words = [v["word"] for v in out.values()]
     print("flip episodes={} (left {}, right {}) rejected={}".format(len(out), words.count("left"), words.count("right"), rejected))
     print("wrote", path)
     if not args.no_splits:
-        from .build_variants import write_split
         directory = write_split(meta["flip_split"], raw, episodes, gt, {eid: v["instruction"] for eid, v in out.items()})
-        ids = DATA_DIR / "{}_flip_ids.txt".format(args.name)
+        ids = ids_path("flip", args.name)
         ids.write_text("# episode ids present in split {}_flip\n".format(args.name) + "".join(eid + "\n" for eid in out))
         print("wrote split", directory, "ids", ids)
 

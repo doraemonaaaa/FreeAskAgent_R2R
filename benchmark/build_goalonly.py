@@ -3,18 +3,15 @@
     python3 -m benchmark.build_goalonly
 
 Episodes with K = 1 are excluded (nothing to remove). Writes
-  benchmark/data/goalonly_<set>.json          per-episode text + removed prefix
+  benchmark/data/<set>/goalonly.json          per-episode text + removed prefix
   <habitat r2r>/<set>_goalonly/...            split for the v19 runner (+ gt, + ids file)
 CA-Nav / AwareVLN inputs: ``benchmark.canav build`` / ``benchmark.awarevln build`` (they read this json).
 """
 import argparse
 import re
 
-from .build_variants import write_split
-from .common import DATA_DIR, dump_json, load_episodes, load_gt, load_json
+from .common import variant_parser, BARE_STOP, DEFAULT_SET, write_split, data_path, ids_path, dump_json, load_episodes, load_gt, load_json
 
-
-BARE_STOP = re.compile(r"^(?:and |then )?(?:stop|wait|stand|end|halt|walk forward)(?: there| here| right there| right here| immediatly| immediately)?\.?$", re.IGNORECASE)
 
 
 def goal_only_text(instruction, last_span):
@@ -24,11 +21,7 @@ def goal_only_text(instruction, last_span):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--subgoals", default=str(DATA_DIR / "subgoals_val_unseen_200.json"))
-    parser.add_argument("--name", default="val_unseen_200")
-    parser.add_argument("--split", default="val_unseen")
-    parser.add_argument("--no-splits", action="store_true")
+    parser = variant_parser(__doc__)
     args = parser.parse_args()
     subgoals = load_json(args.subgoals)["episodes"]
     out = {}
@@ -46,8 +39,9 @@ def main():
             continue
         out[eid] = dict(K=rec["K"], kept_chunks=kept, instruction=goal_only_text(rec["instruction"], span),
                         goal_text=last["text"], removed_text=rec["instruction"][: span[0]].strip())
-    meta = dict(name=args.name, split=args.split, goalonly_split="{}_goalonly".format(args.name), goalonly=out)
-    path = DATA_DIR / "goalonly_{}.json".format(args.name)
+    meta = dict(name=args.name, split=args.split, provenance="rule-based: the last sub-instruction sliced out of the original text verbatim",
+                goalonly_split="{}_goalonly".format(args.name), goalonly=out)
+    path = data_path("goalonly", args.name)
     dump_json(meta, path)
     print("goal-only episodes={} (K=1 excluded {})".format(len(out), len(subgoals) - len(out)))
     print("wrote", path)
@@ -55,7 +49,7 @@ def main():
         episodes, raw = load_episodes(args.split)
         gt = load_gt(args.split)
         directory = write_split(meta["goalonly_split"], raw, episodes, gt, {eid: v["instruction"] for eid, v in out.items()})
-        ids = DATA_DIR / "{}_goalonly_ids.txt".format(args.name)
+        ids = ids_path("goalonly", args.name)
         ids.write_text("# episode ids present in split {}_goalonly\n".format(args.name) + "".join(eid + "\n" for eid in out))
         print("wrote split", directory, "ids", ids)
 

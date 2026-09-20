@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+
+# derived from data/subgoals_*.json by `build_paraphrase export`
+data/*/llm/paraphrase_gen/tasks.jsonl

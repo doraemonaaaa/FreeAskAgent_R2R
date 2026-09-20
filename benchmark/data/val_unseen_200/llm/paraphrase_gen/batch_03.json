@@ -1,0 +1,156 @@
+{
+ "generator": "Claude Opus 5",
+ "batch": 3,
+ "episodes": {
+  "35": {
+   "A1": ["Head over to the master bedroom that has the large sun burst mirror, it's", "straight past the potted plant in the hallway."],
+   "A2": ["To the master bedroom with the large sun burst mirror.", "Straight past the potted plant in the hallway."],
+   "A3": ["Okay so you're heading over to the master bedroom, the one that's got that large sun burst mirror in it, and", "it's just straight on past the potted plant that's in the hallway."],
+   "A4": ["Head over to the main sleeping quarters that has the large radiating starburst glass, it's", "straight past the greenery in its container out in the corridor."]
+  },
+  "43": {
+   "A1": ["Head into the kitchen area.", "Turn left.", "Take the first right into the dining area.", "Go past the dining table.", "Halt to the left of the tall lamp that has a white lampshade."],
+   "A2": ["Into the kitchen area.", "Left.", "First right into the dining area.", "Past the dining table.", "Halt to the left of the tall lamp with the white lampshade."],
+   "A3": ["So first just head on into the kitchen area.", "Then turn left.", "Take the first right you come to and that puts you in the dining area.", "Walk on past the dining table,", "and you'll stop to the left of that tall lamp, the one with a white lampshade on it."],
+   "A4": ["Head into the cooking area.", "Turn left.", "Take the first right into the eating area.", "Go past the long surface people eat at.", "Halt to the left of the tall light fixture that has a pale fabric shade."]
+  },
+  "45": {
+   "A1": ["Head along the hallway", "and go into the kitchen", "and take a left at the island counter into the hallway", "and take a right into the dining room", "and cross the dining room into the living room", "and halt next to the edge of the couch behind the end table."],
+   "A2": ["Along the hallway.", "Into the kitchen.", "Left at the island counter, into the hallway.", "Right into the dining room.", "Through the dining room into the living room.", "Halt next to the couch's edge, behind the end table."],
+   "A3": ["Okay so head on down the hallway,", "and then go into the kitchen,", "and when you get to the island counter take a left, which puts you in the hallway,", "then take a right and you'll be in the dining room,", "just carry on through the dining room and into the living room,", "and stop next to the edge of the couch, behind the end table."],
+   "A4": ["Head along the long narrow passage", "and go into the cooking area", "and take a left at the freestanding counter into that passage", "and take a right into the eating room", "and cross it into the main lounging space", "and halt next to the edge of the upholstered seating, behind the small side surface."]
+  },
+  "67": {
+   "A1": ["Face the walkway that has a kitchen counter with bar stools on the right and large windows on the other side", "and go past them toward a large dining table. Turn toward the sitting area and halt."],
+   "A2": ["Face the walkway: kitchen counter with bar stools on the right, large windows opposite.", "Past them, toward a large dining table. Turn to the sitting area. Halt."],
+   "A3": ["Alright, so turn to face the walkway, the one that's got a kitchen counter with bar stools along the right and large windows over on the other side,", "and then just go on past all of that heading toward a large dining table. Then turn toward the sitting area and that's where you stop."],
+   "A4": ["Face the passage that has a food-preparation surface with high seats on the right and large glazed openings on the other side", "and go past them toward a large eating surface. Turn toward the lounging area and halt."]
+  },
+  "75": {
+   "A1": ["turn hard left toward the dining area.", "go past the kitchen toward the living room.", "turn right by the couch", "and continue along the hallway, then turn left", "and head into the lounge."],
+   "A2": ["Hard left toward the dining area.", "Past the kitchen, toward the living room.", "Right at the couch.", "Down the hallway, then left.", "Into the lounge."],
+   "A3": ["Okay so turn hard to the left and head toward the dining area.", "Then walk on past the kitchen, making your way toward the living room.", "When you get to the couch turn right,", "and then head on down the hallway and turn left,", "and that takes you into the lounge, so go on in there."],
+   "A4": ["turn hard left toward the eating area.", "go past the cooking area toward the main lounging space.", "turn right by the upholstered seating", "and continue along the long narrow passage, then turn left", "and head into the sitting room."]
+  },
+  "134": {
+   "A1": ["If you head along the hall and go past the two large wicker baskets, you will come to a sitting area with a large orange couch directly ahead of you."],
+   "A2": ["Down the hall, past the two large wicker baskets. A sitting area with a large orange couch is directly ahead."],
+   "A3": ["So if you just head on down the hall and go past those two large wicker baskets, you'll see a sitting area up ahead with a large orange couch straight in front of you."],
+   "A4": ["If you head along the corridor and go past the two large woven storage containers, you will come to a lounging area with a large tangerine-coloured sofa directly ahead of you."]
+  },
+  "146": {
+   "A1": ["Go along the back of the couches, past the hanging wall clock, into the next room.", "Carry on down the hallway, going past the shelf with decorations beneath a mirror. Turn the corner", "and carry on past the hanging art piece that resembles an eye exam test."],
+   "A2": ["Behind the couches, past the hanging wall clock, into the next room.", "Down the hallway, past the shelf of decorations under a mirror. Turn the corner.", "Past the hanging art piece that looks like an eye exam test."],
+   "A3": ["Okay so walk along the backside of the couches, you'll go past a hanging wall clock, and that takes you into the next room.", "Then keep heading down the hallway, going past the shelf that's got decorations on it underneath a mirror, and turn the corner,", "and just carry on past that hanging art piece, the one that looks a bit like an eye exam test."],
+   "A4": ["Go along the back of the upholstered seating, past the suspended timepiece, into the next space.", "Carry on down the long narrow passage, going past the ledge with ornaments beneath a reflective glass. Turn the corner", "and carry on past the suspended artwork that resembles a vision-testing poster."]
+  },
+  "154": {
+   "A1": ["With the sink behind you, head out of the bathroom", "and into the hallway", "and into the pantry opposite the bathroom, then straight on into the kitchen", "and at the far end of the kitchen take a left into the closet that has the sink, halting beside the tall cabinet on the left."],
+   "A2": ["Sink at your back. Out of the bathroom.", "Into the hallway.", "Into the pantry opposite the bathroom, straight into the kitchen.", "At the kitchen's end, left into the closet with the sink. Halt beside the tall cabinet on the left."],
+   "A3": ["So you've got the sink at your back, and from there head on out of the bathroom,", "and into the hallway,", "and then into the pantry that's across from the bathroom, and just carry straight on into the kitchen,", "and once you're at the end of the kitchen take a left into the closet, the one with the sink in it, and stop next to the tall cabinet on the left."],
+   "A4": ["With the basin behind you, head out of the washroom", "and into the long narrow passage", "and into the food store opposite that washroom, then straight on into the cooking area", "and at the far end of it take a left into the small nook that has a basin, halting beside the tall storage unit on the left."]
+  },
+  "159": {
+   "A1": ["Move forward through the middle archway that looks down a hallway, and halt."],
+   "A2": ["Forward through the middle archway looking down a hallway. Halt."],
+   "A3": ["So just move forward and go through the middle archway, the one that looks down a hallway, and then stop there."],
+   "A4": ["Move forward through the central curved opening that looks down a long narrow passage, and halt."]
+  },
+  "161": {
+   "A1": ["Head to the 4 panel window. Head to the gold rug. Head to the white rug. Head to the third chair on the left.", "Head to the electrical receptacle."],
+   "A2": ["To the 4 panel window. To the gold rug. To the white rug. To the third chair on the left.", "To the electrical receptacle."],
+   "A3": ["Okay so first go over to the 4 panel window, then from there head to the gold rug, after that the white rug, and then on to the third chair on the left.", "And the last thing is to go over to the electrical receptacle."],
+   "A4": ["Head to the four-section glazed opening. Head to the amber floor covering. Head to the pale floor covering. Head to the third seat on the left.", "Head to the power outlet on the wall."]
+  },
+  "208": {
+   "A1": ["Head to the left, making your way toward the right arch at the back of the room.", "Continue through into the next room and halt once you are at the rug in front of the dining set."],
+   "A2": ["To the left, toward the right arch at the back of the room.", "Through into the next room. Halt at the rug in front of the dining set."],
+   "A3": ["So walk over to the left, heading toward that right arch at the back of the room.", "Then go on through into the next room and stop when you get to the rug that's in front of the dining set."],
+   "A4": ["Head to the left, making your way toward the right curved opening at the back of the space.", "Continue through into the next space and halt once you are at the floor covering in front of the eating furniture."]
+  },
+  "248": {
+   "A1": ["head straight on and make a sharp left", "then head toward the living room, where you will see a photo frame showing the nyc skyline."],
+   "A2": ["Straight. Sharp left.", "Toward the living room, where a photo frame of the nyc skyline is."],
+   "A3": ["So just go straight ahead and then make a sharp left,", "and from there head over toward the living room, where you'll see a photo frame with the nyc skyline in it."],
+   "A4": ["head straight on and make a sharp left", "then head toward the main lounging space, where you will see a mounted picture showing the nyc cityscape."]
+  },
+  "281": {
+   "A1": ["Head to the left of the living area,", "and carry on past it.", "Take a right", "and head to the pool table."],
+   "A2": ["To the left of the living area.", "Past it.", "Right.", "To the pool table."],
+   "A3": ["Okay so head over to the left of the living area,", "and then just keep going past it.", "Take a right from there,", "and make your way over to the pool table."],
+   "A4": ["Head to the left of the main lounging space,", "and carry on past it.", "Take a right", "and head to the green felt games surface."]
+  },
+  "289": {
+   "A1": ["Head right around the counter", "and turn left.", "Carry on until you are at the far end of the second orange couch."],
+   "A2": ["Right around the counter.", "Left.", "On to the far end of the second orange couch."],
+   "A3": ["So go right around the counter,", "and then turn left.", "Just keep going until you're at the end of the second orange couch."],
+   "A4": ["Head right around the work surface", "and turn left.", "Carry on until you are at the far end of the second tangerine-coloured sofa."]
+  },
+  "327": {
+   "A1": ["Head up to the photo on the wall directly in front of you."],
+   "A2": ["To the photo on the wall directly ahead."],
+   "A3": ["So there's a photo up on the wall straight in front of you, just walk on up to that."],
+   "A4": ["Head up to the framed picture on the partition directly in front of you."]
+  },
+  "396": {
+   "A1": ["Head to the front of the fireplace."],
+   "A2": ["To the front of the fireplace."],
+   "A3": ["So just make your way over to the front of the fireplace."],
+   "A4": ["Head to the front of the hearth where logs are burned."]
+  },
+  "419": {
+   "A1": ["Head along the hall toward the eye chart.", "Carry on past it on your left, with a sitting area on your right.", "Halt once you reach a long dining table."],
+   "A2": ["Down the hall toward the eye chart.", "Past it on your left, sitting area on your right.", "Halt at a long dining table."],
+   "A3": ["Okay so head on down the hall in the direction of the eye chart.", "Then just keep walking past it, it'll be on your left, and there's a sitting area on your right.", "You'll stop when you get to a long dining table."],
+   "A4": ["Head along the corridor toward the vision-testing poster.", "Carry on past it on your left, with a lounging area on your right.", "Halt once you reach a long eating surface."]
+  },
+  "448": {
+   "A1": ["Head along the hall. Halt beneath the hanging light in the hallway."],
+   "A2": ["Down the hall. Halt under the hanging light."],
+   "A3": ["So just walk on down the hall, and you'll stop underneath that hanging light in the hallway."],
+   "A4": ["Head along the corridor. Halt beneath the suspended lamp in that corridor."]
+  },
+  "485": {
+   "A1": ["Head toward the two brown daybeds.", "Carry on past them", "and turn right.", "Go past the daybeds once more to reach the pool table."],
+   "A2": ["Toward the two brown daybeds.", "Past them.", "Right.", "Past the daybeds again, to the pool table."],
+   "A3": ["So head over toward those two brown daybeds.", "Then just keep going past them,", "and turn right.", "You'll go past the daybeds again and end up at the pool table."],
+   "A4": ["Head toward the two chestnut-coloured lounging platforms.", "Carry on past them", "and turn right.", "Go past them once more to reach the green felt games surface."]
+  },
+  "503": {
+   "A1": ["Head to the ottoman.", "Head to the bed.", "Head to the wardrobe.", "Head to the glass jug."],
+   "A2": ["To the ottoman.", "To the bed.", "To the wardrobe.", "To the glass jug."],
+   "A3": ["Okay so first go over to the ottoman.", "Then from there head to the bed.", "After that, on to the wardrobe.", "And finally make your way to the glass jug."],
+   "A4": ["Head to the low padded footrest.", "Head to the sleeping platform.", "Head to the tall clothes-storage cupboard.", "Head to the clear pitcher."]
+  },
+  "527": {
+   "A1": ["Turn and follow the line of rugs laid out across the floor, going past the bathroom.", "Where you are headed is a room with a bed that has a large wooden trunk at its end."],
+   "A2": ["Turn. Follow the rugs across the floor, past the bathroom.", "Destination: the room with a bed that has a large wooden trunk at its end."],
+   "A3": ["So turn around and follow the path made by the rugs laid out on the floor, and that takes you past the bathroom.", "Where you're trying to get to is a room with a bed in it, and there's a large wooden trunk at the end of that bed."],
+   "A4": ["Turn and follow the line of floor coverings laid out across the ground, going past the washroom.", "Where you are headed is a space with a sleeping platform that has a large timber chest at its end."]
+  },
+  "548": {
+   "A1": ["Turn to the right", "and move forward."],
+   "A2": ["Turn right.", "Forward."],
+   "A3": ["So turn yourself to the right,", "and then just move forward from there."],
+   "A4": ["Turn to the right", "and move forward."]
+  },
+  "549": {
+   "A1": ["Head toward the painting of the woman in a white dress.", "Turn right at the painting.", "Follow the red path until you are standing beside two red and white chairs."],
+   "A2": ["Toward the painting of the woman in a white dress.", "Right at the painting.", "Follow the red path to two red and white chairs."],
+   "A3": ["Okay so head over toward that painting of the woman wearing a white dress.", "Once you're at the painting, turn right.", "Then follow the red path along until you're standing next to two chairs that are red and white."],
+   "A4": ["Head toward the framed portrait of the woman in a pale gown.", "Turn right at that artwork.", "Follow the crimson floor runner until you are standing beside two crimson and pale seats."]
+  },
+  "649": {
+   "A1": ["Turn right and head toward the far end.", "Once you reach the end, make a right", "and halt."],
+   "A2": ["Right. Toward the end.", "At the end, right.", "Halt."],
+   "A3": ["So turn right and start heading toward the end.", "When you get all the way to the end, make a right,", "and that's where you stop."],
+   "A4": ["Turn right and head toward the far extremity.", "Once you reach it, make a right", "and halt."]
+  },
+  "657": {
+   "A1": ["Head to the painting.", "Head to the electrical receptacle.", "Head to the NQHG painting.", "Head to the couch.", "Head to the footstool."],
+   "A2": ["To the painting.", "To the electrical receptacle.", "To the NQHG painting.", "To the couch.", "To the footstool."],
+   "A3": ["Okay so first go over to the painting.", "Then head on to the electrical receptacle.", "After that, make your way to the NQHG painting.", "Then on to the couch.", "And finally the footstool."],
+   "A4": ["Head to the framed artwork.", "Head to the power outlet on the wall.", "Head to the artwork lettered NQHG.", "Head to the upholstered seating.", "Head to the low padded footrest."]
+  }
+ }
+}

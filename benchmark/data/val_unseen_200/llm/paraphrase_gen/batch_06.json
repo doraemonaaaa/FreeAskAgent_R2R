@@ -1,0 +1,156 @@
+{
+ "generator": "Claude Opus 5",
+ "batch": 6,
+ "episodes": {
+  "970": {
+   "A1": ["Go past the long rectangular dining table to the left, then", "turn left. Wait beneath the stairs."],
+   "A2": ["Past the long rectangular dining table to the left, then", "left. Wait under the stairs."],
+   "A3": ["So walk on past that long rectangular dining table, keeping to the left, and then", "turn left. You'll wait underneath the stairs."],
+   "A4": ["Go past the long oblong eating surface to the left, then", "turn left. Wait beneath the flight of steps."]
+  },
+  "991": {
+   "A1": ["Turn right and go past the stairs", "and past the couch.", "Go into the dining room.", "Carry on along the hall", "and halt in the kitchen."],
+   "A2": ["Right, past the stairs.", "Past the couch.", "Into the dining room.", "Along the hall.", "Halt in the kitchen."],
+   "A3": ["So turn right and walk on past the stairs,", "and then past the couch as well.", "Go into the dining room from there.", "Keep heading down the hall,", "and you'll stop once you're in the kitchen."],
+   "A4": ["Turn right and go past the flight of steps", "and past the upholstered seating.", "Go into the eating room.", "Carry on along the corridor", "and halt in the cooking area."]
+  },
+  "1065": {
+   "A1": ["Head out of the bedroom and carry straight on.", "When you reach the glass wine room, turn left", "and go through the doorway just past it.", "Continue along the hallway to the right", "and turn left at the stairs.", "Go up the first step and then halt."],
+   "A2": ["Out of the bedroom, straight on.", "At the glass wine room, left.", "Through the doorway past it.", "Along the hallway to the right.", "Left at the stairs.", "Up the first step. Halt."],
+   "A3": ["Okay so head out of the bedroom and just go straight.", "Once you get to the glass wine room, turn left,", "and go through the doorway that's just past it.", "Then head down the hallway to the right,", "and turn left when you reach the stairs.", "Go up that first step and then stop."],
+   "A4": ["Head out of the sleeping quarters and carry straight on.", "When you reach the glazed wine store, turn left", "and go through the opening just past it.", "Continue along the long narrow passage to the right", "and turn left at the flight of steps.", "Go up the first tread and then halt."]
+  },
+  "1072": {
+   "A1": ["Head away from the fireplace, going past the table.", "Go through the door and up the stairs.", "Carry on past the first landing.", "Halt on the second stair up from the landing."],
+   "A2": ["Away from the fireplace, past the table.", "Through the door, up the stairs.", "Past the first landing.", "Halt on the second stair up from it."],
+   "A3": ["So walk away from the fireplace and head on past the table.", "Then go through the door and up the stairs.", "Keep going past the first landing,", "and you'll stop on the second stair up from that landing."],
+   "A4": ["Head away from the hearth, going past the flat-topped surface.", "Go through the panel and up the steps.", "Carry on past the first level platform.", "Halt on the second tread up from it."]
+  },
+  "1187": {
+   "A1": ["carry straight on past the", "Tv, past the", "fridge, up 5 stairs, and halt at the top."],
+   "A2": ["Straight past the", "Tv, past the", "fridge, up 5 stairs. Halt at the top."],
+   "A3": ["So just keep going straight on past the", "Tv, and then past the", "fridge, then up 5 stairs and stop once you're at the top."],
+   "A4": ["carry straight on past the", "screen, past the", "cold food cabinet, up 5 treads, and halt at the top."]
+  },
+  "1223": {
+   "A1": ["Carry straight on until you reach a porch.", "Head up the steps of the porch and into the house through the glass double doors. Wait near the tv."],
+   "A2": ["Straight to a porch.", "Up the porch steps, into the house through the glass double doors. Wait near the tv."],
+   "A3": ["So just keep walking straight until you come to a porch.", "Then head up the steps of that porch and go into the house using the glass double doors, and wait somewhere near the tv."],
+   "A4": ["Carry straight on until you reach a covered veranda.", "Head up its treads and into the dwelling through the glazed paired panels. Wait near the screen."]
+  },
+  "1232": {
+   "A1": ["Turn right and head toward the stairs.", "Turn right and wait beside the lamp before you reach the stairs."],
+   "A2": ["Right, toward the stairs.", "Right. Wait by the lamp before the stairs."],
+   "A3": ["So turn right and start heading over toward the stairs.", "Then turn right again and wait next to the lamp, before you actually get to the stairs."],
+   "A4": ["Turn right and head toward the flight of steps.", "Turn right and wait beside the light fixture before you reach it."]
+  },
+  "1236": {
+   "A1": ["Carry straight on up the stairs.", "Wait at the top."],
+   "A2": ["Straight up the stairs.", "Wait at the top."],
+   "A3": ["So just head straight on up the stairs.", "And then wait once you're at the top."],
+   "A4": ["Carry straight on up the flight of steps.", "Wait at the top."]
+  },
+  "1243": {
+   "A1": ["Head down the stairs", "and halt at the very bottom."],
+   "A2": ["Down the stairs.", "Halt at the very bottom."],
+   "A3": ["So head on down the stairs,", "and stop once you're all the way at the bottom."],
+   "A4": ["Head down the flight of steps", "and halt at the very lowest tread."]
+  },
+  "1252": {
+   "A1": ["Turn around and head up onto the patio.", "Go in through the door to the left", "and enter the sitting room.", "Cross the sitting room and go into the kitchen.", "Halt before you reach the steps."],
+   "A2": ["About-face. Up onto the patio.", "In through the door to the left.", "Into the sitting room.", "Across it, into the kitchen.", "Halt before the steps."],
+   "A3": ["So turn yourself around and walk up onto the patio.", "Then go in through the door that's to the left,", "and that brings you into the sitting room.", "Walk across the sitting room and on into the kitchen.", "And you want to stop before you get to the steps."],
+   "A4": ["Turn around and head up onto the outdoor terrace.", "Go in through the panel to the left", "and enter the lounging room.", "Cross it and go into the cooking area.", "Halt before you reach the treads."]
+  },
+  "1349": {
+   "A1": ["Head out of the stairway area through the single door.", "Turn left, go down the steps and through the double doors ahead.", "Carry on forward down another set of steps.", "Wait beside the reception desk."],
+   "A2": ["Out of the stairway area through the single door.", "Left, down the steps, through the double doors ahead.", "Forward, down another set of steps.", "Wait by the reception desk."],
+   "A3": ["So head out of the stairway area, going through the single door.", "Then turn left, head down the steps and on through the double doors that are ahead of you.", "Keep going forward and down another set of steps.", "And wait by the reception desk."],
+   "A4": ["Head out of the stairwell through the lone panel.", "Turn left, go down the treads and through the paired panels ahead.", "Carry on forward down another run of treads.", "Wait beside the front counter where guests check in."]
+  },
+  "1404": {
+   "A1": ["Head out of the kitchen", "and turn left. Wait at the foot of the stairs."],
+   "A2": ["Out of the kitchen.", "Left. Wait at the bottom of the stairs."],
+   "A3": ["So head on out of the kitchen,", "and then turn left, and wait down at the bottom of the stairs."],
+   "A4": ["Head out of the cooking area", "and turn left. Wait at the foot of the flight of steps."]
+  },
+  "1413": {
+   "A1": ["Carry straight on and head up the stairs.", "Turn left and continue up the stairs.", "Wait on that floor with the long blue carpet."],
+   "A2": ["Straight, up the stairs.", "Left, further up the stairs.", "Wait on the floor with the long blue carpet."],
+   "A3": ["So go straight on and head up the stairs.", "Then turn left and keep going up the stairs.", "And you'll wait on that floor, the one with the long blue carpet."],
+   "A4": ["Carry straight on and head up the flight of steps.", "Turn left and continue up the treads.", "Wait on that level with the long blue floor runner."]
+  },
+  "1447": {
+   "A1": ["Head into the hall ahead.", "Go down the flight of stairs that has an iron railing.", "Carry on to the foot of the stairs", "and halt near the bench at the bottom, beside a closed door."],
+   "A2": ["Into the hall ahead.", "Down the flight of stairs with the iron railing.", "On to the bottom of the stairs.", "Halt near the bench at the bottom, next to a closed door."],
+   "A3": ["So head into the hall that's ahead of you.", "Then go down the flight of stairs, the ones with an iron railing.", "Keep going all the way to the bottom of the stairs,", "and stop near the bench down there, the one that's next to a closed door."],
+   "A4": ["Head into the corridor ahead.", "Go down the run of treads that has a wrought metal railing.", "Carry on to the foot of it", "and halt near the long seat at the bottom, beside a shut panel."]
+  },
+  "1452": {
+   "A1": ["Turn around and head out through the door on the left.", "Continue all the way along until you reach the green steps. At the steps, turn right", "and go in through the door to the left.", "Halt once you reach the table."],
+   "A2": ["About-face. Out the door on the left.", "All the way along to the green steps. At them, right.", "In through the door to the left.", "Halt at the table."],
+   "A3": ["So turn yourself around and head out through the door that's on the left.", "Then walk all the way along until you get to the green steps, and once you're at the steps turn right,", "and go in through the door that's to the left.", "You'll stop once you reach the table."],
+   "A4": ["Turn around and head out through the panel on the left.", "Continue all the way along until you reach the green treads. At them, turn right", "and go in through the opening to the left.", "Halt once you reach the flat-topped surface."]
+  },
+  "1469": {
+   "A1": ["Head out through the door to the left of the bed.", "Make your way to the staircase", "and head down one set of steps. Wait beside the door."],
+   "A2": ["Out the door to the left of the bed.", "To the staircase.", "Down one set of steps. Wait by the door."],
+   "A3": ["So head out through the door that's to the left of the bed.", "Then walk over to the staircase,", "and go down one set of steps, and wait by the door there."],
+   "A4": ["Head out through the panel to the left of the sleeping platform.", "Make your way to the flight of steps", "and head down one run of treads. Wait beside the opening."]
+  },
+  "1494": {
+   "A1": ["Position yourself with the bed behind you", "and carry straight on along the red carpet.", "Go into the room that has the tile floor", "and halt after a few steps, nearer the middle of the room."],
+   "A2": ["Bed behind you.", "Straight along the red carpet.", "Into the room with the tile floor.", "Halt a few steps in, nearer the middle."],
+   "A3": ["So stand with the bed behind you,", "and then just walk straight on down the red carpet.", "Go into the room that's got the tile floor,", "and stop after a few steps, once you're closer to the middle of the room."],
+   "A4": ["Position yourself with the sleeping platform behind you", "and carry straight on along the crimson floor runner.", "Go into the space that has the ceramic flooring", "and halt after a few paces, nearer the middle of it."]
+  },
+  "1552": {
+   "A1": ["Head up the stairs.", "Wait beside the support pillar for the stairs."],
+   "A2": ["Up the stairs.", "Wait by the support pillar for the stairs."],
+   "A3": ["So head on up the stairs.", "And then wait next to that support pillar for the stairs."],
+   "A4": ["Head up the flight of steps.", "Wait beside the load-bearing column that holds them up."]
+  },
+  "1569": {
+   "A1": ["Go through the doorway into the next room.", "Turn left and move forward past the railing.", "Turn right and go to the front of the stairs.", "Turn left and head into the bedroom.", "Halt in the bedroom."],
+   "A2": ["Through the doorway into the next room.", "Left, forward past the railing.", "Right, to the front of the stairs.", "Left, into the bedroom.", "Halt in the bedroom."],
+   "A3": ["So go through the doorway and into the next room.", "Then turn left and move forward, going past the railing.", "From there turn right and head to the front of the stairs.", "Turn left and go into the bedroom.", "And the bedroom is where you stop."],
+   "A4": ["Go through the opening into the next space.", "Turn left and move forward past the balustrade.", "Turn right and go to the front of the flight of steps.", "Turn left and head into the sleeping quarters.", "Halt there."]
+  },
+  "1571": {
+   "A1": ["Head up the stairs", "and keep going straight until you come to a wooden door. Turn right into the", "room that has the TV, and halt a few feet in front of the table in the middle of the room."],
+   "A2": ["Up the stairs.", "Straight to a wooden door. Right into the", "room with the TV. Halt a few feet in front of the table in the middle."],
+   "A3": ["So head on up the stairs,", "and then just keep walking straight until you reach a wooden door. Turn right and that puts you into the", "room with the TV, and you want to stop a few feet in front of the table that's in the middle of the room."],
+   "A4": ["Head up the flight of steps", "and keep going straight until you come to a timber panel. Turn right into the", "space that has the screen, and halt a few feet in front of the flat-topped surface in the middle of it."]
+  },
+  "1577": {
+   "A1": ["Head down the stairs to the next floor.", "Go down one step on the next set of stairs", "and halt."],
+   "A2": ["Down the stairs to the next floor.", "Down one step on the next set.", "Halt."],
+   "A3": ["So head on down the stairs to the next floor.", "Then go down just one step on the next set of stairs,", "and stop there."],
+   "A4": ["Head down the flight of steps to the next level.", "Go down one tread on the following run", "and halt."]
+  },
+  "1596": {
+   "A1": ["Move forward up the two sets of three stairs.", "Go into the room at the far end of the hallway.", "Head over to the massage table and halt."],
+   "A2": ["Forward, up the two sets of three stairs.", "Into the room at the hallway's end.", "To the massage table. Halt."],
+   "A3": ["So move forward and go up those two sets of three stairs.", "Then head into the room at the end of the hallway.", "Walk over to the massage table and stop there."],
+   "A4": ["Move forward up the two runs of three treads.", "Go into the space at the far end of the long narrow passage.", "Head over to the padded therapy bed and halt."]
+  },
+  "1713": {
+   "A1": ["Step out into the hallway", "and turn left.", "Continue along the hallway.", "Make a left and go through the doorway with the double glass doors, the one to the left of the top of the staircase. Halt in front of the small table with the red leather chairs in that room."],
+   "A2": ["Out into the hallway.", "Left.", "Down the hallway.", "Left, through the doorway with the double glass doors, to the left of the top of the staircase. Halt in front of the small table with the red leather chairs."],
+   "A3": ["So step on out into the hallway,", "and then turn left.", "Walk along down the hallway,", "and make a left and go through that doorway with the double glass doors, it's the one to the left of the top of the staircase. You'll stop in front of the small table with the red leather chairs in that room."],
+   "A4": ["Step out into the long narrow passage", "and turn left.", "Continue along it.", "Make a left and go through the opening with the paired glazed panels, the one to the left of the top of the flight of steps. Halt in front of the small flat-topped surface with the crimson hide seats in that space."]
+  },
+  "1727": {
+   "A1": ["Head out of the room and turn left.", "Make your way toward the counter top", "and turn left at the stairs.", "Go up 2 sets of stairs and turn right at the doorway."],
+   "A2": ["Out of the room. Left.", "Toward the counter top.", "Left at the stairs.", "Up 2 sets of stairs. Right at the doorway."],
+   "A3": ["So head out of the room and turn left.", "Then make your way over toward the counter top,", "and when you get to the stairs turn left.", "Go up 2 sets of stairs and then turn right at the doorway."],
+   "A4": ["Head out of the space and turn left.", "Make your way toward the work surface", "and turn left at the flight of steps.", "Go up 2 runs of treads and turn right at the opening."]
+  },
+  "1825": {
+   "A1": ["Turn around and head up the stairs.", "Wait in the room that has the red carpet and book shelves."],
+   "A2": ["About-face. Up the stairs.", "Wait in the room with the red carpet and book shelves."],
+   "A3": ["So turn yourself around and go on up the stairs.", "Then wait in the room, the one that's got the red carpet and book shelves in it."],
+   "A4": ["Turn around and head up the flight of steps.", "Wait in the space that has the crimson floor covering and shelving for books."]
+  }
+ }
+}

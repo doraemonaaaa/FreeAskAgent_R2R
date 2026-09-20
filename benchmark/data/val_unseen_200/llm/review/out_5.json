@@ -1,0 +1,882 @@
+[
+ {
+  "id": "item_0745",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0746",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0747",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0748",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0749",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0750",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0751",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0752",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0753",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0754",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0755",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0756",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0757",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0758",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0759",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0760",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0761",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0762",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0763",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0764",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0765",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0766",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0767",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0768",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0769",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0770",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0771",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0772",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0773",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0774",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0775",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0776",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0777",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0778",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0779",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0780",
+  "verdict": "different",
+  "direction_changed": true,
+  "referent_changed": false,
+  "note": "turn left changed to turn right"
+ },
+ {
+  "id": "item_0781",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0782",
+  "verdict": "different",
+  "direction_changed": false,
+  "referent_changed": true,
+  "note": "wholly unrelated route (hallway/back door instead of kitchen-bathroom-bedroom)"
+ },
+ {
+  "id": "item_0783",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0784",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0785",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0786",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0787",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0788",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0789",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0790",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0791",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0792",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0793",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0794",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0795",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0796",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0797",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0798",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0799",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0800",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0801",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0802",
+  "verdict": "different",
+  "direction_changed": false,
+  "referent_changed": true,
+  "note": "wholly unrelated route (stairs) instead of bedroom/hallway/closet route"
+ },
+ {
+  "id": "item_0803",
+  "verdict": "different",
+  "direction_changed": true,
+  "referent_changed": false,
+  "note": "turn left into bathroom changed to turn right"
+ },
+ {
+  "id": "item_0804",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0805",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0806",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0807",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0808",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0809",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0810",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0811",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0812",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0813",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0814",
+  "verdict": "different",
+  "direction_changed": true,
+  "referent_changed": false,
+  "note": "left/right swapped: 'turn left' -> 'turn right' and 'slight right' -> 'slight left'"
+ },
+ {
+  "id": "item_0815",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0816",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0817",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0818",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0819",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0820",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0821",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0822",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0823",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0824",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0825",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0826",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0827",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0828",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0829",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0830",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0831",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0832",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0833",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0834",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0835",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0836",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0837",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0838",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0839",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0840",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0841",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0842",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0843",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0844",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0845",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0846",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0847",
+  "verdict": "different",
+  "direction_changed": false,
+  "referent_changed": true,
+  "note": "wholly unrelated route (yellow chair/dining table/doormats) instead of kitchen/small table set/white couches"
+ },
+ {
+  "id": "item_0848",
+  "verdict": "different",
+  "direction_changed": false,
+  "referent_changed": true,
+  "note": "wholly unrelated route (hallway with vase, open doorway) instead of railing/stairs/bedroom route"
+ },
+ {
+  "id": "item_0849",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0850",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0851",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0852",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0853",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0854",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0855",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0856",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0857",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0858",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0859",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0860",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0861",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0862",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0863",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0864",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0865",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0866",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0867",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0868",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0869",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0870",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0871",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0872",
+  "verdict": "weaker",
+  "direction_changed": false,
+  "referent_changed": false,
+  "note": "'white flowers' blurred to 'pale blooms', dropping the distinguishing color of the destination landmark"
+ },
+ {
+  "id": "item_0873",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0874",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0875",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0876",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0877",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0878",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0879",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0880",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0881",
+  "verdict": "different",
+  "direction_changed": true,
+  "referent_changed": false,
+  "note": "first doorway on the right changed to on the left"
+ },
+ {
+  "id": "item_0882",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0883",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0884",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0885",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0886",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0887",
+  "verdict": "different",
+  "direction_changed": false,
+  "referent_changed": true,
+  "note": "wholly unrelated route (door on right, across hall to bedroom) instead of painting/red path/red-and-white chairs"
+ },
+ {
+  "id": "item_0888",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0889",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ }
+]

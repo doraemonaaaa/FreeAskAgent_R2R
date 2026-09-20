@@ -1,15 +1,15 @@
 """SWAP and DROP-k instruction variants of an evaluation set, as extra habitat splits.
 
-    python -m benchmark.build_variants --subgoals benchmark/data/subgoals_val_unseen_200.json \
-        --name val_unseen_200 --seed 20260917
+    python -m benchmark.build_variants --name val_unseen_200 --seed 20260917
 
 Writes
-  benchmark/data/variants_<name>.json           per-episode variant metadata
+  benchmark/data/<set>/swap_drop.json           per-episode variant metadata
   <r2r data>/<name>_swap/<name>_swap.json.gz    same episodes, instruction of a
                                                 same-scene donor trajectory
   <r2r data>/<name>_drop/<name>_drop.json.gz    same episodes, sub-instruction k removed
   <name>_{swap,drop}/<name>_{swap,drop}_gt.json.gz  copy of the original dense gt
-  benchmark/data/<name>_{swap,drop}_ids.txt      EPISODE_IDS file for each variant run
+  benchmark/data/<set>/ids/{swap,drop}.txt      EPISODE_IDS file for each variant run
+(the split writer itself is common.write_split, shared by every variant builder)
 The runner takes them with SPLIT=<name>_swap (EPISODE_IDS may stay the 200-set
 file: the variant split holds exactly those ids). Episode ids are unchanged,
 so traces of the three runs line up by id.
@@ -22,14 +22,12 @@ DROP-k: k uniform in 1..K-1 (the last sub-instruction carries the stop
 condition and is never removed); episodes with K = 1 are excluded.
 """
 import argparse
-import gzip
-import json
 import math
 import random
 import re
 
 from .build_subgoals import build_episode, load_fgr2r
-from .common import DATA_DIR, R2R_DIR, dump_json, load_episodes, load_gt, load_json
+from .common import variant_parser, DEFAULT_SET, data_path, ids_path, dump_json, load_episodes, load_gt, load_json, write_split
 
 
 def remove_span(text, span):
@@ -54,30 +52,9 @@ def pick_donor(episode, episodes, rng, near_m=0.5):
     return donor, distances[str(donor["episode_id"])]
 
 
-def write_split(name, raw, episodes_by_id, gt, instruction_of):
-    """Write ``<name>/<name>.json.gz`` with the selected episodes and new instruction texts."""
-    directory = R2R_DIR / name
-    directory.mkdir(parents=True, exist_ok=True)
-    data = dict(raw)
-    data["episodes"] = []
-    for episode_id, text in instruction_of.items():
-        episode = json.loads(json.dumps(episodes_by_id[episode_id]))
-        episode["instruction"]["instruction_text"] = text
-        data["episodes"].append(episode)
-    with gzip.open(str(directory / "{}.json.gz".format(name)), "wt") as handle:
-        json.dump(data, handle)
-    with gzip.open(str(directory / "{}_gt.json.gz".format(name)), "wt") as handle:
-        json.dump({eid: dict(locations=gt[eid]) for eid in instruction_of}, handle)
-    return directory
-
-
 def main():
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--subgoals", default=str(DATA_DIR / "subgoals_val_unseen_200.json"))
-    parser.add_argument("--name", default="val_unseen_200")
-    parser.add_argument("--split", default="val_unseen")
+    parser = variant_parser(__doc__)
     parser.add_argument("--seed", type=int, default=20260917)
-    parser.add_argument("--no-splits", action="store_true", help="only write the metadata json")
     args = parser.parse_args()
 
     subgoals = load_json(args.subgoals)["episodes"]
@@ -106,9 +83,10 @@ def main():
                                     instruction=remove_span(item["instruction"], span))
 
     meta = dict(name=args.name, split=args.split, seed=args.seed, subgoals_file=args.subgoals,
+                provenance="rule-based: donor instruction copied verbatim (SWAP) / sub-instruction span deleted (DROP)",
                 swap_split="{}_swap".format(args.name), drop_split="{}_drop".format(args.name),
                 swap=swap, drop=drop)
-    out = DATA_DIR / "variants_{}.json".format(args.name)
+    out = data_path("swap_drop", args.name)
     dump_json(meta, out)
     near = sum(v["donor_start_distance_m"] <= 0.5 for v in swap.values())
     print("swap={} (same-start donors {}) drop={} (K=1 excluded {})".format(
@@ -118,7 +96,7 @@ def main():
         for suffix, table in (("swap", swap), ("drop", drop)):
             directory = write_split("{}_{}".format(args.name, suffix), raw, episodes, gt,
                                     {eid: v["instruction"] for eid, v in table.items()})
-            ids_file = DATA_DIR / "{}_{}_ids.txt".format(args.name, suffix)
+            ids_file = ids_path(suffix, args.name)
             ids_file.write_text("# episode ids present in split {}_{}\n".format(args.name, suffix)
                                 + "".join(eid + "\n" for eid in table))
             print("wrote split", directory, "ids", ids_file)

@@ -1,6 +1,7 @@
 {
  "split": "val_unseen",
  "ids_file": "/data/pengyh/workspace/FreeAskAgent_R2R/integrations/v3/eval_sets/val_unseen_200.txt",
+ "provenance": "derived from the FGR2R human sub-instruction annotation (Hong et al. 2020)",
  "episodes": {
   "31": {
    "episode_id": "31",

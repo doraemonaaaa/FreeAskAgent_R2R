@@ -1,6 +1,7 @@
 {
  "name": "val_unseen_200",
  "split": "val_unseen",
+ "provenance": "rule-based: the last sub-instruction sliced out of the original text verbatim",
  "goalonly_split": "val_unseen_200_goalonly",
  "goalonly": {
   "31": {

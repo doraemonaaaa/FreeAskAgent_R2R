@@ -9,10 +9,77 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = Path(__file__).resolve().parent / "data"
+FGR2R_DIR = DATA_DIR / "fgr2r"
 R2R_DIR = ROOT.parent / "habitat" / "data" / "datasets" / "vln" / "mp3d" / "r2r" / "v1"
 EVAL_SETS = ROOT / "integrations" / "v3" / "eval_sets"
+# A final sub-instruction that names nothing ("and stop immediatly.", "Wait there.").
+# build_goalonly keeps the preceding chunk for these; build_paraphrase skips its
+# final-chunk landmark gate on them -- there is no landmark to preserve.
+BARE_STOP = re.compile(r"^(?:and |then )?(?:stop|wait|stand|end|halt|walk forward)"
+                       r"(?: there| here| right there| right here| immediatly| immediately)?\.?$", re.IGNORECASE)
 SUCCESS_DISTANCE_M = 3.0
 FORWARD_STEP_M = 0.25
+
+# Everything derived for one evaluation set lives under data/<set>/, so adding a
+# second set (the full val_unseen the FLIP suite wants) adds a directory instead
+# of another dozen files in a flat folder.
+DEFAULT_SET = "val_unseen_200"
+
+# Inside a set, variants are filed by HOW THEY WERE MADE, because that decides how
+# they may be read. A rule/ variant is a minimal pair -- one word flipped, one span
+# deleted, a donor's text copied verbatim -- so it can be compared against ORIG
+# directly. An llm/ variant re-words the whole instruction, so its arms may only be
+# read against their own para_id control, never against ORIG. subgoals.json sits
+# above both: it is the FGR2R-derived boundary set every variant and metric builds on.
+FAMILY = {
+    "swap_drop": "rule", "flip": "rule", "goalonly": "rule",
+    "paraphrase": "llm",
+}
+VARIANT_FAMILY = {
+    "swap": "rule", "drop": "rule", "flip": "rule", "goalonly": "rule",
+    "para_id": "llm", "para_terse": "llm", "para_natural": "llm", "para_lm_shift": "llm",
+}
+
+
+def variant_parser(doc):
+    """argparse parser with the four options every variant builder takes.
+
+    --subgoals is the boundary file the variant is cut from, --name the eval set,
+    --split the underlying R2R-CE split, --no-splits stops before writing the
+    habitat split (metadata only).
+    """
+    import argparse
+    parser = argparse.ArgumentParser(description=doc, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--subgoals", default=str(data_path("subgoals")))
+    parser.add_argument("--name", default=DEFAULT_SET)
+    parser.add_argument("--split", default="val_unseen")
+    parser.add_argument("--no-splits", action="store_true")
+    return parser
+
+
+def set_dir(name=DEFAULT_SET):
+    return DATA_DIR / name
+
+
+def data_path(kind, name=DEFAULT_SET):
+    """data/<set>/subgoals.json, or data/<set>/{rule,llm}/<kind>.json for a variant."""
+    if kind == "subgoals":
+        return set_dir(name) / "subgoals.json"
+    if kind not in FAMILY:
+        raise KeyError("unknown data kind {!r}; known: subgoals, {}".format(kind, ", ".join(sorted(FAMILY))))
+    return set_dir(name) / FAMILY[kind] / "{}.json".format(kind)
+
+
+def ids_path(variant, name=DEFAULT_SET):
+    """data/<set>/{rule,llm}/ids/<variant>.txt -- the EPISODE_IDS file a variant run takes."""
+    if variant not in VARIANT_FAMILY:
+        raise KeyError("unknown variant {!r}; known: {}".format(variant, ", ".join(sorted(VARIANT_FAMILY))))
+    return set_dir(name) / VARIANT_FAMILY[variant] / "ids" / "{}.txt".format(variant)
+
+
+def gen_dir(name=DEFAULT_SET):
+    """data/<set>/llm/paraphrase_gen/ -- the rewrites paraphrase.json is built from."""
+    return set_dir(name) / "llm" / "paraphrase_gen"
 
 try:
     from fastdtw import fastdtw as _fastdtw
@@ -113,7 +180,89 @@ def load_run(out_dirs):
     return positions, results
 
 
+# ---------------------------------------------------------------- variant splits
+def write_split(name, raw, episodes_by_id, gt, instruction_of):
+    """Write ``<r2r data>/<name>/<name>.json.gz`` with new instruction texts, plus a gt copy.
+
+    Every variant builder (swap/drop, flip, goalonly, paraphrase) emits its split
+    this way. It lives here rather than in one of them so the others do not have
+    to import a sibling builder just to write a file.
+    """
+    directory = R2R_DIR / name
+    directory.mkdir(parents=True, exist_ok=True)
+    data = dict(raw)
+    data["episodes"] = []
+    for episode_id, text in instruction_of.items():
+        episode = json.loads(json.dumps(episodes_by_id[episode_id]))
+        episode["instruction"]["instruction_text"] = text
+        data["episodes"].append(episode)
+    with gzip.open(str(directory / "{}.json.gz".format(name)), "wt") as handle:
+        json.dump(data, handle)
+    with gzip.open(str(directory / "{}_gt.json.gz".format(name)), "wt") as handle:
+        json.dump({eid: dict(locations=gt[eid]) for eid in instruction_of}, handle)
+    return directory
+
+
+def write_runner_run(traj_files, out_dir):
+    """External ``traj_*.jsonl`` (positions / distances / metric per episode) -> runner format.
+
+    CA-Nav and AwareVLN both dump one record per episode; the metric stack reads
+    the runner's ``rank_*_trace.jsonl`` + ``rank_*.log`` instead, so both adapters
+    converted them with the same twenty lines. Duplicate episodes (a rerun
+    appended to the same file) keep their first occurrence.
+
+    ``sdtw`` goes into the log line only when the source reports it -- load_run's
+    result regex stops at ``dtg=``, so trailing fields are free-form.
+    Returns the set of episode ids written.
+    """
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    seen = set()
+    with open(out_dir / "rank_0_trace.jsonl", "w") as trace, open(out_dir / "rank_0.log", "w") as log:
+        for path in sorted(traj_files):
+            for line in open(path):
+                record = json.loads(line)
+                episode = record["episode_id"]
+                if episode in seen:
+                    continue
+                seen.add(episode)
+                positions, distances = record["positions"], record["distances"]
+                for step in range(1, len(positions)):
+                    # sort_keys: load_run parses the record from its "distance_to_goal_after"
+                    # key onwards, exactly as the runner's own traces are laid out
+                    trace.write(json.dumps(dict(
+                        episode_id=episode, step=step - 1,
+                        position_before=positions[step - 1], position_after=positions[step],
+                        distance_to_goal_before=distances[step - 1],
+                        distance_to_goal_after=distances[step]), sort_keys=True) + "\n")
+                m = record["metric"]
+                row = ("rank=0 id={} steps={} success={:.3f} spl={:.3f} dtg={:.2f} osr={:.0f}"
+                       " path_length={:.2f} ndtw={:.3f}").format(
+                    episode, int(m["steps_taken"]), m["success"], m["spl"], m["distance_to_goal"],
+                    m["oracle_success"], m["path_length"], m["ndtw"])
+                if "sdtw" in m:
+                    row += " sdtw={:.3f}".format(m["sdtw"])
+                log.write(row + "\n")
+    return seen
+
+
 # ---------------------------------------------------------------- geometry
+DIRECTION = re.compile(r"\b(left|right)\b", re.IGNORECASE)
+
+
+def signed_angle(a, b):
+    """Degrees from 2-vector ``a`` to ``b``; negative is left, positive is right in habitat x/z."""
+    return float(np.degrees(np.arctan2(a[0] * b[1] - a[1] * b[0], a[0] * b[0] + a[1] * b[1])))
+
+
+def path_walked(positions):
+    """Cumulative 3D path length at every step."""
+    out = [0.0]
+    for a, b in zip(positions[:-1], positions[1:]):
+        out.append(out[-1] + float(np.linalg.norm(np.asarray(b, dtype=np.float64) - np.asarray(a, dtype=np.float64))))
+    return out
+
+
 def xz(point):
     return np.asarray([point[0], point[2]], dtype=np.float64)
 

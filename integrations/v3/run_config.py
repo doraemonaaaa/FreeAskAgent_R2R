@@ -37,8 +37,20 @@ ROLE_FALLBACK = {"planner": "decision", "som": "actor"}
 # captioner.<key> -> environment variable (bool flags become "1"/"0").
 CAPTIONER_ENV = {
     "inference_only_completion": "CAPTIONER_INFERENCE_ONLY_COMPLETION",
+    "completion_screen": "CAPTIONER_COMPLETION_SCREEN",
     "preview_candidates": "CAPTIONER_PREVIEW_CANDIDATES",
     "opening_look_around": "CAPTIONER_OPENING_LOOK_AROUND",
+    "preview_min_move_m": "CAPTIONER_PREVIEW_MIN_MOVE_M",
+    "preview_move_backoff_max_m": "CAPTIONER_PREVIEW_MOVE_BACKOFF_MAX_M",
+    "preview_gate_min_move_m": "CAPTIONER_PREVIEW_GATE_MIN_MOVE_M",
+    "preview_gate_max_skips": "CAPTIONER_PREVIEW_GATE_MAX_SKIPS",
+    "preview_gate_free_rings": "CAPTIONER_PREVIEW_GATE_FREE_RINGS",
+    "preview_gate_backoff_start_m": "CAPTIONER_PREVIEW_GATE_BACKOFF_START_M",
+    "preview_gate_backoff_max_m": "CAPTIONER_PREVIEW_GATE_BACKOFF_MAX_M",
+    "preview_idle_reset_m": "CAPTIONER_PREVIEW_IDLE_RESET_M",
+    "preview_min_turn_deg": "CAPTIONER_PREVIEW_MIN_TURN_DEG",
+    "preview_idle_limit": "CAPTIONER_PREVIEW_IDLE_LIMIT",
+    "preview_backoff_max_steps": "CAPTIONER_PREVIEW_BACKOFF_MAX_STEPS",
     "step_deadline_s": "CAPTIONER_STEP_DEADLINE_S",
     "evidence_dir": "JOYAI_EVIDENCE_DIR",
 }

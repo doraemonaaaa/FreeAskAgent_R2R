@@ -1,0 +1,904 @@
+[
+ {
+  "id": "item_0149",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0150",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0151",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0152",
+  "verdict": "different",
+  "direction_changed": true,
+  "referent_changed": false,
+  "note": "both turns flipped right->left"
+ },
+ {
+  "id": "item_0153",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0154",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0155",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0156",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0157",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0158",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0159",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0160",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0161",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0162",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0163",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0164",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0165",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0166",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0167",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0168",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0169",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0170",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0171",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0172",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0173",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0174",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0175",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0176",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0177",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0178",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0179",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0180",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0181",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0182",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0183",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0184",
+  "verdict": "different",
+  "direction_changed": true,
+  "referent_changed": false,
+  "note": "door is on the right instead of the left"
+ },
+ {
+  "id": "item_0185",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0186",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0187",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0188",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0189",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0190",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0191",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0192",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0193",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0194",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0195",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0196",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0197",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0198",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0199",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0200",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0201",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0202",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0203",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0204",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0205",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0206",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0207",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0208",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0209",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0210",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0211",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0212",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0213",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0214",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0215",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0216",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0217",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0218",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0219",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0220",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0221",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0222",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0223",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0224",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0225",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0226",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0227",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0228",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0229",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0230",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0231",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0232",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0233",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0234",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0235",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0236",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0237",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0238",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0239",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0240",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0241",
+  "verdict": "different",
+  "direction_changed": true,
+  "referent_changed": false,
+  "note": "enters the room on the left instead of the right"
+ },
+ {
+  "id": "item_0242",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0243",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0244",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0245",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0246",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0247",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0248",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0249",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0250",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0251",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0252",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0253",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0254",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0255",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0256",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0257",
+  "verdict": "different",
+  "direction_changed": true,
+  "referent_changed": false,
+  "note": "eye chart/sitting area sides swapped"
+ },
+ {
+  "id": "item_0258",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0259",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0260",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0261",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0262",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0263",
+  "verdict": "different",
+  "direction_changed": false,
+  "referent_changed": true,
+  "note": "wholly unrelated waypoint list (rugs/chair/sliding doors/pool table)"
+ },
+ {
+  "id": "item_0264",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0265",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0266",
+  "verdict": "different",
+  "direction_changed": false,
+  "referent_changed": true,
+  "note": "wholly unrelated route and destination (doll case in hall)"
+ },
+ {
+  "id": "item_0267",
+  "verdict": "different",
+  "direction_changed": true,
+  "referent_changed": false,
+  "note": "turn left instead of right; TV passed on the left"
+ },
+ {
+  "id": "item_0268",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0269",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0270",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0271",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0272",
+  "verdict": "different",
+  "direction_changed": true,
+  "referent_changed": true,
+  "note": "wholly different route and destination"
+ },
+ {
+  "id": "item_0273",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0274",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0275",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0276",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0277",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0278",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0279",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0280",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0281",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0282",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0283",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0284",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0285",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0286",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0287",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0288",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0289",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0290",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0291",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0292",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0293",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0294",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0295",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0296",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ },
+ {
+  "id": "item_0297",
+  "verdict": "same",
+  "direction_changed": false,
+  "referent_changed": false
+ }
+]

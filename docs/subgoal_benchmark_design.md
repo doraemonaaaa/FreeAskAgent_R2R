@@ -21,7 +21,7 @@ R2R / R2R-CE 只报终点指标,一条轨迹里"哪句指令在哪段路被执�
 
 **范围**:`integrations/v3/eval_sets/val_unseen_200.txt` 的 200 条,FGR2R 覆盖 200/200。R2R-CE 的 `start_position + reference_path + goal` 与 FGR2R 的 viewpoint 序列一一对应(用 MP3D connectivity 图核对过)。同一 viewpoint 结尾的相邻 chunk 合并;合并后 K 均值 2.94,K=1 的 24 条不参与 DROP-k。
 
-**产出**:`benchmark/data/subgoals_val_unseen_200.json`,每条含 K、子指令原文片段(按 FGR2R 词元对齐回原句,保留大小写与标点)、节点区间、B_k 圆心、边界弧长。
+**产出**:`benchmark/data/val_unseen_200/subgoals.json`,每条含 K、子指令原文片段(按 FGR2R 词元对齐回原句,保留大小写与标点)、节点区间、B_k 圆心、边界弧长。
 
 **诊断变体**(不改代码,只换指令文件):
 
@@ -99,7 +99,7 @@ SR | SGCR | SGCR-eff | ISens-SGCR | ISens-SGCR-eff | PathAttrib | LocFail | 前�
 
 | 步骤 | 内容 | 状态 |
 |---|---|---|
-| 1 | FGR2R 映射 200-set,`benchmark/data/subgoals_val_unseen_200.json` | 完成 |
+| 1 | FGR2R 映射 200-set,`benchmark/data/val_unseen_200/subgoals.json` | 完成 |
 | 2 | 进入事件、c/f、SGCR、SGCR@k,在 ring6_200 trace 上跑通,`benchmark/metrics.py` | 完成 |
 | 3 | 两个假 agent 自检,r_b 标定,`benchmark/selfcheck.py` | 完成 |
 | 4a | SWAP / DROP-k 变体 split 与 id 文件,`benchmark/build_variants.py` | 完成 |

@@ -2,7 +2,8 @@
  "name": "val_unseen_200",
  "split": "val_unseen",
  "seed": 20260917,
- "subgoals_file": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/subgoals_val_unseen_200.json",
+ "subgoals_file": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/val_unseen_200/subgoals.json",
+ "provenance": "rule-based: donor instruction copied verbatim (SWAP) / sub-instruction span deleted (DROP)",
  "swap_split": "val_unseen_200_swap",
  "drop_split": "val_unseen_200_drop",
  "swap": {
@@ -224,7 +225,7 @@
   },
   "121": {
    "donor_episode_id": "364",
-   "donor_start_distance_m": 0.9329896364498347,
+   "donor_start_distance_m": 0.9329896364498348,
    "instruction": "Walk down the hallway to the end. Turn left into the laundry room and wait in the doorway. ",
    "donor_K": 2,
    "donor_subgoals": [
@@ -1790,7 +1791,7 @@
   },
   "805": {
    "donor_episode_id": "277",
-   "donor_start_distance_m": 3.694689324276324,
+   "donor_start_distance_m": 3.6946893242763235,
    "instruction": "turn to your right and go down the hallway and take a right into the first doorway and then stop right next to the chair. ",
    "donor_K": 4,
    "donor_subgoals": [
@@ -3257,7 +3258,7 @@
   },
   "1741": {
    "donor_episode_id": "49",
-   "donor_start_distance_m": 1.8933608781185907,
+   "donor_start_distance_m": 1.8933608781185909,
    "instruction": "Walk through the kitchen passed the sink and around the corner out into the hallway. Walk into the arched entry well to the left of the stairwell. Continue into the room with the armchair and bed. ",
    "donor_K": 4,
    "donor_subgoals": [
@@ -4130,7 +4131,7 @@
   },
   "159": {
    "donor_episode_id": "178",
-   "donor_start_distance_m": 1.7583851170699876,
+   "donor_start_distance_m": 1.7583851170699878,
    "instruction": "go trough the doorway and take a hard left then walk straight towards the archway and then keep going until you are under the archway and then stop. ",
    "donor_K": 4,
    "donor_subgoals": [
@@ -4517,7 +4518,7 @@
   },
   "289": {
    "donor_episode_id": "1234",
-   "donor_start_distance_m": 7.568723012536759,
+   "donor_start_distance_m": 7.568723012536758,
    "instruction": "With the fireplace to your right, walk straight past the big potted plant and up the stairs.  Stop at the very top of the stairs. ",
    "donor_K": 2,
    "donor_subgoals": [
@@ -4814,7 +4815,7 @@
   },
   "485": {
    "donor_episode_id": "1243",
-   "donor_start_distance_m": 1.8743307980314927,
+   "donor_start_distance_m": 1.8743307980314925,
    "instruction": "Go down the stairs and stop at the very bottom. ",
    "donor_K": 2,
    "donor_subgoals": [
@@ -5165,7 +5166,7 @@
   },
   "781": {
    "donor_episode_id": "886",
-   "donor_start_distance_m": 3.639847394882345,
+   "donor_start_distance_m": 3.6398473948823447,
    "instruction": "Walk forward toward the stairs. Enter the living area on the right. Wait there. ",
    "donor_K": 3,
    "donor_subgoals": [
@@ -5228,7 +5229,7 @@
   },
   "782": {
    "donor_episode_id": "886",
-   "donor_start_distance_m": 3.639847394882345,
+   "donor_start_distance_m": 3.6398473948823447,
    "instruction": "Walk forward toward the stairs. Enter the living area on the right. Wait there. ",
    "donor_K": 3,
    "donor_subgoals": [
@@ -5930,7 +5931,7 @@
   },
   "1266": {
    "donor_episode_id": "1414",
-   "donor_start_distance_m": 1.1549807458675345,
+   "donor_start_distance_m": 1.1549807458675343,
    "instruction": "Go straight into the third arch from the left. Turn right and go down the hallway until you get to stairs on the right. Go up two steps then stop. ",
    "donor_K": 3,
    "donor_subgoals": [
@@ -6272,7 +6273,7 @@
   },
   "1455": {
    "donor_episode_id": "1414",
-   "donor_start_distance_m": 1.8842798082902548,
+   "donor_start_distance_m": 1.884279808290255,
    "instruction": "Go straight into the third arch from the left. Turn right and go down the hallway until you get to stairs on the right. Go up two steps then stop. ",
    "donor_K": 3,
    "donor_subgoals": [
@@ -6542,7 +6543,7 @@
   },
   "1718": {
    "donor_episode_id": "1426",
-   "donor_start_distance_m": 3.364382446510613,
+   "donor_start_distance_m": 3.3643824465106125,
    "instruction": "Walk up the stairs and down the hallway. Walk past the chairs and stop in front of the dining room table and chairs. ",
    "donor_K": 3,
    "donor_subgoals": [
@@ -6704,7 +6705,7 @@
   },
   "1765": {
    "donor_episode_id": "250",
-   "donor_start_distance_m": 1.0440233803963506,
+   "donor_start_distance_m": 1.0440233803963508,
    "instruction": "Go past the eye chart and in the right bedroom door and wait. ",
    "donor_K": 2,
    "donor_subgoals": [
@@ -6749,7 +6750,7 @@
   },
   "1766": {
    "donor_episode_id": "250",
-   "donor_start_distance_m": 1.0440233803963506,
+   "donor_start_distance_m": 1.0440233803963508,
    "instruction": "Go past the eye chart and in the right bedroom door and wait. ",
    "donor_K": 2,
    "donor_subgoals": [
@@ -6839,7 +6840,7 @@
   },
   "1784": {
    "donor_episode_id": "1021",
-   "donor_start_distance_m": 1.8360162651615342,
+   "donor_start_distance_m": 1.836016265161534,
    "instruction": "Walk into the kitchen, walk past the stove, wait near the telephone. ",
    "donor_K": 2,
    "donor_subgoals": [
@@ -7064,7 +7065,7 @@
   },
   "181": {
    "donor_episode_id": "4",
-   "donor_start_distance_m": 1.0485510714768642,
+   "donor_start_distance_m": 1.0485510714768644,
    "instruction": "Walk up the flight of stairs to the top. Turn and follow the railing into the bedroom area. Walk towards the closet. ",
    "donor_K": 3,
    "donor_subgoals": [
@@ -7361,7 +7362,7 @@
   },
   "371": {
    "donor_episode_id": "634",
-   "donor_start_distance_m": 1.3905580889160722,
+   "donor_start_distance_m": 1.390558088916072,
    "instruction": "Turn right and enter through the sliding door. Continue past the TV on the right. Enter the kitchen and wait beside the fridge. ",
    "donor_K": 4,
    "donor_subgoals": [
@@ -7649,7 +7650,7 @@
   },
   "590": {
    "donor_episode_id": "337",
-   "donor_start_distance_m": 1.4354399099566413,
+   "donor_start_distance_m": 1.4354399099566415,
    "instruction": "Make a right at the top of the stairs and go into the bedroom then make a left. Make another left to leave the bedroom then make a slight right and go to the doorway of the room to the right of the closet and wait. ",
    "donor_K": 4,
    "donor_subgoals": [
@@ -7811,7 +7812,7 @@
   },
   "619": {
    "donor_episode_id": "637",
-   "donor_start_distance_m": 1.5920798147496207,
+   "donor_start_distance_m": 1.5920798147496205,
    "instruction": "Continue down the wood staircase, turn right at the bottom and walk behind the two chairs toward the pool table. Turn right at the pool table and stop in front of the red chair with a brown leather foot stool. ",
    "donor_K": 5,
    "donor_subgoals": [
@@ -7910,7 +7911,7 @@
   },
   "639": {
    "donor_episode_id": "619",
-   "donor_start_distance_m": 1.5920798147496207,
+   "donor_start_distance_m": 1.5920798147496205,
    "instruction": "Walk past the stairs, down the walkway and stop in the second bedroom next to the bathroom door. ",
    "donor_K": 2,
    "donor_subgoals": [
@@ -8648,7 +8649,7 @@
   },
   "991": {
    "donor_episode_id": "1642",
-   "donor_start_distance_m": 1.7452453089471303,
+   "donor_start_distance_m": 1.74524530894713,
    "instruction": "Turn right and walk down the hall until you enter the kitchen.  Then turn right and walk into the living room.  Stand near the end table. ",
    "donor_K": 3,
    "donor_subgoals": [
@@ -8837,7 +8838,7 @@
   },
   "1187": {
    "donor_episode_id": "370",
-   "donor_start_distance_m": 2.468813003220971,
+   "donor_start_distance_m": 2.4688130032209705,
    "instruction": "Move through the kitchen with the square table to your right. Continue moving forward to the staircase just after the refrigerator. Walk up the stairs and stop 18 inches before the end of the stair railing to your right. ",
    "donor_K": 4,
    "donor_subgoals": [
@@ -8999,7 +9000,7 @@
   },
   "1232": {
    "donor_episode_id": "1317",
-   "donor_start_distance_m": 0.38588937514138355,
+   "donor_start_distance_m": 0.3858893751413835,
    "instruction": "Turn around and enter the sitting room to your right. Walk in front of the fireplace to the other side and stop once you reach the pool table. ",
    "donor_K": 3,
    "donor_subgoals": [
@@ -9737,7 +9738,7 @@
   },
   "1494": {
    "donor_episode_id": "916",
-   "donor_start_distance_m": 1.3488067283126581,
+   "donor_start_distance_m": 1.348806728312658,
    "instruction": "Walk down the red carpet away from the bedroom, through the doorway and wait near the stairs. ",
    "donor_K": 2,
    "donor_subgoals": [
@@ -10079,7 +10080,7 @@
   },
   "1713": {
    "donor_episode_id": "1312",
-   "donor_start_distance_m": 1.5554588731077432,
+   "donor_start_distance_m": 1.555458873107743,
    "instruction": "Walk down the hall in the direction of the stairs to the second floor. Pass the stairs and enter the living room. Take a right in the living room. Stop on the right of the chair at the head of the table. ",
    "donor_K": 5,
    "donor_subgoals": [
@@ -10529,7 +10530,7 @@
   },
   "96": {
    "donor_episode_id": "1783",
-   "donor_start_distance_m": 2.2683969758699667,
+   "donor_start_distance_m": 2.2683969758699662,
    "instruction": "Go towards the oven, go straight through the archway and then straight into the second archway, take a step in and stop. ",
    "donor_K": 4,
    "donor_subgoals": [
@@ -11042,7 +11043,7 @@
   },
   "365": {
    "donor_episode_id": "121",
-   "donor_start_distance_m": 0.9329896364498347,
+   "donor_start_distance_m": 0.9329896364498348,
    "instruction": "Walk straight into the kitchen area. Turn left and exit the kitchen and stop there. ",
    "donor_K": 3,
    "donor_subgoals": [
@@ -11420,7 +11421,7 @@
   },
   "634": {
    "donor_episode_id": "370",
-   "donor_start_distance_m": 1.3905580889160722,
+   "donor_start_distance_m": 1.390558088916072,
    "instruction": "Move through the kitchen with the square table to your right. Continue moving forward to the staircase just after the refrigerator. Walk up the stairs and stop 18 inches before the end of the stair railing to your right. ",
    "donor_K": 4,
    "donor_subgoals": [
@@ -11582,7 +11583,7 @@
   },
   "759": {
    "donor_episode_id": "43",
-   "donor_start_distance_m": 1.3515797669872396,
+   "donor_start_distance_m": 1.3515797669872394,
    "instruction": "Go into the kitchen area. Turn left. Take the first right into the dining area. Walk past the dining table. Stop left of the tall lamp with a white lampshade. ",
    "donor_K": 5,
    "donor_subgoals": [
@@ -11816,7 +11817,7 @@
   },
   "785": {
    "donor_episode_id": "1141",
-   "donor_start_distance_m": 2.5376786591481477,
+   "donor_start_distance_m": 2.5376786591481473,
    "instruction": "walk  through the doorway on the right side of the bed, walk straight past decorative cabinet on your left, continue through doorway and stop on hardwood floor. ",
    "donor_K": 4,
    "donor_subgoals": [
@@ -12698,7 +12699,7 @@
   },
   "1329": {
    "donor_episode_id": "67",
-   "donor_start_distance_m": 1.642241358625091,
+   "donor_start_distance_m": 1.6422413586250912,
    "instruction": "Face the walkway with a kitchen counter with bar stools on the right and large windows on the other side and walk past them towards a large dining table  Turn to the sitting area and stop. ",
    "donor_K": 2,
    "donor_subgoals": [

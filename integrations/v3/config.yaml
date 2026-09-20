@@ -62,8 +62,23 @@ models:
 captioner:                                 # TemporalMemory / Captioner switches
   # The Captioner always runs as JoyAI observer + separate decision model.
   inference_only_completion: true          # -> CAPTIONER_INFERENCE_ONLY_COMPLETION (isolated 2nd call before a stage advances)
+  completion_screen: false                 # -> CAPTIONER_COMPLETION_SCREEN (screen final proposals on the current frame before the arrival ring; 200-set v5: previews 6% of steps but SR -8, keep off)
   preview_candidates: true                 # -> CAPTIONER_PREVIEW_CANDIDATES
   opening_look_around: true                # -> CAPTIONER_OPENING_LOOK_AROUND (step 0 renders the full preview ring)
+  # Preview gating (2026-09-20): a repeated question is not re-asked until the
+  # robot moved / turned; model route questions are limited to N idle attempts
+  # per subgoal with a doubling retry cool-down (gate arrival rings exempt).
+  preview_min_move_m: 1.0                  # -> CAPTIONER_PREVIEW_MIN_MOVE_M (doubles after each ring that settles nothing)
+  preview_move_backoff_max_m: 8.0          # -> CAPTIONER_PREVIEW_MOVE_BACKOFF_MAX_M
+  preview_gate_min_move_m: 0.5             # -> CAPTIONER_PREVIEW_GATE_MIN_MOVE_M (arrival rings of the completion gate)
+  preview_gate_max_skips: 2                # -> CAPTIONER_PREVIEW_GATE_MAX_SKIPS (never skip more arrival rings in a row)
+  preview_gate_free_rings: 6               # -> CAPTIONER_PREVIEW_GATE_FREE_RINGS (dense arrival rings per stage before the spacing backs off)
+  preview_gate_backoff_start_m: 1.0        # -> CAPTIONER_PREVIEW_GATE_BACKOFF_START_M (then 1, 2, 4 m between arrival rings ...)
+  preview_gate_backoff_max_m: 4.0          # -> CAPTIONER_PREVIEW_GATE_BACKOFF_MAX_M
+  preview_idle_reset_m: 3.0                # -> CAPTIONER_PREVIEW_IDLE_RESET_M (moving this far re-allows route Previews)
+  preview_min_turn_deg: 60                 # -> CAPTIONER_PREVIEW_MIN_TURN_DEG
+  preview_idle_limit: 4                    # -> CAPTIONER_PREVIEW_IDLE_LIMIT (0 = never ignore)
+  preview_backoff_max_steps: 16            # -> CAPTIONER_PREVIEW_BACKOFF_MAX_STEPS
   step_deadline_s: 30                      # -> CAPTIONER_STEP_DEADLINE_S
   # evidence_dir: /path                    # -> JOYAI_EVIDENCE_DIR (archive request images)
 

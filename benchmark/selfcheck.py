@@ -18,7 +18,7 @@ import argparse
 
 import numpy as np
 
-from .common import DATA_DIR, load_gt, load_json, resample
+from .common import data_path, load_gt, load_json, resample
 from .metrics import evaluate, format_table
 
 
@@ -63,8 +63,8 @@ def fake_runs(subgoals, variants, gt, agent, sigma, rng):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--subgoals", default=str(DATA_DIR / "subgoals_val_unseen_200.json"))
-    parser.add_argument("--variants", default=str(DATA_DIR / "variants_val_unseen_200.json"))
+    parser.add_argument("--subgoals", default=str(data_path("subgoals")))
+    parser.add_argument("--variants", default=str(data_path("swap_drop")))
     parser.add_argument("--noise", type=float, default=0.3, help="position noise sigma in metres")
     parser.add_argument("--repeats", type=int, default=20)
     parser.add_argument("--radii", default="0.5,0.75,1.0,1.25,1.5,2.0")

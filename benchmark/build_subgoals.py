@@ -1,7 +1,7 @@
 """FGR2R sub-instruction chunks -> per-episode subgoal boundaries.
 
     python -m benchmark.build_subgoals --ids integrations/v3/eval_sets/val_unseen_200.txt \
-        --out benchmark/data/subgoals_val_unseen_200.json
+        --out benchmark/data/<set>/subgoals.json
 
 For every episode: K subgoals, each with its instruction text span, the FGR2R
 node range, the boundary point B_k (the end viewpoint of the chunk, start +
@@ -16,7 +16,7 @@ import re
 
 import numpy as np
 
-from .common import DATA_DIR, EVAL_SETS, dist_xz, dump_json, episode_nodes, load_episodes, load_gt, load_json
+from .common import DEFAULT_SET, EVAL_SETS, FGR2R_DIR, data_path, dump_json, episode_nodes, load_episodes, load_gt, load_json
 
 
 def _as_list(value):
@@ -28,7 +28,7 @@ def _norm(text):
 
 
 def load_fgr2r(split="val_unseen"):
-    return {int(d["path_id"]): d for d in load_json(DATA_DIR / "FGR2R_{}.json".format(split))}
+    return {int(d["path_id"]): d for d in load_json(FGR2R_DIR / "FGR2R_{}.json".format(split))}
 
 
 def match_instruction(record, text):
@@ -162,18 +162,22 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--ids", default=str(EVAL_SETS / "val_unseen_200.txt"))
     parser.add_argument("--split", default="val_unseen")
-    parser.add_argument("--out", default=str(DATA_DIR / "subgoals_val_unseen_200.json"))
+    parser.add_argument("--name", default=DEFAULT_SET)
+    parser.add_argument("--out", default=None)
     args = parser.parse_args()
     from .common import read_id_list
     ids = read_id_list(args.ids)
     subgoals, skipped = build(ids, args.split)
-    dump_json(dict(split=args.split, ids_file=args.ids, episodes=subgoals, skipped=skipped), args.out)
+    out = args.out or data_path("subgoals", args.name)
+    dump_json(dict(split=args.split, ids_file=args.ids,
+                   provenance="derived from the FGR2R human sub-instruction annotation (Hong et al. 2020)",
+                   episodes=subgoals, skipped=skipped), out)
     ks = [v["K"] for v in subgoals.values()]
     gaps = [b["arc_end_m"] - a["arc_end_m"] for v in subgoals.values() for a, b in zip(v["subgoals"][:-1], v["subgoals"][1:])]
     print("episodes={} skipped={} K mean={:.2f} min={} max={} unaligned_text={} min_boundary_gap={:.2f}m boundaries<1m={}".format(
         len(subgoals), len(skipped), sum(ks) / len(ks), min(ks), max(ks),
         sum(not v["span_aligned"] for v in subgoals.values()), min(gaps), sum(g < 1.0 for g in gaps)))
-    print("wrote", args.out)
+    print("wrote", out)
 
 
 if __name__ == "__main__":

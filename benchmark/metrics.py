@@ -1,8 +1,8 @@
 """Subgoal-level instruction-following metrics from runner traces.
 
     python -m benchmark.metrics --orig OUT_DIR[,OUT_DIR] [--swap OUT_DIR] [--drop OUT_DIR] \
-        [--subgoals benchmark/data/subgoals_val_unseen_200.json] \
-        [--variants benchmark/data/variants_val_unseen_200.json] [--radius 1.5] [--json out.json]
+        [--subgoals benchmark/data/<set>/subgoals.json] \
+        [--variants benchmark/data/<set>/swap_drop.json] [--radius 1.5] [--json out.json]
 
 Per episode (design doc section 4.1): e_k = first step at or after e_{k-1}
 whose position lies within r_b of boundary B_k (the last boundary uses the 3 m
@@ -27,7 +27,8 @@ import random
 
 import numpy as np
 
-from .common import DATA_DIR, SUCCESS_DISTANCE_M, dist_xz, dump_json, load_gt, load_json, load_run, ndtw
+from .common import (SUCCESS_DISTANCE_M, data_path, dist_xz, dump_json, load_gt, load_json,
+                      load_run, ndtw, path_walked, signed_angle, xz)
 
 
 # ---------------------------------------------------------------- per-episode scoring
@@ -60,14 +61,6 @@ def entry_steps(positions, boundaries, radius, last_radius=SUCCESS_DISTANCE_M):
 def completed_prefix(entries):
     """c: number of boundaries reached in order."""
     return sum(e is not None for e in entries)
-
-
-def path_walked(positions):
-    """Cumulative 3D path length at every step."""
-    out = [0.0]
-    for a, b in zip(positions[:-1], positions[1:]):
-        out.append(out[-1] + float(np.linalg.norm(np.asarray(b, dtype=np.float64) - np.asarray(a, dtype=np.float64))))
-    return out
 
 
 def score_episode(positions, subgoals, radius, budget_factor=2.0, budget_min_m=3.0):
@@ -172,28 +165,28 @@ def evaluate(subgoals, orig, swap=None, drop=None, variants=None, radius=1.5, gt
 
 
 # ---------------------------------------------------------------- FLIP-k
-def _xz(p):
-    return np.asarray(p, dtype=np.float64)[[0, 2]]
-
-
-def _signed_angle(a, b):
-    return float(np.degrees(np.arctan2(a[0] * b[1] - a[1] * b[0], a[0] * b[0] + a[1] * b[1])))
-
-
 def turn_at_anchor(positions, anchor_step, fallback_incoming, scan_m=5.0, in_m=1.5, min_turn=30.0):
     """Signed turn the agent makes after reaching the anchor: 'left', 'right' or 'straight'.
 
-    Same rule as the selection in build_flip: incoming = displacement over the
-    last ``in_m`` of walked path before the anchor; outgoing = displacement
-    from the anchor to each later point within ``scan_m`` of walked path
-    (points >= 0.5 m away); the angle with the largest magnitude decides.
-    None when the agent walks less than 0.5 m after the anchor.
+    Incoming = displacement over the last ``in_m`` of walked path before the
+    anchor; outgoing = displacement from the anchor to each later point within
+    ``scan_m`` of walked path (points >= 0.5 m away); the largest-magnitude angle
+    decides. None when the agent walks less than 0.5 m after the anchor.
+
+    NOT bit-identical to build_flip's selection geometry, which walks the
+    incoming window with a 2D arc accumulator (and overshoots it by one segment)
+    where this uses the 3D cumulative arc. Measured on the 47 flip episodes the
+    two incoming headings differ on 4, by at most 5.5 deg. Unifying them shifts
+    AwareVLN's TurnMatch by ~2.5 points and leaves v19 / CA-Nav unchanged, so the
+    split is kept deliberate rather than silently "fixed": the released flip set
+    was selected with build_flip's version, and these numbers are already
+    published. Change both together or neither.
     """
     walked = path_walked(positions)
     j = anchor_step
     while j > 0 and walked[anchor_step] - walked[j] < in_m:
         j -= 1
-    inc = _xz(positions[anchor_step]) - _xz(positions[j])
+    inc = xz(positions[anchor_step]) - xz(positions[j])
     if np.linalg.norm(inc) < 0.5:
         inc = np.asarray(fallback_incoming, dtype=np.float64)
     inc = inc / np.linalg.norm(inc)
@@ -201,12 +194,12 @@ def turn_at_anchor(positions, anchor_step, fallback_incoming, scan_m=5.0, in_m=1
     for t in range(anchor_step + 1, len(positions)):
         if walked[t] - walked[anchor_step] > scan_m:
             break
-        out = _xz(positions[t]) - _xz(positions[anchor_step])
+        out = xz(positions[t]) - xz(positions[anchor_step])
         n = np.linalg.norm(out)
         if n < 0.5:
             continue
         moved = True
-        angle = _signed_angle(inc, out / n)
+        angle = signed_angle(inc, out / n)
         if best is None or abs(angle) > abs(best):
             best = angle
     if not moved:
@@ -329,11 +322,11 @@ def main():
     parser.add_argument("--swap", help="SWAP run output dir(s)")
     parser.add_argument("--drop", help="DROP-k run output dir(s)")
     parser.add_argument("--flip", help="FLIP-k run output dir(s)")
-    parser.add_argument("--flip-meta", default=str(DATA_DIR / "flip_val_unseen_200.json"))
+    parser.add_argument("--flip-meta", default=str(data_path("flip")))
     parser.add_argument("--goalonly", help="GOAL-ONLY run output dir(s)")
-    parser.add_argument("--goalonly-meta", default=str(DATA_DIR / "goalonly_val_unseen_200.json"))
-    parser.add_argument("--subgoals", default=str(DATA_DIR / "subgoals_val_unseen_200.json"))
-    parser.add_argument("--variants", default=str(DATA_DIR / "variants_val_unseen_200.json"))
+    parser.add_argument("--goalonly-meta", default=str(data_path("goalonly")))
+    parser.add_argument("--subgoals", default=str(data_path("subgoals")))
+    parser.add_argument("--variants", default=str(data_path("swap_drop")))
     parser.add_argument("--radius", type=float, default=1.5, help="boundary radius r_b in metres")
     parser.add_argument("--ids", help="restrict to an id list file")
     parser.add_argument("--json", help="write metrics + per-episode rows here")

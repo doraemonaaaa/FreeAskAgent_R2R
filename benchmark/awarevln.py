@@ -17,7 +17,7 @@ import gzip
 import json
 from pathlib import Path
 
-from .common import DATA_DIR, dump_json, load_json
+from .common import DEFAULT_SET, data_path, dump_json, load_json, write_runner_run
 
 AWARE = Path("/data/pengyh/workspace/Reproductions/AwareVLN/evaluation")
 AWARE_DATA = AWARE / "data/datasets/R2R_VLNCE_v1-3_preprocessed"
@@ -65,24 +65,7 @@ def import_run(args):
     stats = {}
     for fn in glob.glob(str(results / "*_[0-9]*-[0-9]*.json")):
         stats.update(load_json(fn))
-    seen = set()
-    with open(out / "rank_0_trace.jsonl", "w") as trace, open(out / "rank_0.log", "w") as log:
-        for fn in sorted(glob.glob(str(results / "traj_*.jsonl"))):
-            for line in open(fn):
-                rec = json.loads(line)
-                eid = rec["episode_id"]
-                if eid in seen:
-                    continue
-                seen.add(eid)
-                pos, dist = rec["positions"], rec["distances"]
-                for step in range(1, len(pos)):
-                    trace.write(json.dumps(dict(episode_id=eid, step=step - 1, position_before=pos[step - 1],
-                                                position_after=pos[step], distance_to_goal_before=dist[step - 1],
-                                                distance_to_goal_after=dist[step]), sort_keys=True) + "\n")
-                m = rec["metric"]
-                log.write("rank=0 id={} steps={} success={:.3f} spl={:.3f} dtg={:.2f} osr={:.0f} path_length={:.2f} ndtw={:.3f}\n".format(
-                    eid, int(m["steps_taken"]), m["success"], m["spl"], m["distance_to_goal"], m["oracle_success"],
-                    m["path_length"], m["ndtw"]))
+    seen = write_runner_run(glob.glob(str(results / "traj_*.jsonl")), out)
     keys = ["success", "oracle_success", "spl", "distance_to_goal", "path_length", "steps_taken", "ndtw"]
     rows = [stats[e] for e in seen if e in stats]
     summary = {k: sum(r[k] for r in rows) / len(rows) for k in keys} if rows else {}
@@ -98,11 +81,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="cmd", required=True)
     b = sub.add_parser("build")
-    b.add_argument("--subgoals", default=str(DATA_DIR / "subgoals_val_unseen_200.json"))
-    b.add_argument("--variants", default=str(DATA_DIR / "variants_val_unseen_200.json"))
-    b.add_argument("--name", default="val_unseen_200")
-    b.add_argument("--flip", default=str(DATA_DIR / "flip_val_unseen_200.json"))
-    b.add_argument("--goalonly", default=str(DATA_DIR / "goalonly_val_unseen_200.json"))
+    b.add_argument("--subgoals", default=str(data_path("subgoals")))
+    b.add_argument("--variants", default=str(data_path("swap_drop")))
+    b.add_argument("--name", default=DEFAULT_SET)
+    b.add_argument("--flip", default=str(data_path("flip")))
+    b.add_argument("--goalonly", default=str(data_path("goalonly")))
     i = sub.add_parser("import")
     i.add_argument("--results", required=True, help="AwareVLN results dir holding traj_*.jsonl and <split>_N-i.json")
     i.add_argument("--out", required=True)
