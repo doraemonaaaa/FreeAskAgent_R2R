@@ -33,7 +33,7 @@ from integrations.v3.habitat_runner.control import (  # noqa: E402
 )
 from integrations.v3.habitat_runner.video import (  # noqa: E402
     annotated_video_frame, decode_visuals, navmesh_map_for_height, new_subgoal_chain,
-    render_topdown, topdown_panel, update_subgoal_chain,
+    preview_strip, render_topdown, topdown_panel, update_subgoal_chain,
 )
 from integrations.v3.habitat_runner.step_log import (  # noqa: E402
     empty_totals, step_line, write_rank_summary, write_step_trace,
@@ -386,6 +386,10 @@ def main():
                         flush=True,
                     )
                 frames = [] if args.record_video else None
+                # The last surrounding-view ring stays under the video until
+                # another one is rendered, so every frame is the same size.
+                ring_views, ring_step = (), None
+                last_topdown = None
                 subgoal_chain = new_subgoal_chain(subgoals)
                 navmesh_map = None
                 navmesh_floor_key = None
@@ -495,18 +499,33 @@ def main():
                                 "{}: {}".format(type(exc).__name__, exc),
                                 flush=True,
                             )
-                        if navmesh_map is None:
-                            frames.append(debug_rgb)
-                        else:
-                            frames.append(topdown_panel(
-                                debug_rgb, render_topdown(
-                                    env, navmesh_map, positions, goal_position,
-                                    rgb.shape[0],
-                                    waypoints=waypoint_targets,
-                                    floor_height=position_before[1],
-                                ),
-                                agent_map=last_agent_map,
-                            ))
+                        # Every frame keeps the same panel count: a missing
+                        # map becomes a grey placeholder, never a narrower
+                        # frame, which the video encoder rejects outright.
+                        side = rgb.shape[0]
+                        blank = np.full((side, side, 3), 128, dtype=np.uint8)
+                        if navmesh_map is not None:
+                            last_topdown = render_topdown(
+                                env, navmesh_map, positions, goal_position, side,
+                                waypoints=waypoint_targets,
+                                floor_height=position_before[1],
+                            )
+                        composed = topdown_panel(
+                            debug_rgb,
+                            last_topdown if last_topdown is not None else blank,
+                            agent_map=last_agent_map if last_agent_map is not None else blank,
+                        )
+                        if joint_views:
+                            ring_views = [(v["yaw_deg"], v["rgb"]) for v in joint_views]
+                            ring_step = steps
+                        chosen = ((decision.get("decision") or {}).get("execution") or {})
+                        frames.append(np.concatenate([composed, preview_strip(
+                            ring_views, composed.shape[1],
+                            selected_yaw=chosen.get("view_yaw_deg") if joint_views else None,
+                            label=("surrounding views @ step {}".format(ring_step)
+                                   if ring_views else "no surrounding views yet"),
+                            stale=not joint_views,
+                        )], axis=0))
                     render_ms = (time.perf_counter() - render_started) * 1000
                     follower_action = None
                     if decision.get("stop"):
@@ -617,6 +636,12 @@ def main():
                             agent_map=last_agent_map,
                         ))
                     episode_id = str(episode.episode_id).replace("/", "_")
+                    shape = frames[0].shape
+                    if any(frame.shape != shape for frame in frames):
+                        # Never lose a whole recording to one odd frame.
+                        print("Video frames differ in size; normalising to {}".format(shape), flush=True)
+                        frames = [frame if frame.shape == shape else np.asarray(
+                            Image.fromarray(frame).resize((shape[1], shape[0]))) for frame in frames]
                     images_to_video(frames, str(args.video_dir), episode_id, fps=10)
                     if navmesh_map is not None:
                         Image.fromarray(
