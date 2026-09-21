@@ -1,17 +1,14 @@
 {
  "args": {
-  "orig": "benchmark/results/canav/orig",
-  "swap": null,
-  "drop": null,
-  "flip": "benchmark/results/canav/flip",
-  "flip_meta": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/val_unseen_200/flip.json",
+  "orig": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/results/canav/orig",
+  "flip": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/results/canav/flip",
+  "flip_meta": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/val_unseen_200/rule/flip.json",
   "goalonly": null,
-  "goalonly_meta": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/val_unseen_200/goalonly.json",
+  "goalonly_meta": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/val_unseen_200/rule/goalonly.json",
   "subgoals": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/val_unseen_200/subgoals.json",
-  "variants": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/val_unseen_200/swap_drop.json",
   "radius": 1.5,
   "ids": null,
-  "json": "benchmark/results/canav/metrics_flip.json",
+  "json": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/results/canav/metrics_flip.json",
   "csv": null
  },
  "metrics": {
@@ -426,11 +423,11 @@
    "orig_reached": true,
    "orig_bk": true,
    "orig_turn": "left",
-   "orig_angle": -50.45176773263293,
+   "orig_angle": -50.45176773263294,
    "flip_reached": true,
    "flip_bk": true,
    "flip_turn": "left",
-   "flip_angle": -50.45176773263293
+   "flip_angle": -50.45176773263294
   },
   "288": {
    "K": 1,
@@ -646,11 +643,11 @@
    "orig_reached": true,
    "orig_bk": false,
    "orig_turn": "right",
-   "orig_angle": 40.20782118421903,
+   "orig_angle": 40.20782118421902,
    "flip_reached": true,
    "flip_bk": false,
    "flip_turn": "right",
-   "flip_angle": 40.20782118421903
+   "flip_angle": 40.20782118421902
   },
   "869": {
    "K": 2,
@@ -1014,11 +1011,11 @@
    "orig_reached": true,
    "orig_bk": true,
    "orig_turn": "right",
-   "orig_angle": 105.68403593214126,
+   "orig_angle": 105.68403593214127,
    "flip_reached": true,
    "flip_bk": true,
    "flip_turn": "right",
-   "flip_angle": 105.68403593214126
+   "flip_angle": 105.68403593214127
   },
   "45": {
    "K": 6,
@@ -1069,11 +1066,11 @@
    "orig_reached": true,
    "orig_bk": true,
    "orig_turn": "right",
-   "orig_angle": 75.27965898818879,
+   "orig_angle": 75.2796589881888,
    "flip_reached": true,
    "flip_bk": true,
    "flip_turn": "right",
-   "flip_angle": 75.27965898818879
+   "flip_angle": 75.2796589881888
   },
   "134": {
    "K": 1,
@@ -1340,11 +1337,11 @@
    "orig_reached": true,
    "orig_bk": false,
    "orig_turn": "straight",
-   "orig_angle": -28.553092061887618,
+   "orig_angle": -28.553092061887615,
    "flip_reached": true,
    "flip_bk": false,
    "flip_turn": "straight",
-   "flip_angle": -28.553092061887618
+   "flip_angle": -28.553092061887615
   },
   "649": {
    "K": 3,
@@ -1417,11 +1414,11 @@
    "orig_reached": true,
    "orig_bk": true,
    "orig_turn": "straight",
-   "orig_angle": 21.471246788898835,
+   "orig_angle": 21.47124678889883,
    "flip_reached": true,
    "flip_bk": true,
    "flip_turn": "straight",
-   "flip_angle": 21.471246788898835
+   "flip_angle": 21.47124678889883
   },
   "954": {
    "K": 2,
@@ -2007,7 +2004,7 @@
    "flip_reached": true,
    "flip_bk": false,
    "flip_turn": "straight",
-   "flip_angle": -7.113905949568227
+   "flip_angle": -7.113905949568226
   },
   "654": {
    "K": 2,
@@ -2027,11 +2024,11 @@
    "orig_reached": true,
    "orig_bk": false,
    "orig_turn": "straight",
-   "orig_angle": 13.40987965761865,
+   "orig_angle": 13.409879657618648,
    "flip_reached": true,
    "flip_bk": false,
    "flip_turn": "straight",
-   "flip_angle": 16.47741547288315
+   "flip_angle": 16.477415472883152
   },
   "681": {
    "K": 2,
@@ -2114,11 +2111,11 @@
    "orig_reached": true,
    "orig_bk": true,
    "orig_turn": "right",
-   "orig_angle": 41.29614661605786,
+   "orig_angle": 41.296146616057854,
    "flip_reached": true,
    "flip_bk": true,
    "flip_turn": "right",
-   "flip_angle": 41.29614661605786
+   "flip_angle": 41.296146616057854
   },
   "831": {
    "K": 2,
@@ -2296,7 +2293,7 @@
    "orig_reached": true,
    "orig_bk": true,
    "orig_turn": "left",
-   "orig_angle": -42.82724543353032,
+   "orig_angle": -42.827245433530315,
    "flip_reached": true,
    "flip_bk": true,
    "flip_turn": "left",
@@ -2650,11 +2647,11 @@
    "orig_reached": true,
    "orig_bk": false,
    "orig_turn": "right",
-   "orig_angle": 33.68749244185458,
+   "orig_angle": 33.68749244185457,
    "flip_reached": true,
    "flip_bk": false,
    "flip_turn": "right",
-   "flip_angle": 33.68749244185458
+   "flip_angle": 33.68749244185457
   },
   "361": {
    "K": 4,
@@ -2742,7 +2739,7 @@
    "flip_reached": true,
    "flip_bk": true,
    "flip_turn": "right",
-   "flip_angle": 131.84977198040542
+   "flip_angle": 131.84977198040545
   },
   "610": {
    "K": 2,
@@ -2917,7 +2914,7 @@
    "flip_reached": true,
    "flip_bk": true,
    "flip_turn": "left",
-   "flip_angle": -109.33662131056826
+   "flip_angle": -109.33662131056828
   },
   "956": {
    "K": 2,
@@ -3178,11 +3175,11 @@
    "orig_reached": true,
    "orig_bk": true,
    "orig_turn": "right",
-   "orig_angle": 61.61011131598016,
+   "orig_angle": 61.61011131598017,
    "flip_reached": true,
    "flip_bk": true,
    "flip_turn": "right",
-   "flip_angle": 65.62567429836531
+   "flip_angle": 65.62567429836533
   },
   "1582": {
    "K": 4,

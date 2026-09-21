@@ -1,14 +1,15 @@
 {
  "args": {
-  "orig": "benchmark/results/canav/orig",
-  "swap": "benchmark/results/canav/swap",
-  "drop": "benchmark/results/canav/drop",
-  "subgoals": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/subgoals_val_unseen_200.json",
-  "variants": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/variants_val_unseen_200.json",
+  "orig": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/results/canav/orig",
+  "flip": null,
+  "flip_meta": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/val_unseen_200/rule/flip.json",
+  "goalonly": null,
+  "goalonly_meta": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/val_unseen_200/rule/goalonly.json",
+  "subgoals": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/val_unseen_200/subgoals.json",
   "radius": 1.5,
   "ids": null,
-  "json": "benchmark/results/canav/metrics.json",
-  "csv": "benchmark/results/canav/per_episode.csv"
+  "json": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/results/canav/metrics.json",
+  "csv": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/results/canav/per_episode.csv"
  },
  "metrics": {
   "SR": {
@@ -93,114 +94,6 @@
      0.0
     ]
    }
-  },
-  "ISens-SGCR": {
-   "name": "ISens-SGCR",
-   "n": 200,
-   "mean": 0.10008333333333333,
-   "ci": [
-    0.03339791666666667,
-    0.16886041666666665
-   ]
-  },
-  "ISens-SGCR-eff": {
-   "name": "ISens-SGCR-eff",
-   "n": 200,
-   "mean": 0.07200000000000001,
-   "ci": [
-    0.006066666666666677,
-    0.13326874999999996
-   ]
-  },
-  "SGCR_swap(orig bounds)": {
-   "name": "SGCR_swap",
-   "n": 200,
-   "mean": 0.5041666666666667,
-   "ci": [
-    0.44616458333333325,
-    0.5601770833333334
-   ]
-  },
-  "SGCR'(donor bounds)": {
-   "name": "SGCR'",
-   "n": 200,
-   "mean": 0.6,
-   "ci": [
-    0.5418145833333333,
-    0.6533416666666667
-   ]
-  },
-  "PathAttrib": {
-   "name": "PathAttrib",
-   "n": 200,
-   "mean": 0.54,
-   "ci": [
-    0.47,
-    0.605
-   ]
-  },
-  "PathAttrib(same-start donors)": {
-   "name": "PathAttrib_near",
-   "n": 128,
-   "mean": 0.546875,
-   "ci": [
-    0.4609375,
-    0.6328125
-   ]
-  },
-  "SR_swap": {
-   "name": "SR_swap",
-   "n": 200,
-   "mean": 0.115,
-   "ci": [
-    0.075,
-    0.16
-   ]
-  },
-  "LocFail": {
-   "name": "LocFail",
-   "n": 120,
-   "mean": 0.15833333333333333,
-   "ci": [
-    0.1,
-    0.225
-   ]
-  },
-  "Skip": {
-   "name": "Skip",
-   "n": 120,
-   "mean": 0.8333333333333334,
-   "ci": [
-    0.7666666666666667,
-    0.8916666666666667
-   ]
-  },
-  "PrefixKeep": {
-   "name": "PrefixKeep",
-   "n": 52,
-   "mean": 0.9807692307692307,
-   "ci": [
-    0.9423076923076923,
-    1.0
-   ]
-  },
-  "LocFail_random_baseline": {
-   "name": "1/K_mean",
-   "n": 120,
-   "mean": 0.30456852791878175,
-   "ci": [
-    null,
-    null
-   ]
-  },
-  "SR_drop": {
-   "name": "SR_drop",
-   "n": 171,
-   "mean": 0.2631578947368421,
-   "ci": [
-    0.19883040935672514,
-    0.32748538011695905
-   ]
   }
  },
  "episodes": {
@@ -216,19 +109,7 @@
     14,
     16,
     16
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 4,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0003058011608071207,
-   "swap_ndtw_donor": 1.5877553497064917e-06,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "37": {
    "K": 1,
@@ -239,15 +120,7 @@
    "orig_f": 1,
    "orig_entries": [
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.8405922359855486,
-   "swap_ndtw_donor": 0.458138035888563,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "108": {
    "K": 5,
@@ -262,19 +135,7 @@
     51,
     56,
     60
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 1,
-   "swap_donor_c": 0,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.3549373370352706,
-   "swap_ndtw_donor": 0.5142650712779517,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 3,
-   "drop_c": 5,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "115": {
    "K": 3,
@@ -287,19 +148,7 @@
     0,
     13,
     13
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.03608835808796134,
-   "swap_ndtw_donor": 0.14292786003911206,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "121": {
    "K": 3,
@@ -312,19 +161,7 @@
     5,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 3.28230269192807e-05,
-   "swap_ndtw_donor": 0.002593189329922549,
-   "swap_donor_start_m": 0.9329896364498347,
-   "drop_k": 1,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "136": {
    "K": 2,
@@ -336,19 +173,7 @@
    "orig_entries": [
     16,
     22
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 5,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.002776865360389437,
-   "swap_ndtw_donor": 0.09015780581999824,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "141": {
    "K": 5,
@@ -363,19 +188,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 1,
-   "swap_donor_c": 0,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.4059896006667431,
-   "swap_ndtw_donor": 0.027680503500423646,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "142": {
    "K": 4,
@@ -389,15 +202,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 1,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 7.477997109534621e-08,
-   "swap_ndtw_donor": 0.0001813356722594593,
-   "swap_donor_start_m": 1.6370513395316788
+   ]
   },
   "149": {
    "K": 4,
@@ -411,19 +216,7 @@
     16,
     29,
     29
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 4,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.20409431217710297,
-   "swap_ndtw_donor": 0.15697178485483246,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "150": {
    "K": 4,
@@ -437,19 +230,7 @@
     16,
     32,
     32
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 4,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.1816125620607265,
-   "swap_ndtw_donor": 0.1761849665108588,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "162": {
    "K": 3,
@@ -462,19 +243,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 1,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.10793648746329376,
-   "swap_ndtw_donor": 0.19273223980931645,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "177": {
    "K": 3,
@@ -487,19 +256,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.027999933323683748,
-   "swap_ndtw_donor": 0.8552729231706734,
-   "swap_donor_start_m": 1.5451066389559678,
-   "drop_k": 1,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "228": {
    "K": 5,
@@ -514,19 +271,7 @@
     72,
     76,
     79
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.11414563127020495,
-   "swap_ndtw_donor": 0.11719212532507496,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 5,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "288": {
    "K": 1,
@@ -537,15 +282,7 @@
    "orig_f": null,
    "orig_entries": [
     133
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 0,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.015509549479637516,
-   "swap_ndtw_donor": 0.37650003258644277,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "300": {
    "K": 4,
@@ -559,19 +296,7 @@
     87,
     97,
     97
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 0,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 2.9681358888430216e-06,
-   "swap_ndtw_donor": 0.0010233694882051004,
-   "swap_donor_start_m": 1.5995115561635938,
-   "drop_k": 2,
-   "drop_c": 2,
-   "drop_f": 3,
-   "drop_sr": 0.0
+   ]
   },
   "386": {
    "K": 5,
@@ -586,19 +311,7 @@
     18,
     74,
     null
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.023930124091907874,
-   "swap_ndtw_donor": 0.0021591972250342346,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 5,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "450": {
    "K": 4,
@@ -612,15 +325,7 @@
     10,
     23,
     23
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 4,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.01471854811889747,
-   "swap_ndtw_donor": 0.09859404626984264,
-   "swap_donor_start_m": 2.1604851535964578
+   ]
   },
   "496": {
    "K": 4,
@@ -634,19 +339,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.20254721606298326,
-   "swap_ndtw_donor": 0.1230397262084357,
-   "swap_donor_start_m": 2.3923958015500264,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "561": {
    "K": 2,
@@ -658,19 +351,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 1,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 5.381048594156895e-05,
-   "swap_ndtw_donor": 0.08219549017377632,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "569": {
    "K": 2,
@@ -682,19 +363,7 @@
    "orig_entries": [
     21,
     132
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.06226532761441643,
-   "swap_ndtw_donor": 0.0834903617440246,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "574": {
    "K": 2,
@@ -706,19 +375,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.00010064279129144613,
-   "swap_ndtw_donor": 4.956722555596515e-08,
-   "swap_donor_start_m": 4.162340138812202,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "655": {
    "K": 4,
@@ -732,19 +389,7 @@
     55,
     63,
     69
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.07429320441165854,
-   "swap_ndtw_donor": 0.03866901217004444,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 2,
-   "drop_f": 3,
-   "drop_sr": 0.0
+   ]
   },
   "676": {
    "K": 3,
@@ -757,15 +402,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.00015590650617566015,
-   "swap_ndtw_donor": 0.0004389195151395729,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "715": {
    "K": 4,
@@ -779,19 +416,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 3,
-   "swap_donor_K": 6,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.027178303309360677,
-   "swap_ndtw_donor": 0.0305784188884723,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 3,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 1.0
+   ]
   },
   "716": {
    "K": 2,
@@ -803,19 +428,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.029475214266226294,
-   "swap_ndtw_donor": 0.028951027960043136,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "724": {
    "K": 2,
@@ -827,19 +440,7 @@
    "orig_entries": [
     47,
     47
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.02213786634389769,
-   "swap_ndtw_donor": 0.010622593920813909,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "805": {
    "K": 3,
@@ -852,19 +453,7 @@
     0,
     17,
     17
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 2,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.005279563928412502,
-   "swap_ndtw_donor": 0.0323502243466315,
-   "swap_donor_start_m": 3.694689324276324,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 1.0
+   ]
   },
   "820": {
    "K": 4,
@@ -878,19 +467,7 @@
     79,
     null,
     null
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.009954769147793713,
-   "swap_ndtw_donor": 0.033529716138641814,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "869": {
    "K": 2,
@@ -902,19 +479,7 @@
    "orig_entries": [
     28,
     34
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 0,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.06158560385292414,
-   "swap_ndtw_donor": 0.05122010697793426,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "911": {
    "K": 5,
@@ -929,15 +494,7 @@
     77,
     80,
     80
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 1,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.023024480032019286,
-   "swap_ndtw_donor": 0.009160908412811758,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "998": {
    "K": 1,
@@ -948,15 +505,7 @@
    "orig_f": null,
    "orig_entries": [
     15
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.13214386470695538,
-   "swap_ndtw_donor": 0.0890357609360296,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "1040": {
    "K": 2,
@@ -968,19 +517,7 @@
    "orig_entries": [
     92,
     92
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.19607143760325596,
-   "swap_ndtw_donor": 0.6105166072181506,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1136": {
    "K": 2,
@@ -992,19 +529,7 @@
    "orig_entries": [
     23,
     31
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 3,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.002063909286033045,
-   "swap_ndtw_donor": 0.0010448760564663268,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1160": {
    "K": 3,
@@ -1017,19 +542,7 @@
     0,
     null,
     null
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 0,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.23282698650939426,
-   "swap_ndtw_donor": 4.17726707996492e-06,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1192": {
    "K": 2,
@@ -1041,19 +554,7 @@
    "orig_entries": [
     0,
     113
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 0,
-   "swap_donor_K": 1,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 4.9368565104855785e-05,
-   "swap_ndtw_donor": 8.335397882078099e-05,
-   "swap_donor_start_m": 1.0703167696334541,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "1196": {
    "K": 2,
@@ -1065,19 +566,7 @@
    "orig_entries": [
     47,
     47
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.10955256823980923,
-   "swap_ndtw_donor": 0.11043756691307782,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1197": {
    "K": 2,
@@ -1089,19 +578,7 @@
    "orig_entries": [
     6,
     49
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.21871717043827077,
-   "swap_ndtw_donor": 0.2692775803829165,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1228": {
    "K": 2,
@@ -1113,19 +590,7 @@
    "orig_entries": [
     0,
     74
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 1,
-   "swap_donor_c": 0,
-   "swap_donor_K": 3,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.06337833402662264,
-   "swap_ndtw_donor": 0.0002000314510087618,
-   "swap_donor_start_m": 3.2237066347686936,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1272": {
    "K": 2,
@@ -1137,19 +602,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 3,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.02083973698899213,
-   "swap_ndtw_donor": 0.0310631174205009,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1297": {
    "K": 3,
@@ -1162,19 +615,7 @@
     17,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.017644522968648536,
-   "swap_ndtw_donor": 0.18015024745582528,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1311": {
    "K": 2,
@@ -1186,19 +627,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.048655233535762066,
-   "swap_ndtw_donor": 0.4380564088569306,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1537": {
    "K": 5,
@@ -1213,19 +642,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 5,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.008147110107391033,
-   "swap_ndtw_donor": 0.29075536166535315,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1544": {
    "K": 3,
@@ -1238,19 +655,7 @@
     14,
     28,
     28
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 1,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.2982138028270141,
-   "swap_ndtw_donor": 0.17476601471530015,
-   "swap_donor_start_m": 1.0394996850188207,
-   "drop_k": 2,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "1589": {
    "K": 1,
@@ -1261,15 +666,7 @@
    "orig_f": 1,
    "orig_entries": [
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.03807904968011657,
-   "swap_ndtw_donor": 0.0435235200879465,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "1612": {
    "K": 5,
@@ -1284,19 +681,7 @@
     33,
     52,
     52
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.02147556986264336,
-   "swap_ndtw_donor": 0.10678236834019343,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 3,
-   "drop_f": 4,
-   "drop_sr": 0.0
+   ]
   },
   "1619": {
    "K": 2,
@@ -1308,19 +693,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.16434475929575018,
-   "swap_ndtw_donor": 0.11308855274368064,
-   "swap_donor_start_m": 2.348671485102485,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1685": {
    "K": 4,
@@ -1334,19 +707,7 @@
     14,
     null,
     null
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.030815077187229267,
-   "swap_ndtw_donor": 0.15033607840342678,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 2,
-   "drop_f": 3,
-   "drop_sr": 0.0
+   ]
   },
   "1741": {
    "K": 3,
@@ -1359,19 +720,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 2,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.029143033555975764,
-   "swap_ndtw_donor": 0.039715595777073995,
-   "swap_donor_start_m": 1.8933608781185907,
-   "drop_k": 1,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "1772": {
    "K": 4,
@@ -1385,19 +734,7 @@
     35,
     47,
     47
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 4,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.2822838135679777,
-   "swap_ndtw_donor": 0.0688183987931075,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1774": {
    "K": 4,
@@ -1411,19 +748,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 5,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.4341646403663073,
-   "swap_ndtw_donor": 0.7231474686553847,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "35": {
    "K": 2,
@@ -1435,19 +760,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 0,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.16704523704443586,
-   "swap_ndtw_donor": 0.11776394980688693,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "43": {
    "K": 5,
@@ -1462,19 +775,7 @@
     36,
     96,
     96
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 2,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.016273301086256,
-   "swap_ndtw_donor": 0.0006008077446128508,
-   "swap_donor_start_m": 1.2107715529968812,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": 3,
-   "drop_sr": 0.0
+   ]
   },
   "45": {
    "K": 6,
@@ -1490,19 +791,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 3,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.016273301086256,
-   "swap_ndtw_donor": 0.0006008077446128508,
-   "swap_donor_start_m": 1.2107715529968812,
-   "drop_k": 3,
-   "drop_c": 3,
-   "drop_f": 4,
-   "drop_sr": 0.0
+   ]
   },
   "67": {
    "K": 2,
@@ -1514,19 +803,7 @@
    "orig_entries": [
     0,
     146
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 6,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 4.994688542823522e-05,
-   "swap_ndtw_donor": 0.000211161859904101,
-   "swap_donor_start_m": 1.5135458212789838,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "75": {
    "K": 5,
@@ -1541,19 +818,7 @@
     12,
     22,
     22
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.014786827800460641,
-   "swap_ndtw_donor": 0.028951027960043136,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 3,
-   "drop_c": 5,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "134": {
    "K": 1,
@@ -1564,15 +829,7 @@
    "orig_f": null,
    "orig_entries": [
     32
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 0,
-   "swap_donor_c": 3,
-   "swap_donor_K": 4,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.26128264687900055,
-   "swap_ndtw_donor": 0.058587910701211415,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "146": {
    "K": 3,
@@ -1585,19 +842,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 4,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.07990714311255379,
-   "swap_ndtw_donor": 0.05498026101349352,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "154": {
    "K": 4,
@@ -1611,19 +856,7 @@
     7,
     35,
     41
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.17858304911520356,
-   "swap_ndtw_donor": 0.15397930683657557,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 3,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "159": {
    "K": 1,
@@ -1634,15 +867,7 @@
    "orig_f": 1,
    "orig_entries": [
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 4,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.0540392104773525,
-   "swap_ndtw_donor": 0.00011532317310265329,
-   "swap_donor_start_m": 1.7583851170699876
+   ]
   },
   "161": {
    "K": 2,
@@ -1654,19 +879,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.01243454751118918,
-   "swap_ndtw_donor": 0.062465476307148306,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "208": {
    "K": 2,
@@ -1678,19 +891,7 @@
    "orig_entries": [
     23,
     68
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 5,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.027955495798234295,
-   "swap_ndtw_donor": 0.0513355276590685,
-   "swap_donor_start_m": 4.273755898092473,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "248": {
    "K": 2,
@@ -1702,19 +903,7 @@
    "orig_entries": [
     116,
     121
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.3970827504508313,
-   "swap_ndtw_donor": 0.46338149118111643,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "281": {
    "K": 4,
@@ -1728,19 +917,7 @@
     53,
     68,
     68
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 0,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.015531139897113527,
-   "swap_ndtw_donor": 0.24258053417322326,
-   "swap_donor_start_m": 0.4605047618763431,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 1.0
+   ]
   },
   "289": {
    "K": 3,
@@ -1753,19 +930,7 @@
     19,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 0,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 2.5446538066164324e-06,
-   "swap_ndtw_donor": 0.14888908291370379,
-   "swap_donor_start_m": 7.568723012536759,
-   "drop_k": 2,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "327": {
    "K": 1,
@@ -1776,15 +941,7 @@
    "orig_f": 1,
    "orig_entries": [
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 1,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.10841349766859067,
-   "swap_ndtw_donor": 0.19273223980931645,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "396": {
    "K": 1,
@@ -1795,15 +952,7 @@
    "orig_f": null,
    "orig_entries": [
     19
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 5.796518699898223e-06,
-   "swap_ndtw_donor": 0.0012494350810549264,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "419": {
    "K": 3,
@@ -1816,19 +965,7 @@
     8,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 3,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.033415636894304324,
-   "swap_ndtw_donor": 0.019235334094821237,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "448": {
    "K": 1,
@@ -1839,15 +976,7 @@
    "orig_f": null,
    "orig_entries": [
     22
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.01471854811889747,
-   "swap_ndtw_donor": 0.09859404626984264,
-   "swap_donor_start_m": 2.1604851535964578
+   ]
   },
   "485": {
    "K": 4,
@@ -1861,19 +990,7 @@
     8,
     112,
     112
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.01347797314236542,
-   "swap_ndtw_donor": 0.0010297971480154346,
-   "swap_donor_start_m": 1.8743307980314927,
-   "drop_k": 1,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "503": {
    "K": 4,
@@ -1887,19 +1004,7 @@
     18,
     28,
     28
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 0,
-   "swap_donor_K": 1,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.38108516588819547,
-   "swap_ndtw_donor": 0.25074277475831885,
-   "swap_donor_start_m": 1.1604924642531524,
-   "drop_k": 2,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "527": {
    "K": 2,
@@ -1911,19 +1016,7 @@
    "orig_entries": [
     40,
     46
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.13440519824188618,
-   "swap_ndtw_donor": 0.031223976294927683,
-   "swap_donor_start_m": 1.1604924642531524,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "548": {
    "K": 2,
@@ -1935,19 +1028,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.11955882351295023,
-   "swap_ndtw_donor": 0.20642095174448427,
-   "swap_donor_start_m": 2.758326455414482,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "549": {
    "K": 3,
@@ -1960,19 +1041,7 @@
     58,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.11955882351295023,
-   "swap_ndtw_donor": 0.20642095174448427,
-   "swap_donor_start_m": 2.758326455414482,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "649": {
    "K": 3,
@@ -1985,19 +1054,7 @@
     0,
     103,
     103
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.22211202013103165,
-   "swap_ndtw_donor": 0.4030491164807346,
-   "swap_donor_start_m": 3.491649570158418,
-   "drop_k": 2,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "657": {
    "K": 5,
@@ -2012,19 +1069,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 0,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.45944436648168496,
-   "swap_ndtw_donor": 0.45981839288508186,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 2,
-   "drop_f": 3,
-   "drop_sr": 0.0
+   ]
   },
   "781": {
    "K": 1,
@@ -2035,15 +1080,7 @@
    "orig_f": null,
    "orig_entries": [
     52
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.06484411418133525,
-   "swap_ndtw_donor": 0.0004255336279228561,
-   "swap_donor_start_m": 3.639847394882345
+   ]
   },
   "782": {
    "K": 3,
@@ -2056,19 +1093,7 @@
     0,
     23,
     27
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.06484411418133525,
-   "swap_ndtw_donor": 0.0004255336279228561,
-   "swap_donor_start_m": 3.639847394882345,
-   "drop_k": 2,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "929": {
    "K": 3,
@@ -2081,19 +1106,7 @@
     7,
     13,
     null
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 2,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.14882027051003072,
-   "swap_ndtw_donor": 0.00024404214026074218,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "954": {
    "K": 2,
@@ -2105,19 +1118,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 1.6866920472348825e-05,
-   "swap_ndtw_donor": 8.149502347932038e-06,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1008": {
    "K": 4,
@@ -2131,19 +1132,7 @@
     32,
     58,
     74
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 4,
-   "swap_donor_c": 2,
-   "swap_donor_K": 6,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.2030432703372163,
-   "swap_ndtw_donor": 1.71647748945378e-05,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1023": {
    "K": 3,
@@ -2156,19 +1145,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 0,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.019474174993693194,
-   "swap_ndtw_donor": 0.0001632523660963598,
-   "swap_donor_start_m": 1.0556273897921464,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1035": {
    "K": 3,
@@ -2181,19 +1158,7 @@
     11,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.008199337401657377,
-   "swap_ndtw_donor": 0.013557741571866363,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1117": {
    "K": 1,
@@ -2204,15 +1169,7 @@
    "orig_f": null,
    "orig_entries": [
     28
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.03926530013098702,
-   "swap_ndtw_donor": 0.07371629004959572,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "1149": {
    "K": 2,
@@ -2224,19 +1181,7 @@
    "orig_entries": [
     42,
     42
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.019906589828465406,
-   "swap_ndtw_donor": 0.035796549278025204,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1191": {
    "K": 3,
@@ -2249,19 +1194,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 1,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.08464707735232258,
-   "swap_ndtw_donor": 0.6081108779010453,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1208": {
    "K": 2,
@@ -2273,19 +1206,7 @@
    "orig_entries": [
     35,
     36
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 5,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0018167886277661483,
-   "swap_ndtw_donor": 0.05989727297366808,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1266": {
    "K": 3,
@@ -2298,19 +1219,7 @@
     14,
     31,
     44
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.001125761517979703,
-   "swap_ndtw_donor": 0.2317867678019817,
-   "swap_donor_start_m": 1.1549807458675345,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1305": {
    "K": 1,
@@ -2321,15 +1230,7 @@
    "orig_f": null,
    "orig_entries": [
     70
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.002031169427005285,
-   "swap_ndtw_donor": 0.0024287481443332104,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "1382": {
    "K": 4,
@@ -2343,19 +1244,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 3,
-   "swap_donor_K": 6,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.00017715770447078474,
-   "swap_ndtw_donor": 0.025726388091868592,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1432": {
    "K": 3,
@@ -2368,19 +1257,7 @@
     28,
     44,
     51
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 0,
-   "swap_donor_c": 3,
-   "swap_donor_K": 5,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.07039937255603146,
-   "swap_ndtw_donor": 0.10644224060650102,
-   "swap_donor_start_m": 1.3073123041786174,
-   "drop_k": 2,
-   "drop_c": 2,
-   "drop_f": 3,
-   "drop_sr": 0.0
+   ]
   },
   "1455": {
    "K": 5,
@@ -2395,19 +1272,7 @@
     48,
     52,
     52
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 0,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.00011446755549604711,
-   "swap_ndtw_donor": 2.181444223105551e-06,
-   "swap_donor_start_m": 1.8842798082902548,
-   "drop_k": 4,
-   "drop_c": 5,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "1581": {
    "K": 3,
@@ -2420,19 +1285,7 @@
     37,
     null,
     null
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 2,
-   "swap_donor_c": 6,
-   "swap_donor_K": 6,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0072844707568078225,
-   "swap_ndtw_donor": 0.022329378502321136,
-   "swap_donor_start_m": 0.6414336559548139,
-   "drop_k": 1,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "1583": {
    "K": 2,
@@ -2444,19 +1297,7 @@
    "orig_entries": [
     5,
     55
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.033991274840048005,
-   "swap_ndtw_donor": 0.0012044355991416872,
-   "swap_donor_start_m": 1.043855200408503,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1659": {
    "K": 1,
@@ -2467,15 +1308,7 @@
    "orig_f": 1,
    "orig_entries": [
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.07903519536195878,
-   "swap_ndtw_donor": 0.0938765184362707,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "1718": {
    "K": 1,
@@ -2486,15 +1319,7 @@
    "orig_f": null,
    "orig_entries": [
     38
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.011471773891913832,
-   "swap_ndtw_donor": 0.008616571761918955,
-   "swap_donor_start_m": 3.364382446510613
+   ]
   },
   "1731": {
    "K": 4,
@@ -2508,19 +1333,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 1,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.005092895461469461,
-   "swap_ndtw_donor": 0.004936596653771191,
-   "swap_donor_start_m": 1.4973134459150719,
-   "drop_k": 3,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1765": {
    "K": 3,
@@ -2533,19 +1346,7 @@
     0,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.005406204490977464,
-   "swap_ndtw_donor": 0.0564784663919451,
-   "swap_donor_start_m": 1.0440233803963506,
-   "drop_k": 2,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1766": {
    "K": 1,
@@ -2556,15 +1357,7 @@
    "orig_f": null,
    "orig_entries": [
     28
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.005406204490977464,
-   "swap_ndtw_donor": 0.0564784663919451,
-   "swap_donor_start_m": 1.0440233803963506
+   ]
   },
   "1777": {
    "K": 1,
@@ -2575,15 +1368,7 @@
    "orig_f": null,
    "orig_entries": [
     8
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.27024102694949753,
-   "swap_ndtw_donor": 0.6385209294237953,
-   "swap_donor_start_m": 1.035999202563712
+   ]
   },
   "1784": {
    "K": 1,
@@ -2594,15 +1379,7 @@
    "orig_f": 1,
    "orig_entries": [
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.05654349326745679,
-   "swap_ndtw_donor": 0.05833848691295479,
-   "swap_donor_start_m": 1.8360162651615342
+   ]
   },
   "58": {
    "K": 4,
@@ -2616,19 +1393,7 @@
     18,
     24,
     null
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 4,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.3052168895209642,
-   "swap_ndtw_donor": 0.8181519903430032,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 3,
-   "drop_f": 4,
-   "drop_sr": 0.0
+   ]
   },
   "170": {
    "K": 4,
@@ -2642,19 +1407,7 @@
     110,
     124,
     124
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 3,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.019318194361952656,
-   "swap_ndtw_donor": 0.13563170530546245,
-   "swap_donor_start_m": 1.457960797392108,
-   "drop_k": 1,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "181": {
    "K": 5,
@@ -2669,19 +1422,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.011930273086904813,
-   "swap_ndtw_donor": 0.006232455379349133,
-   "swap_donor_start_m": 1.0485510714768642,
-   "drop_k": 2,
-   "drop_c": 2,
-   "drop_f": 3,
-   "drop_sr": 0.0
+   ]
   },
   "196": {
    "K": 3,
@@ -2694,19 +1435,7 @@
     13,
     23,
     26
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 0,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.15479921150005949,
-   "swap_ndtw_donor": 0.005086819242536749,
-   "swap_donor_start_m": 1.200555121275221,
-   "drop_k": 1,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "229": {
    "K": 4,
@@ -2720,19 +1449,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.04802591224521928,
-   "swap_ndtw_donor": 0.02151909107724428,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 3,
-   "drop_c": 2,
-   "drop_f": 3,
-   "drop_sr": 0.0
+   ]
   },
   "295": {
    "K": 2,
@@ -2744,19 +1461,7 @@
    "orig_entries": [
     103,
     103
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.05413132227259499,
-   "swap_ndtw_donor": 0.03563047268388576,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "316": {
    "K": 3,
@@ -2769,19 +1474,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.12001299401156475,
-   "swap_ndtw_donor": 0.6711736861046337,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "371": {
    "K": 3,
@@ -2794,19 +1487,7 @@
     26,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0043647776885132146,
-   "swap_ndtw_donor": 0.02462380923037087,
-   "swap_donor_start_m": 1.3905580889160722,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 1.0
+   ]
   },
   "377": {
    "K": 4,
@@ -2820,19 +1501,7 @@
     41,
     49,
     54
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.008808321483017629,
-   "swap_ndtw_donor": 0.03438156162069127,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 3,
-   "drop_f": 4,
-   "drop_sr": 0.0
+   ]
   },
   "451": {
    "K": 6,
@@ -2848,19 +1517,7 @@
     35,
     null,
     null
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 4,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.024297304793808098,
-   "swap_ndtw_donor": 0.13268710704977907,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 6,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "543": {
    "K": 3,
@@ -2873,19 +1530,7 @@
     0,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0006599309014900276,
-   "swap_ndtw_donor": 0.0006369223470245011,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "590": {
    "K": 3,
@@ -2898,19 +1543,7 @@
     0,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0036159883991968966,
-   "swap_ndtw_donor": 0.0001319929733195255,
-   "swap_donor_start_m": 1.4354399099566413,
-   "drop_k": 2,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "617": {
    "K": 3,
@@ -2923,19 +1556,7 @@
     13,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.024965411581975173,
-   "swap_ndtw_donor": 0.018403741717550506,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "619": {
    "K": 2,
@@ -2947,19 +1568,7 @@
    "orig_entries": [
     14,
     14
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 0,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.009562655181059377,
-   "swap_ndtw_donor": 0.010391829990853788,
-   "swap_donor_start_m": 1.5920798147496207,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 1.0
+   ]
   },
   "639": {
    "K": 4,
@@ -2973,19 +1582,7 @@
     83,
     136,
     null
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 2,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.15429859428075252,
-   "swap_ndtw_donor": 5.2266405884315474e-05,
-   "swap_donor_start_m": 1.5920798147496207,
-   "drop_k": 3,
-   "drop_c": 2,
-   "drop_f": 3,
-   "drop_sr": 0.0
+   ]
   },
   "644": {
    "K": 2,
@@ -2997,19 +1594,7 @@
    "orig_entries": [
     50,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.09672054757465079,
-   "swap_ndtw_donor": 0.05871153074402902,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "653": {
    "K": 4,
@@ -3023,19 +1608,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 1,
-   "swap_donor_c": 5,
-   "swap_donor_K": 5,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.13748599774179984,
-   "swap_ndtw_donor": 0.04959855929880631,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 3,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "654": {
    "K": 2,
@@ -3047,19 +1620,7 @@
    "orig_entries": [
     27,
     null
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.43171550698461997,
-   "swap_ndtw_donor": 0.39407322058511535,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "681": {
    "K": 2,
@@ -3071,19 +1632,7 @@
    "orig_entries": [
     31,
     31
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.00019610357783239127,
-   "swap_ndtw_donor": 0.0002979019434999837,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "726": {
    "K": 2,
@@ -3095,19 +1644,7 @@
    "orig_entries": [
     24,
     24
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.02213786634389769,
-   "swap_ndtw_donor": 0.010622593920813909,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "736": {
    "K": 3,
@@ -3120,15 +1657,7 @@
     2,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.09099038429974544,
-   "swap_ndtw_donor": 0.0006658833103214294,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "775": {
    "K": 2,
@@ -3140,19 +1669,7 @@
    "orig_entries": [
     156,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.014941917165026528,
-   "swap_ndtw_donor": 0.07844695536789505,
-   "swap_donor_start_m": 0.4605047618763431,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "792": {
    "K": 4,
@@ -3166,19 +1683,7 @@
     18,
     22,
     23
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 4,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.0032705748610729253,
-   "swap_ndtw_donor": 0.09569515368382114,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "831": {
    "K": 2,
@@ -3190,19 +1695,7 @@
    "orig_entries": [
     27,
     36
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.09028910675321601,
-   "swap_ndtw_donor": 0.01700289572607043,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "884": {
    "K": 1,
@@ -3213,15 +1706,7 @@
    "orig_f": null,
    "orig_entries": [
     62
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.26774055010726716,
-   "swap_ndtw_donor": 0.44339889288608914,
-   "swap_donor_start_m": 1.2619385337384383
+   ]
   },
   "970": {
    "K": 2,
@@ -3233,19 +1718,7 @@
    "orig_entries": [
     117,
     117
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 1,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.007820226424684431,
-   "swap_ndtw_donor": 0.04093442691763311,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "991": {
    "K": 5,
@@ -3260,19 +1733,7 @@
     27,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0009065960042811277,
-   "swap_ndtw_donor": 0.0006949619193136076,
-   "swap_donor_start_m": 1.7452453089471303,
-   "drop_k": 2,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 1.0
+   ]
   },
   "1065": {
    "K": 6,
@@ -3288,19 +1749,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.08364357921153744,
-   "swap_ndtw_donor": 0.003017657613528312,
-   "swap_donor_start_m": 3.57105479398648,
-   "drop_k": 2,
-   "drop_c": 2,
-   "drop_f": 3,
-   "drop_sr": 0.0
+   ]
   },
   "1072": {
    "K": 4,
@@ -3314,19 +1763,7 @@
     104,
     null,
     null
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 2,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.22997118244442175,
-   "swap_ndtw_donor": 0.19217661640453085,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 3,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "1187": {
    "K": 3,
@@ -3339,19 +1776,7 @@
     0,
     null,
     null
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 1,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.05316793969037854,
-   "swap_ndtw_donor": 0.07392041443988052,
-   "swap_donor_start_m": 2.468813003220971,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1223": {
    "K": 2,
@@ -3363,19 +1788,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.03574330528333664,
-   "swap_ndtw_donor": 0.03372835781057102,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1232": {
    "K": 2,
@@ -3387,19 +1800,7 @@
    "orig_entries": [
     47,
     47
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.08339562408232638,
-   "swap_ndtw_donor": 0.00043019485807946394,
-   "swap_donor_start_m": 0.38588937514138355,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1236": {
    "K": 2,
@@ -3411,19 +1812,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0008371109886703864,
-   "swap_ndtw_donor": 0.053893664863532545,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1243": {
    "K": 2,
@@ -3435,19 +1824,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0003849773688517094,
-   "swap_ndtw_donor": 0.0034586810213290023,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1252": {
    "K": 5,
@@ -3462,19 +1839,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 6,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0022652390735351108,
-   "swap_ndtw_donor": 0.003994889693972044,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1349": {
    "K": 4,
@@ -3488,19 +1853,7 @@
     47,
     55,
     55
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 1,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.027851148981705827,
-   "swap_ndtw_donor": 0.0674389826980668,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1404": {
    "K": 2,
@@ -3512,19 +1865,7 @@
    "orig_entries": [
     31,
     31
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 0,
-   "swap_donor_c": 3,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.09792606196166802,
-   "swap_ndtw_donor": 0.20284711808886158,
-   "swap_donor_start_m": 1.738488802001441,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1413": {
    "K": 3,
@@ -3537,19 +1878,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 6,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.3062523259222222,
-   "swap_ndtw_donor": 0.24672341828757172,
-   "swap_donor_start_m": 1.8837897914086976,
-   "drop_k": 2,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1447": {
    "K": 4,
@@ -3563,19 +1892,7 @@
     26,
     33,
     33
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0008398726254918052,
-   "swap_ndtw_donor": 0.0007233699219763118,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 3,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1452": {
    "K": 4,
@@ -3589,19 +1906,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.42871753730492895,
-   "swap_ndtw_donor": 0.33313921763971266,
-   "swap_donor_start_m": 2.481177703584871,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 1.0
+   ]
   },
   "1469": {
    "K": 3,
@@ -3614,19 +1919,7 @@
     31,
     125,
     133
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0379060562889852,
-   "swap_ndtw_donor": 0.06342451960049235,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1494": {
    "K": 4,
@@ -3640,19 +1933,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 0,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 1.6521595598788005e-05,
-   "swap_ndtw_donor": 4.3427595856774056e-07,
-   "swap_donor_start_m": 1.3488067283126581,
-   "drop_k": 1,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1552": {
    "K": 2,
@@ -3664,19 +1945,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 1,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.001117063278316814,
-   "swap_ndtw_donor": 0.007941596571714159,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1569": {
    "K": 5,
@@ -3691,19 +1960,7 @@
     47,
     53,
     57
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.03864743177777934,
-   "swap_ndtw_donor": 0.08066064122916451,
-   "swap_donor_start_m": 1.3347416748009318,
-   "drop_k": 4,
-   "drop_c": 5,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "1571": {
    "K": 3,
@@ -3716,19 +1973,7 @@
     0,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0009658197130868235,
-   "swap_ndtw_donor": 0.5183347505745847,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1577": {
    "K": 3,
@@ -3741,19 +1986,7 @@
     0,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.5629377441416643,
-   "swap_ndtw_donor": 0.5036834548882516,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1596": {
    "K": 3,
@@ -3766,19 +1999,7 @@
     3,
     25,
     25
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.09306788580355954,
-   "swap_ndtw_donor": 0.08393281221260682,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1713": {
    "K": 4,
@@ -3792,19 +2013,7 @@
     2,
     17,
     17
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 4,
-   "swap_donor_c": 5,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0028660437437211497,
-   "swap_ndtw_donor": 0.45240393105687815,
-   "swap_donor_start_m": 1.5554588731077432,
-   "drop_k": 3,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1727": {
    "K": 4,
@@ -3818,19 +2027,7 @@
     68,
     74,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.17283409005057762,
-   "swap_ndtw_donor": 0.14776457992258282,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 3,
-   "drop_f": 4,
-   "drop_sr": 0.0
+   ]
   },
   "1825": {
    "K": 2,
@@ -3842,19 +2039,7 @@
    "orig_entries": [
     2,
     2
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.00034699777778470474,
-   "swap_ndtw_donor": 0.00020821557394613464,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "56": {
    "K": 6,
@@ -3870,19 +2055,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 6,
-   "swap_c_eff": 6,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.25482925687754465,
-   "swap_ndtw_donor": 0.23848018588415526,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 5,
-   "drop_c": 6,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "57": {
    "K": 4,
@@ -3896,19 +2069,7 @@
     15,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 5,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.04001987624429754,
-   "swap_ndtw_donor": 0.06445523180209686,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "82": {
    "K": 2,
@@ -3920,19 +2081,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.012370881919273848,
-   "swap_ndtw_donor": 5.012928009965332e-05,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "96": {
    "K": 4,
@@ -3946,19 +2095,7 @@
     7,
     39,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 0,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.015122014655637105,
-   "swap_ndtw_donor": 0.047233871152474495,
-   "swap_donor_start_m": 2.2683969758699667,
-   "drop_k": 2,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "99": {
    "K": 1,
@@ -3969,15 +2106,7 @@
    "orig_f": 1,
    "orig_entries": [
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 6,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0005288165204230279,
-   "swap_ndtw_donor": 0.3792168708840864,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "247": {
    "K": 3,
@@ -3990,19 +2119,7 @@
     29,
     null,
     null
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.034486974412658015,
-   "swap_ndtw_donor": 0.16096792202988183,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "250": {
    "K": 2,
@@ -4014,19 +2131,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.024318029004725513,
-   "swap_ndtw_donor": 0.011539139460988132,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "262": {
    "K": 5,
@@ -4041,19 +2146,7 @@
     33,
     41,
     41
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.005900046582541681,
-   "swap_ndtw_donor": 6.851092102861328e-06,
-   "swap_donor_start_m": 4.355260686990951,
-   "drop_k": 1,
-   "drop_c": 5,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "356": {
    "K": 3,
@@ -4066,19 +2159,7 @@
     3,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0005032275603300178,
-   "swap_ndtw_donor": 0.0001499706262816667,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "361": {
    "K": 4,
@@ -4092,19 +2173,7 @@
     12,
     22,
     null
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.03718896187561842,
-   "swap_ndtw_donor": 0.16836974881601258,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 3,
-   "drop_f": 4,
-   "drop_sr": 0.0
+   ]
   },
   "365": {
    "K": 2,
@@ -4116,19 +2185,7 @@
    "orig_entries": [
     22,
     22
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.012824565503018982,
-   "swap_ndtw_donor": 0.006926493668311311,
-   "swap_donor_start_m": 0.9329896364498347,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "411": {
    "K": 2,
@@ -4140,19 +2197,7 @@
    "orig_entries": [
     52,
     52
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0019822560036033446,
-   "swap_ndtw_donor": 6.11881396739685e-06,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "493": {
    "K": 3,
@@ -4165,19 +2210,7 @@
     7,
     51,
     51
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0002772640928854026,
-   "swap_ndtw_donor": 0.03630067264225107,
-   "swap_donor_start_m": 1.3936402422775178,
-   "drop_k": 1,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "501": {
    "K": 1,
@@ -4188,15 +2221,7 @@
    "orig_f": null,
    "orig_entries": [
     33
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.014337903118080846,
-   "swap_ndtw_donor": 0.00676006458099274,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "512": {
    "K": 4,
@@ -4210,19 +2235,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 2.5261619452836823e-08,
-   "swap_ndtw_donor": 0.0004733454952271819,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "610": {
    "K": 2,
@@ -4234,19 +2247,7 @@
    "orig_entries": [
     31,
     38
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 1,
-   "swap_donor_K": 1,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.2083278570810886,
-   "swap_ndtw_donor": 0.08219549017377632,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "634": {
    "K": 4,
@@ -4260,19 +2261,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.19907794543966204,
-   "swap_ndtw_donor": 0.09166877098694018,
-   "swap_donor_start_m": 1.3905580889160722,
-   "drop_k": 2,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "697": {
    "K": 4,
@@ -4286,19 +2275,7 @@
     49,
     53,
     53
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 0,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.013871974557860272,
-   "swap_ndtw_donor": 0.10538824417862044,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "759": {
    "K": 3,
@@ -4311,19 +2288,7 @@
     0,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 5,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 3.242334805965985e-07,
-   "swap_ndtw_donor": 0.030339787458115785,
-   "swap_donor_start_m": 1.3515797669872396,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": 3,
-   "drop_sr": 0.0
+   ]
   },
   "773": {
    "K": 1,
@@ -4334,15 +2299,7 @@
    "orig_f": null,
    "orig_entries": [
     16
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.0009784890294084277,
-   "swap_ndtw_donor": 0.03511300432684311,
-   "swap_donor_start_m": 1.0301368693080268
+   ]
   },
   "778": {
    "K": 3,
@@ -4355,19 +2312,7 @@
     48,
     68,
     68
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.2467131077308703,
-   "swap_ndtw_donor": 0.2610156599164965,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "779": {
    "K": 4,
@@ -4381,19 +2326,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 1,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0007926388483161895,
-   "swap_ndtw_donor": 0.0012101427546118316,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 1.0
+   ]
   },
   "785": {
    "K": 1,
@@ -4404,15 +2337,7 @@
    "orig_f": 1,
    "orig_entries": [
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 0,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.3958362290775842,
-   "swap_ndtw_donor": 0.24999044815965887,
-   "swap_donor_start_m": 2.5376786591481477
+   ]
   },
   "903": {
    "K": 2,
@@ -4424,19 +2349,7 @@
    "orig_entries": [
     20,
     23
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 0,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.06485909201492406,
-   "swap_ndtw_donor": 0.04712282088112529,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "925": {
    "K": 2,
@@ -4448,19 +2361,7 @@
    "orig_entries": [
     0,
     0
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.49116140330187597,
-   "swap_ndtw_donor": 0.5383610216963189,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "936": {
    "K": 3,
@@ -4473,19 +2374,7 @@
     21,
     90,
     90
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0647212301899242,
-   "swap_ndtw_donor": 0.11269065563217576,
-   "swap_donor_start_m": 4.091133561689028,
-   "drop_k": 2,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "956": {
    "K": 2,
@@ -4497,19 +2386,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0015067210498190319,
-   "swap_ndtw_donor": 0.0010279343464217338,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1017": {
    "K": 4,
@@ -4523,19 +2400,7 @@
     16,
     78,
     80
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 0,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.007073075847896753,
-   "swap_ndtw_donor": 0.05278357430917905,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 3,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1052": {
    "K": 2,
@@ -4547,19 +2412,7 @@
    "orig_entries": [
     52,
     52
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.4872220626940376,
-   "swap_ndtw_donor": 0.2418425029019312,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "1088": {
    "K": 3,
@@ -4572,19 +2425,7 @@
     8,
     15,
     16
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0007886669533171742,
-   "swap_ndtw_donor": 0.005970157276018596,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1119": {
    "K": 2,
@@ -4596,19 +2437,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.545515508347896,
-   "swap_ndtw_donor": 0.5201893611366483,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "1162": {
    "K": 3,
@@ -4621,19 +2450,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 1,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0065612121734906015,
-   "swap_ndtw_donor": 0.0006496956351615596,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1190": {
    "K": 4,
@@ -4647,19 +2464,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 1,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.0002998148967542728,
-   "swap_ndtw_donor": 0.0006396645005866684,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 3,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1214": {
    "K": 3,
@@ -4672,19 +2477,7 @@
     7,
     null,
     null
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 1.0,
-   "swap_ndtw_orig": 0.01908168677052625,
-   "swap_ndtw_donor": 0.0489399216269931,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "1274": {
    "K": 1,
@@ -4695,15 +2488,7 @@
    "orig_f": null,
    "orig_entries": [
     25
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 0,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.03967000440533638,
-   "swap_ndtw_donor": 0.01507732241386511,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "1283": {
    "K": 4,
@@ -4717,19 +2502,7 @@
     97,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 1,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.1772867049359303,
-   "swap_ndtw_donor": 0.14377458004984173,
-   "swap_donor_start_m": 3.085920068144896,
-   "drop_k": 2,
-   "drop_c": 2,
-   "drop_f": 3,
-   "drop_sr": 0.0
+   ]
   },
   "1329": {
    "K": 2,
@@ -4741,19 +2514,7 @@
    "orig_entries": [
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.006579376668213086,
-   "swap_ndtw_donor": 0.06958315730379802,
-   "swap_donor_start_m": 1.642241358625091,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 1.0
+   ]
   },
   "1339": {
    "K": 3,
@@ -4766,19 +2527,7 @@
     0,
     37,
     39
-   ],
-   "swap_c": 3,
-   "swap_c_eff": 3,
-   "swap_donor_c": 1,
-   "swap_donor_K": 1,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 7.972365052011691e-05,
-   "swap_ndtw_donor": 0.009396698311220966,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 3,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "1441": {
    "K": 2,
@@ -4790,19 +2539,7 @@
    "orig_entries": [
     16,
     16
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 2,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.014586239376158532,
-   "swap_ndtw_donor": 0.049225534637257935,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 2,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "1442": {
    "K": 1,
@@ -4813,15 +2550,7 @@
    "orig_f": null,
    "orig_entries": [
     14
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.3514110094848902,
-   "swap_ndtw_donor": 0.3806383780588313,
-   "swap_donor_start_m": 0.0
+   ]
   },
   "1462": {
    "K": 2,
@@ -4833,19 +2562,7 @@
    "orig_entries": [
     10,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 1.1992043387059302e-05,
-   "swap_ndtw_donor": 0.00021443224844379543,
-   "swap_donor_start_m": 1.5554125518437867,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1478": {
    "K": 3,
@@ -4858,19 +2575,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.45240810938419745,
-   "swap_ndtw_donor": 0.7178448777086042,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1498": {
    "K": 4,
@@ -4884,19 +2589,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 1,
-   "swap_donor_c": 3,
-   "swap_donor_K": 3,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.17125131146882389,
-   "swap_ndtw_donor": 0.05855057937924672,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 3,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1503": {
    "K": 4,
@@ -4910,19 +2603,7 @@
     16,
     40,
     40
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 4,
-   "swap_donor_c": 4,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.005376347365698976,
-   "swap_ndtw_donor": 0.07588157927358834,
-   "swap_donor_start_m": 2.0245082821220026,
-   "drop_k": 2,
-   "drop_c": 2,
-   "drop_f": 3,
-   "drop_sr": 0.0
+   ]
   },
   "1582": {
    "K": 4,
@@ -4936,19 +2617,7 @@
     70,
     70,
     70
-   ],
-   "swap_c": 4,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.033991274840048005,
-   "swap_ndtw_donor": 0.0012044355991416872,
-   "swap_donor_start_m": 1.043855200408503,
-   "drop_k": 1,
-   "drop_c": 4,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   },
   "1584": {
    "K": 2,
@@ -4960,19 +2629,7 @@
    "orig_entries": [
     134,
     null
-   ],
-   "swap_c": 2,
-   "swap_c_eff": 1,
-   "swap_donor_c": 2,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.033991274840048005,
-   "swap_ndtw_donor": 0.0012044355991416872,
-   "swap_donor_start_m": 1.043855200408503,
-   "drop_k": 1,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 1.0
+   ]
   },
   "1585": {
    "K": 3,
@@ -4985,19 +2642,7 @@
     87,
     97,
     108
-   ],
-   "swap_c": 0,
-   "swap_c_eff": 0,
-   "swap_donor_c": 0,
-   "swap_donor_K": 2,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.005191789494954049,
-   "swap_ndtw_donor": 0.0008694279699342326,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 0,
-   "drop_f": 1,
-   "drop_sr": 0.0
+   ]
   },
   "1682": {
    "K": 3,
@@ -5010,19 +2655,7 @@
     13,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 0,
-   "swap_donor_c": 2,
-   "swap_donor_K": 4,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.04180081453710379,
-   "swap_ndtw_donor": 0.035313903279654,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 1,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1775": {
    "K": 4,
@@ -5036,19 +2669,7 @@
     null,
     null,
     null
-   ],
-   "swap_c": 1,
-   "swap_c_eff": 1,
-   "swap_donor_c": 1,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.4341646403663073,
-   "swap_ndtw_donor": 0.42618544150249027,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 1,
-   "drop_f": 2,
-   "drop_sr": 0.0
+   ]
   },
   "1830": {
    "K": 5,
@@ -5063,19 +2684,7 @@
     11,
     16,
     16
-   ],
-   "swap_c": 5,
-   "swap_c_eff": 2,
-   "swap_donor_c": 5,
-   "swap_donor_K": 5,
-   "swap_sr": 0.0,
-   "swap_ndtw_orig": 0.08509032562674847,
-   "swap_ndtw_donor": 0.17933892991325948,
-   "swap_donor_start_m": 0.0,
-   "drop_k": 2,
-   "drop_c": 5,
-   "drop_f": null,
-   "drop_sr": 0.0
+   ]
   }
  }
 }

@@ -1,8 +1,8 @@
-"""AwareVLN adapter: ORIG / SWAP / DROP-k splits in its data dir, and result import.
+"""AwareVLN adapter: ORIG / FLIP / GOAL-ONLY splits in its data dir, and result import.
 
 AwareVLN reads the instruction text at run time (no offline parse), so a
 variant is just an R2R_VLNCE_v1-3 split with the new ``instruction_text``;
-all 200 / 200 / 176 episodes are usable.
+each variant uses its own eligible episode subset.
 
     python -m benchmark.awarevln build
     python -m benchmark.awarevln import --results <RESULTS_DIR>/awarevln/VLN-CE-v1/<split> --out benchmark/results/awarevln/<variant>
@@ -25,15 +25,12 @@ AWARE_DATA = AWARE / "data/datasets/R2R_VLNCE_v1-3_preprocessed"
 
 def build(args):
     subgoals = load_json(args.subgoals)["episodes"]
-    variants = load_json(args.variants)
     with gzip.open(str(AWARE_DATA / "val_unseen/val_unseen.json.gz"), "rt") as handle:
         base = json.load(handle)
     with gzip.open(str(AWARE_DATA / "val_unseen/val_unseen_gt.json.gz"), "rt") as handle:
         gt = json.load(handle)
     tables = dict(
         orig={eid: rec["instruction"] for eid, rec in subgoals.items()},
-        swap={eid: v["instruction"] for eid, v in variants["swap"].items()},
-        drop={eid: v["instruction"] for eid, v in variants["drop"].items()},
     )
     if args.flip:
         tables["flip"] = {eid: v["instruction"] for eid, v in load_json(args.flip)["flip"].items()}
@@ -82,7 +79,6 @@ def main():
     sub = parser.add_subparsers(dest="cmd", required=True)
     b = sub.add_parser("build")
     b.add_argument("--subgoals", default=str(data_path("subgoals")))
-    b.add_argument("--variants", default=str(data_path("swap_drop")))
     b.add_argument("--name", default=DEFAULT_SET)
     b.add_argument("--flip", default=str(data_path("flip")))
     b.add_argument("--goalonly", default=str(data_path("goalonly")))

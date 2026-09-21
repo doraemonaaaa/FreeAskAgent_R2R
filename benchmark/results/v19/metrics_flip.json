@@ -1,15 +1,14 @@
 {
  "args": {
-  "orig": "/data/pengyh/.claude/jobs/1097846d/tmp/ring6_200",
-  "swap": null,
-  "drop": null,
-  "flip": "/data/pengyh/.claude/jobs/1097846d/tmp/ring6_200_flip",
-  "flip_meta": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/flip_val_unseen_200.json",
-  "subgoals": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/subgoals_val_unseen_200.json",
-  "variants": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/variants_val_unseen_200.json",
+  "orig": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/results/v19/orig",
+  "flip": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/results/v19/flip",
+  "flip_meta": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/val_unseen_200/rule/flip.json",
+  "goalonly": null,
+  "goalonly_meta": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/val_unseen_200/rule/goalonly.json",
+  "subgoals": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/data/val_unseen_200/subgoals.json",
   "radius": 1.5,
   "ids": null,
-  "json": "benchmark/results/v19/metrics_flip.json",
+  "json": "/data/pengyh/workspace/FreeAskAgent_R2R/benchmark/results/v19/metrics_flip.json",
   "csv": null
  },
  "metrics": {

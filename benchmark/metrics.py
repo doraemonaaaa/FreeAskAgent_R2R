@@ -1,10 +1,10 @@
 """Subgoal-level instruction-following metrics from runner traces.
 
-    python -m benchmark.metrics --orig OUT_DIR[,OUT_DIR] [--swap OUT_DIR] [--drop OUT_DIR] \
+    python -m benchmark.metrics --orig OUT_DIR[,OUT_DIR] [--flip OUT_DIR] [--goalonly OUT_DIR] \
         [--subgoals benchmark/data/<set>/subgoals.json] \
-        [--variants benchmark/data/<set>/swap_drop.json] [--radius 1.5] [--json out.json]
+        [--radius 1.5] [--json out.json]
 
-Per episode (design doc section 4.1): e_k = first step at or after e_{k-1}
+Per episode (design doc: subgoal metrics): e_k = first step at or after e_{k-1}
 whose position lies within r_b of boundary B_k (the last boundary uses the 3 m
 success radius); c = number of boundaries reached in this order, f = c + 1 is
 the first failed segment.
@@ -13,17 +13,10 @@ ORIG run            SR, SGCR = mean(c / K), SGCR@k = P(c >= k | K >= k)
                     SGCR-eff: c counted with a per-segment path budget
                     (<= max(2 x reference segment length, 3 m)) so that a long
                     wandering trajectory does not collect boundaries by chance
-SWAP run (paired)   ISens-SGCR = SGCR_orig - SGCR_swap (original boundaries)
-                    PathAttrib = P(nDTW to donor path > nDTW to original path)
-                    SGCR'      = prefix completion against the donor's boundaries
-DROP-k run (paired) LocFail    = P(f_drop = k | c_orig >= k)
-                    PrefixKeep = P(c_drop >= k-1 | c_orig >= k-1), k >= 2
-                    Skip       = P(c_drop >= k | c_orig >= k)
 All rates carry a bootstrap 95% CI over episodes.
 """
 import argparse
 import csv
-import random
 
 import numpy as np
 
@@ -104,8 +97,8 @@ def rate(name, values, rng):
     return dict(name=name, n=len(values), mean=float(np.mean(values)) if values else float("nan"), ci=[lo, hi])
 
 
-def evaluate(subgoals, orig, swap=None, drop=None, variants=None, radius=1.5, gt=None, ids=None, seed=0):
-    """subgoals: episode -> record from build_subgoals; orig/swap/drop: (positions, results)."""
+def evaluate(subgoals, orig, radius=1.5, ids=None, seed=0):
+    """subgoals: episode -> record from build_subgoals; orig: (positions, results)."""
     rng = np.random.default_rng(seed)
     per = {}
     episodes = [e for e in subgoals if e in orig[0] and (ids is None or e in ids)]
@@ -123,44 +116,6 @@ def evaluate(subgoals, orig, swap=None, drop=None, variants=None, radius=1.5, gt
     metrics["SGCR@k"] = {k: rate("SGCR@{}".format(k), [per[e]["orig_c"] >= k for e in episodes if per[e]["K"] >= k], rng)
                          for k in range(1, max_k + 1)}
 
-    if swap is not None and variants is not None:
-        paired = [e for e in episodes if e in swap[0] and e in variants["swap"]]
-        for e in paired:
-            meta = variants["swap"][e]
-            record = subgoals[e]
-            positions = swap[0][e]
-            own = score_episode(positions, record["subgoals"], radius)
-            donor = score_episode(positions, meta["donor_subgoals"], radius)
-            d_orig = ndtw(positions, gt[e]) if gt else None
-            d_donor = ndtw(positions, gt[meta["donor_episode_id"]]) if gt else None
-            per[e].update(swap_c=own["c"], swap_c_eff=own["c_eff"], swap_donor_c=donor["c"], swap_donor_K=meta["donor_K"],
-                          swap_sr=swap[1].get(e, {}).get("success"),
-                          swap_ndtw_orig=d_orig, swap_ndtw_donor=d_donor,
-                          swap_donor_start_m=meta["donor_start_distance_m"])
-        metrics["ISens-SGCR"] = rate("ISens-SGCR", [per[e]["orig_c"] / per[e]["K"] - per[e]["swap_c"] / per[e]["K"] for e in paired], rng)
-        metrics["ISens-SGCR-eff"] = rate("ISens-SGCR-eff", [(per[e]["orig_c_eff"] - per[e]["swap_c_eff"]) / per[e]["K"] for e in paired], rng)
-        metrics["SGCR_swap(orig bounds)"] = rate("SGCR_swap", [per[e]["swap_c"] / per[e]["K"] for e in paired], rng)
-        metrics["SGCR'(donor bounds)"] = rate("SGCR'", [per[e]["swap_donor_c"] / per[e]["swap_donor_K"] for e in paired], rng)
-        if gt:
-            metrics["PathAttrib"] = rate("PathAttrib", [per[e]["swap_ndtw_donor"] > per[e]["swap_ndtw_orig"] for e in paired], rng)
-            near = [e for e in paired if per[e]["swap_donor_start_m"] <= 0.5]
-            metrics["PathAttrib(same-start donors)"] = rate("PathAttrib_near", [per[e]["swap_ndtw_donor"] > per[e]["swap_ndtw_orig"] for e in near], rng)
-        metrics["SR_swap"] = rate("SR_swap", [per[e]["swap_sr"] for e in paired if per[e]["swap_sr"] is not None], rng)
-
-    if drop is not None and variants is not None:
-        paired = [e for e in episodes if e in drop[0] and e in variants["drop"]]
-        for e in paired:
-            k = variants["drop"][e]["k"]
-            scored = score_episode(drop[0][e], subgoals[e]["subgoals"], radius)
-            per[e].update(drop_k=k, drop_c=scored["c"], drop_f=scored["f"], drop_sr=drop[1].get(e, {}).get("success"))
-        reached = [e for e in paired if per[e]["orig_c"] >= per[e]["drop_k"]]
-        metrics["LocFail"] = rate("LocFail", [per[e]["drop_f"] == per[e]["drop_k"] for e in reached], rng)
-        metrics["Skip"] = rate("Skip", [per[e]["drop_c"] >= per[e]["drop_k"] for e in reached], rng)
-        keep = [e for e in paired if per[e]["drop_k"] >= 2 and per[e]["orig_c"] >= per[e]["drop_k"] - 1]
-        metrics["PrefixKeep"] = rate("PrefixKeep", [per[e]["drop_c"] >= per[e]["drop_k"] - 1 for e in keep], rng)
-        mean_k = float(np.mean([per[e]["K"] for e in reached])) if reached else float("nan")
-        metrics["LocFail_random_baseline"] = dict(name="1/K_mean", n=len(reached), mean=1.0 / mean_k if reached else float("nan"), ci=[None, None])
-        metrics["SR_drop"] = rate("SR_drop", [per[e]["drop_sr"] for e in paired if per[e]["drop_sr"] is not None], rng)
     return metrics, per
 
 
@@ -319,14 +274,11 @@ def _load(spec):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--orig", required=True, help="ORIG run output dir(s), comma separated")
-    parser.add_argument("--swap", help="SWAP run output dir(s)")
-    parser.add_argument("--drop", help="DROP-k run output dir(s)")
     parser.add_argument("--flip", help="FLIP-k run output dir(s)")
     parser.add_argument("--flip-meta", default=str(data_path("flip")))
     parser.add_argument("--goalonly", help="GOAL-ONLY run output dir(s)")
     parser.add_argument("--goalonly-meta", default=str(data_path("goalonly")))
     parser.add_argument("--subgoals", default=str(data_path("subgoals")))
-    parser.add_argument("--variants", default=str(data_path("swap_drop")))
     parser.add_argument("--radius", type=float, default=1.5, help="boundary radius r_b in metres")
     parser.add_argument("--ids", help="restrict to an id list file")
     parser.add_argument("--json", help="write metrics + per-episode rows here")
@@ -334,14 +286,12 @@ def main():
     args = parser.parse_args()
 
     subgoals = load_json(args.subgoals)
-    variants = load_json(args.variants) if (args.swap or args.drop) else None
     gt = load_gt(subgoals["split"])
     ids = None
     if args.ids:
         from .common import read_id_list
         ids = set(read_id_list(args.ids))
-    metrics, per = evaluate(subgoals["episodes"], _load(args.orig), _load(args.swap), _load(args.drop),
-                            variants, radius=args.radius, gt=gt, ids=ids)
+    metrics, per = evaluate(subgoals["episodes"], _load(args.orig), radius=args.radius, ids=ids)
     print(format_table(metrics))
     if args.flip:
         flip_metrics, flip_per = evaluate_flip(subgoals["episodes"], _load(args.orig), _load(args.flip),
@@ -364,7 +314,7 @@ def main():
     if args.csv:
         keys = sorted({k for row in per.values() for k in row if k != "orig_entries"})
         with open(args.csv, "w", newline="") as handle:
-            writer = csv.DictWriter(handle, fieldnames=["episode_id"] + keys, extrasaction="ignore")
+            writer = csv.DictWriter(handle, fieldnames=["episode_id"] + keys, extrasaction="ignore", lineterminator="\n")
             writer.writeheader()
             for episode, row in per.items():
                 writer.writerow(dict(row, episode_id=episode))

@@ -27,16 +27,16 @@ DEFAULT_SET = "val_unseen_200"
 
 # Inside a set, variants are filed by HOW THEY WERE MADE, because that decides how
 # they may be read. A rule/ variant is a minimal pair -- one word flipped, one span
-# deleted, a donor's text copied verbatim -- so it can be compared against ORIG
+# deleted -- so it can be compared against ORIG
 # directly. An llm/ variant re-words the whole instruction, so its arms may only be
 # read against their own para_id control, never against ORIG. subgoals.json sits
 # above both: it is the FGR2R-derived boundary set every variant and metric builds on.
 FAMILY = {
-    "swap_drop": "rule", "flip": "rule", "goalonly": "rule",
+    "flip": "rule", "goalonly": "rule",
     "paraphrase": "llm",
 }
 VARIANT_FAMILY = {
-    "swap": "rule", "drop": "rule", "flip": "rule", "goalonly": "rule",
+    "flip": "rule", "goalonly": "rule",
     "para_id": "llm", "para_terse": "llm", "para_natural": "llm", "para_lm_shift": "llm",
 }
 
@@ -184,7 +184,7 @@ def load_run(out_dirs):
 def write_split(name, raw, episodes_by_id, gt, instruction_of):
     """Write ``<r2r data>/<name>/<name>.json.gz`` with new instruction texts, plus a gt copy.
 
-    Every variant builder (swap/drop, flip, goalonly, paraphrase) emits its split
+    Every variant builder (flip, goalonly, paraphrase) emits its split
     this way. It lives here rather than in one of them so the others do not have
     to import a sibling builder just to write a file.
     """

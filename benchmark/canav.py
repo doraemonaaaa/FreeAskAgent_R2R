@@ -1,18 +1,13 @@
-"""CA-Nav adapter: build its ORIG / SWAP / DROP-k inputs and import its outputs.
+"""CA-Nav adapter: build its ORIG / FLIP / GOAL-ONLY inputs and import its outputs.
 
 CA-Nav (Reproductions/CA-Nav-code) does not read the instruction text at run
 time: it executes a GPT-4 parse (sub-instructions, state constraints,
 decisions) stored per episode id in ``llm_reply_valunseen1839.json``. So a
 variant needs both a dataset split with the new text and a matching reply file:
 
-  ORIG    the 200-set, replies unchanged (rerun so that trajectories are recorded)
-  SWAP    episode keeps its start / scene; reply = the donor episode's reply
-  DROP-k  text = benchmark DROP-k text; reply = original reply minus the GPT
-          sub-instructions whose text overlaps FGR2R chunk k (>= 50 % of the
-          sub-instruction's characters inside the removed span), constraints
-          and decisions renumbered. Episodes where no sub-instruction maps onto
-          the removed chunk, or none would remain, are excluded from the CA-Nav
-          DROP id list (they still exist for the v19 run).
+  ORIG      the 200-set, replies unchanged
+  FLIP      reverse left/right in the matching parsed sub-instructions
+  GOAL-ONLY keep the parsed sub-instructions overlapping the retained final chunks
 
     python -m benchmark.canav build            # writes into CA-Nav's data/datasets/benchmark/
     python -m benchmark.canav import --exp exp_bench_orig --out benchmark/results/canav/orig
@@ -66,7 +61,7 @@ def locate(text, fragment, cursor=0):
 def _walk(reply, text, span):
     """Walk the reply's sub-instructions once, reporting which ones cover ``span``.
 
-    ``locate`` is cursor-driven, so the three rewriters below must advance the
+    ``locate`` is cursor-driven, so the two rewriters below must advance the
     cursor identically or they would disagree about where a sub-instruction
     sits. Sharing the walk is what guarantees that.
 
@@ -96,21 +91,6 @@ def _renumbered(reply, keep):
     out["state-constraints"] = {str(n): reply["state-constraints"][str(i)] for n, i in enumerate(keep)}
     out["decisions"] = {str(n): reply["decisions"][str(i)] for n, i in enumerate(keep)}
     return out
-
-
-def drop_reply(reply, text, span):
-    """Remove the sub-instructions overlapping ``span`` and renumber the reply."""
-    keep, dropped = [], []
-    for index, sub, located, covers in _walk(reply, text, span):
-        (dropped if covers else keep).append(index)
-    if not dropped or not keep:
-        return None, dropped
-    out = _renumbered(reply, keep)
-    remaining = [c[1] for i in keep for c in reply["state-constraints"][str(i)]]
-    dropped_objects = [c[1] for i in dropped for c in reply["state-constraints"][str(i)]]
-    if reply["destination"] in dropped_objects and reply["destination"] not in remaining and remaining:
-        out["destination"] = remaining[-1]
-    return out, dropped
 
 
 FLIP_WORD = DIRECTION
@@ -165,7 +145,6 @@ def write_canav_split(name, base, gt, texts):
 
 def build(args):
     subgoals = load_json(args.subgoals)["episodes"]
-    variants = load_json(args.variants)
     with gzip.open(str(CANAV_DATASET), "rt") as handle:
         base = json.load(handle)
     with gzip.open(str(CANAV_GT), "rt") as handle:
@@ -174,18 +153,6 @@ def build(args):
 
     orig_text = {eid: rec["instruction"] for eid, rec in subgoals.items()}
     orig_reply = {eid: replies[eid] for eid in subgoals}
-    swap_text = {eid: v["instruction"] for eid, v in variants["swap"].items()}
-    swap_reply = {eid: replies[v["donor_episode_id"]] for eid, v in variants["swap"].items()}
-    drop_text, drop_reply_table, excluded = {}, {}, {}
-    for eid, v in variants["drop"].items():
-        span = subgoals[eid]["subgoals"][v["k"] - 1]["span"]
-        reply, dropped = drop_reply(replies[eid], subgoals[eid]["instruction"], span)
-        if reply is None:
-            excluded[eid] = "no GPT sub-instruction maps onto chunk {}".format(v["k"]) if not dropped else "all sub-instructions would be removed"
-            continue
-        drop_text[eid] = v["instruction"]
-        drop_reply_table[eid] = dict(reply, _dropped_sub_instructions=[replies[eid]["sub-instructions"][i] for i in dropped])
-
     flip_text, flip_reply_table, flip_excluded = {}, {}, {}
     if args.flip:
         flips = load_json(args.flip)["flip"]
@@ -213,7 +180,7 @@ def build(args):
             goal_reply_table[eid] = dict(reply, _kept_for_goal_only=True)
         print("goalonly: {} episodes (excluded {})".format(len(goal_text), len(goals) - len(goal_text)))
 
-    for name, texts, table in (("orig", orig_text, orig_reply), ("swap", swap_text, swap_reply), ("drop", drop_text, drop_reply_table),
+    for name, texts, table in (("orig", orig_text, orig_reply),
                                ("flip", flip_text, flip_reply_table), ("goalonly", goal_text, goal_reply_table)):
         if not texts:
             continue
@@ -222,8 +189,6 @@ def build(args):
         dump_json(table, directory / "llm_reply.json")
         dump_json(sorted(texts, key=int), directory / "episode_ids.json")
         print("{}: {} episodes -> {}".format(split, len(texts), directory))
-    dump_json(dict(excluded_from_drop=excluded), CANAV_BENCH / "{}_drop_excluded.json".format(args.name))
-    print("drop excluded for CA-Nav: {} ({})".format(len(excluded), ", ".join(sorted(set(excluded.values())))))
 
 
 def import_run(args):
@@ -248,7 +213,6 @@ def main():
     sub = parser.add_subparsers(dest="cmd", required=True)
     b = sub.add_parser("build")
     b.add_argument("--subgoals", default=str(data_path("subgoals")))
-    b.add_argument("--variants", default=str(data_path("swap_drop")))
     b.add_argument("--name", default=DEFAULT_SET)
     b.add_argument("--flip", default=str(data_path("flip")), help="flip json from build_flip ('' to skip)")
     b.add_argument("--goalonly", default=str(data_path("goalonly")), help="goal-only json ('' to skip)")
