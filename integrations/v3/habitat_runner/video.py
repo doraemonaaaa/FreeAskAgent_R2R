@@ -135,13 +135,81 @@ def topdown_panel(rgb, topdown, agent_map=None):
     panels = [rgb]
     if agent_map is not None:
         height = rgb.shape[0]
-        if agent_map.shape[0] != height:
+        # Both dimensions, not only the height: a map that is already the right
+        # height but a different width used to widen the whole frame, and a
+        # video whose frames change size is rejected by the encoder.
+        if agent_map.shape[:2] != (height, height):
             agent_map = np.asarray(
                 Image.fromarray(agent_map).resize((height, height), Image.Resampling.NEAREST)
             )
         panels.append(agent_map)
     panels.append(topdown)
     return np.concatenate(panels, axis=1)
+
+
+PREVIEW_STRIP_HEIGHT = 136
+
+
+def preview_strip(views, width, *, selected_yaw=None, label=None,
+                  height=PREVIEW_STRIP_HEIGHT, stale=False):
+    """A filmstrip of one surrounding-view ring, read left to right as a panorama.
+
+    ``views`` is a sequence of ``(yaw_deg, rgb)`` pairs; they are ordered by
+    heading, not by capture order, so the strip reads from the robot's left to
+    its right. The view the step committed to is outlined in cyan - a strip
+    with no outlined cell is a ring the model looked at and passed over, which
+    is what the recordings could not show before. ``stale`` dims a ring carried
+    over from an earlier step so it is never mistaken for a fresh one.
+    """
+    import cv2
+
+    def heading(value):
+        try:
+            value = float(value)
+        except (TypeError, ValueError):
+            return None
+        return value if np.isfinite(value) else None
+
+    band = np.zeros((height, width, 3), dtype=np.uint8)
+    band[:] = (24, 24, 24)
+    # An unlabelled view is still shown, last: dropping it would hide the very
+    # thing the strip exists to reveal.
+    ordered = sorted(((heading(yaw), rgb) for yaw, rgb in views),
+                     key=lambda item: (item[0] is None, item[0] or 0.0))
+    if not ordered:
+        if label:
+            import cv2 as _cv2
+            _cv2.putText(band, label, (6, height // 2), _cv2.FONT_HERSHEY_SIMPLEX,
+                         0.42, (120, 120, 120), 1, _cv2.LINE_AA)
+        return band
+    margin, gap, text_h = 6, 4, 18
+    cell_w = max((width - 2 * margin - gap * (len(ordered) - 1)) // len(ordered), 24)
+    cell_h = height - 2 * margin - text_h
+    bright, dim = (40, 225, 255), (120, 120, 120)
+    for index, (yaw, rgb) in enumerate(ordered):
+        x0 = margin + index * (cell_w + gap)
+        thumb = np.asarray(Image.fromarray(np.asarray(rgb)).convert("RGB")
+                           .resize((cell_w, cell_h), Image.Resampling.BILINEAR))
+        if stale:
+            thumb = (thumb * 0.45).astype(np.uint8)
+        band[margin:margin + cell_h, x0:x0 + cell_w] = thumb
+        chosen = (yaw is not None and selected_yaw is not None
+                  and abs(yaw - float(selected_yaw)) < 1e-6)
+        cv2.rectangle(band, (x0, margin), (x0 + cell_w - 1, margin + cell_h - 1),
+                      bright if chosen else dim, 2 if chosen else 1, cv2.LINE_AA)
+        caption = ("?deg" if yaw is None else "{:+.0f}deg".format(yaw))
+        caption += " SELECTED" if chosen else ""
+        cv2.putText(band, caption, (x0 + 3, height - margin - 3),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.38, bright if chosen else dim, 1, cv2.LINE_AA)
+    if label:
+        # Top right, on its own dark backing: the bottom row belongs to the
+        # per-view headings and a label there covers the last one.
+        (text_width, text_height), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.42, 1)
+        x0 = max(width - text_width - 2 * margin, margin)
+        cv2.rectangle(band, (x0 - 4, 0), (width - 1, text_height + 9), (24, 24, 24), -1)
+        cv2.putText(band, label, (x0, text_height + 4), cv2.FONT_HERSHEY_SIMPLEX,
+                    0.42, dim if stale else bright, 1, cv2.LINE_AA)
+    return band
 
 
 def decode_visuals(decision):
@@ -170,36 +238,67 @@ def previewed_view(decision):
     return inner if inner.get("view_index") is not None else None
 
 
+def preview_ring_yaws(decision):
+    """Headings the surrounding-view ring of this step was captured at."""
+    yaws = (decision.get("preview") or {}).get("yaws_deg")
+    if not isinstance(yaws, (list, tuple)):
+        return ()
+    return tuple(float(yaw) for yaw in yaws
+                 if isinstance(yaw, (int, float)) and np.isfinite(yaw))
+
+
 def draw_preview_indicator(image, decision):
-    """Show which surrounding heading a PREVIEW decision selected."""
+    """Show the surrounding views this step looked at, and which it chose.
+
+    One ray per captured heading, right positive from the current heading, at
+    the angles actually captured - the robot reports measured yaws, which drift
+    from the requested ring. The bright ray is the view the step committed to;
+    a ring with no bright ray settled nothing, which is what a Preview loop
+    looks like from outside (the Go2 run of 2026-09-18 drew seven of them).
+    """
     import cv2
 
     previewed = previewed_view(decision)
-    if previewed is None:
+    yaws = preview_ring_yaws(decision)
+    if previewed is None and not yaws:
         return
 
-    yaw_deg = float(previewed.get("view_yaw_deg") or 0.0)
-    yaw_rad = np.deg2rad(yaw_deg)
     height, width = image.shape[:2]
     origin = (width // 2, max(int(height * 0.20), 55))
     length = max(int(min(width, height) * 0.14), 45)
-    endpoint = (
-        int(np.clip(origin[0] + length * np.sin(yaw_rad), 12, width - 13)),
-        int(np.clip(origin[1] - length * np.cos(yaw_rad), 12, height - 13)),
-    )
-    color = (40, 225, 255)
-    cv2.circle(image, origin, 7, color, 2, cv2.LINE_AA)
-    cv2.arrowedLine(
-        image, origin, endpoint, color, 3, cv2.LINE_AA, tipLength=0.28,
-    )
-    label = "PREVIEW {:+.0f}deg".format(yaw_deg)
+    bright, dim = (40, 225, 255), (110, 150, 165)
+    accent = bright if previewed is not None else dim
+
+    def endpoint(yaw_deg, radius):
+        yaw_rad = np.deg2rad(yaw_deg)
+        return (int(np.clip(origin[0] + radius * np.sin(yaw_rad), 12, width - 13)),
+                int(np.clip(origin[1] - radius * np.cos(yaw_rad), 12, height - 13)))
+
+    for yaw in yaws:
+        tip = endpoint(yaw, length)
+        cv2.line(image, origin, tip, dim, 2, cv2.LINE_AA)
+        cv2.circle(image, tip, 3, dim, -1, cv2.LINE_AA)
+    if yaws:
+        cv2.circle(image, origin, length, dim, 1, cv2.LINE_AA)
+    cv2.circle(image, origin, 7, accent, 2, cv2.LINE_AA)
+    if previewed is not None:
+        yaw_deg = float(previewed.get("view_yaw_deg") or 0.0)
+        cv2.arrowedLine(image, origin, endpoint(yaw_deg, length), bright, 3,
+                        cv2.LINE_AA, tipLength=0.28)
+        label = "PREVIEW {:+.0f}deg".format(yaw_deg)
+        if yaws:
+            label += " of {}".format(len(yaws))
+    else:
+        label = "PREVIEW {} views, no selection".format(len(yaws))
+    (text_width, _), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.50, 2)
     cv2.putText(
         image,
         label,
-        (max(origin[0] - 72, 4), origin[1] + 27),
+        (int(np.clip(origin[0] - text_width // 2, 4, width - text_width - 4)),
+         min(origin[1] + length + 19, height - 6)),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.50,
-        color,
+        accent,
         2,
         cv2.LINE_AA,
     )
@@ -442,7 +541,8 @@ def annotated_video_frame(rgb, decision, steps, chain=None):
     ``pixel_uv`` is where the depth map allowed that waypoint to land. Drawing
     both, joined by a line, separates a bad model selection from a good
     selection that the walkable-pixel snap pulled somewhere else. PREVIEW is a
-    cyan heading arrow and an in-place turn a yellow bent arrow. The top strip
+    cyan compass of every captured heading, the chosen one drawn as an arrow;
+    an in-place turn is a yellow bent arrow. The top strip
     holds the route instruction and active subgoal; detailed diagnostics
     remain in terminal logs.
     """
