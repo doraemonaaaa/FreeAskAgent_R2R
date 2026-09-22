@@ -11,6 +11,7 @@ episodes.  This file is the argument parser and the episode loop.
 """
 
 import argparse
+import json
 import os
 import sys
 import time
@@ -174,6 +175,14 @@ def main():
         action="store_true",
         help="Record unannotated RGB instead of overlaying the agent's waypoint pixels.",
     )
+    parser.add_argument(
+        "--discrete-action-space", dest="discrete_action_space",
+        action=argparse.BooleanOptionalAction, default=None,
+        help="Action-space ablation. The agent answers with one MOVE_FORWARD / TURN_LEFT / "
+        "TURN_RIGHT primitive per step instead of a floor waypoint; planner, observer, "
+        "TemporalMemory, completion gate and Preview are unchanged. Default: config.yaml "
+        "navigation.discrete_action_space.",
+    )
     pre, _ = parser.parse_known_args()
     if not pre.no_config_file and pre.config and Path(pre.config).exists():
         defaults, agent_env = load_config(pre.config, rank=pre.rank)
@@ -185,6 +194,14 @@ def main():
             pre.config, ", ".join(sorted(defaults)) or "-",
             ", ".join(sorted(agent_env)) or "-"), flush=True)
     args = parser.parse_args()
+    if args.discrete_action_space is not None:
+        # Merge, never replace: VLN_NAV_PARAMS carries every navigation
+        # constant and config.py rejects a missing or unknown key.
+        params = json.loads(os.environ.get("VLN_NAV_PARAMS") or "{}")
+        params["discrete_action_space"] = bool(args.discrete_action_space)
+        os.environ["VLN_NAV_PARAMS"] = json.dumps(params)
+        print("action space: {}".format(
+            "discrete (forward/left/right)" if args.discrete_action_space else "waypoint"), flush=True)
     # Sensor / motion geometry is module state for the follower and the
     # preview ring; both come from the config now.
     camera = CameraModel(

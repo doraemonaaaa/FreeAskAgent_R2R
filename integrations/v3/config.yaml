@@ -20,12 +20,18 @@ services:
       port: 7060
       gpu_util: 0.28
       max_model_len: 16384
-      max_num_seqs: 4                      # one endpoint serves at most four ranks
+      max_num_seqs: 8                      # JoyAI has 11.3 GiB KV (10x concurrency); it is not the bottleneck
       max_images: 14
   qwen3-vl-8b:                             # decision + completion gate + planner + actor + SoM
     served_name: qwen3-vl-8b
-    base_url: http://127.0.0.1:8302/v1
-    # Several replicas: use ``base_urls: [..]``; rank r talks to base_urls[r % n].
+    # Two replicas: the 8B is the run's bottleneck (decision + gate + planner +
+    # actor + steering = 2-3 calls per step on one GPU, measured 97% util with
+    # four ranks while JoyAI idled at 0%). Rank r talks to base_urls[r % n], so
+    # eight ranks over two endpoints keep the same four-ranks-per-endpoint
+    # queueing each rank saw before.
+    base_urls:
+      - http://127.0.0.1:8302/v1        # serve: gpu 2, below
+      - http://127.0.0.1:8303/v1        # GPU=3 PORT=8303 serve_service.sh qwen3-vl-8b
     serve:                                 # -> integrations/v3/serve_vllm.sh (SERVICE=qwen3-vl-8b)
       model_dir: /data/pengyh/workspace/FreeAskAgent/models/Qwen3-VL-8B-Instruct
       gpu: 2
@@ -128,6 +134,10 @@ navigation:                                # agent constants -> VLN_NAV_PARAMS (
   collision_repeat_window_steps: 12        # a collision within this many steps ...
   collision_repeat_radius_m: 1.0           # ... and this close to the last one is the same wall: turn further
   collision_max_recovery_turns: 12
+  # action space (ablation): false = waypoint policy, true = the model answers
+  # with one MOVE_FORWARD / TURN_LEFT / TURN_RIGHT primitive per step
+  discrete_action_space: false
+  discrete_turn_deg: 15
   # approach before STOP
   final_approach_stop_m: 1.5               # stop when the confirmed endpoint is this close
   final_approach_max_steps: 16
@@ -180,4 +190,4 @@ eval:                                      # consumed by the launcher scripts
   split: val_unseen
   episodes: 0                              # 0 = every episode of the split (unless episode_set is given)
   # episode_set: integrations/v3/eval_sets/val_unseen_200.txt   # the 200-episode set is the decision standard
-  rank_gpus: [4, 5, 6, 7]                  # one Habitat worker per entry; length = world size
+  rank_gpus: [4, 5, 6, 7, 4, 5, 6, 7]      # one Habitat worker per entry; length = world size (2 per GPU, ~1.8 GB each)

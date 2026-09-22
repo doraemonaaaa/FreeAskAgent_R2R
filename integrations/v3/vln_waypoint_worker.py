@@ -108,6 +108,8 @@ def _act_response(actor, decision, want_visuals=False):
         # How the runner tells a turn apart from a stop and a steer; None on
         # every step that steers to a waypoint.
         "turn_deg": decision.turn_deg,
+        # A discrete-action-space arm answers with primitives; None otherwise.
+        "forward_steps": decision.forward_steps,
         "raw_model_response": decision.raw_response,
         "timings": actor.last_timings,
     }
@@ -170,6 +172,10 @@ def _agent_debug_state(actor, decision):
         "requested_pixel_uv": actor.last_requested_pixel,
         "requested_normalized_uv": actor.last_requested_normalized,
         "requested_turn_deg": actor.last_requested_turn_deg,
+        # Discrete-action-space arm; all None/0 when the agent steers to points.
+        "discrete_choice": getattr(actor, "last_discrete_choice", None),
+        "discrete_error": getattr(actor, "last_discrete_error", None),
+        "discrete_unanswered": getattr(actor, "discrete_unanswered", 0),
         "navigation_phase": actor._navigation_phase,
         "waypoint_intent": actor.last_waypoint_intent,
         "waypoint_guard_reason": actor.last_waypoint_guard_reason,

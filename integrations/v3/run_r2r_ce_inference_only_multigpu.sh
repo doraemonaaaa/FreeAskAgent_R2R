@@ -3,6 +3,7 @@
 # comes from integrations/v3/config.yaml (override the file with V3_CONFIG=...).
 # Only run-shape knobs are taken from the environment:
 #   SPLIT EPISODES EPISODE_IDS MAX_STEPS RANK_GPUS   (default: the yaml eval/runner sections)
+#   ACTION_SPACE=waypoint|discrete                   (default: the yaml navigation section)
 #   TRACE_JSONL=1 EVIDENCE_ARCHIVE_DIR VLN_FROZEN_PLAN_FILE R2R_RUN_ID OUTPUT_DIR
 # Any other exported VLN_*/JOYAI_*/CAPTIONER_* variable still wins over the
 # yaml (run_habitat.py only fills unset variables), which is how A/B scripts
@@ -26,6 +27,11 @@ episode_ids="${EPISODE_IDS:-${CFG_EVAL_EPISODE_SET:+@${root_dir}/${CFG_EVAL_EPIS
 max_steps="${MAX_STEPS:-${CFG_RUNNER_MAX_STEPS:-500}}"
 rank_gpus_csv="${RANK_GPUS:-${CFG_EVAL_RANK_GPUS:-4,5,6,7}}"
 trace_jsonl="${TRACE_JSONL:-0}"
+action_space="${ACTION_SPACE:-}"
+case "${action_space}" in
+  ""|waypoint|discrete) ;;
+  *) echo "ACTION_SPACE must be waypoint or discrete, not '${action_space}'." >&2; exit 2 ;;
+esac
 frozen_plan_file="${VLN_FROZEN_PLAN_FILE:-}"
 evidence_archive_dir="${EVIDENCE_ARCHIVE_DIR:-}"
 gpu_monitor_interval_s="${GPU_MONITOR_INTERVAL_S:-10}"
@@ -131,6 +137,11 @@ for rank in $(seq 0 $((world_size - 1))); do
     extra_args=()
     if [[ "${trace_jsonl}" == "1" ]]; then
       extra_args+=(--trace-jsonl "${output_dir}/rank_${rank}_trace.jsonl")
+    fi
+    if [[ "${action_space}" == "discrete" ]]; then
+      extra_args+=(--discrete-action-space)
+    elif [[ "${action_space}" == "waypoint" ]]; then
+      extra_args+=(--no-discrete-action-space)
     fi
     echo "rank=${rank} physical_gpu=${gpu} config=${config_file}"
     # Model endpoints, captioner switches and agent flags are filled from the
