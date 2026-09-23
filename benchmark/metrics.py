@@ -1,6 +1,7 @@
 """Subgoal-level instruction-following metrics from runner traces.
 
     python -m benchmark.metrics --orig OUT_DIR[,OUT_DIR] [--flip OUT_DIR] [--goalonly OUT_DIR] \
+        [--compare OUT_DIR] \
         [--subgoals benchmark/data/<set>/subgoals.json] \
         [--radius 1.5] [--json out.json]
 
@@ -13,10 +14,13 @@ ORIG run            SR, SGCR = mean(c / K), SGCR@k = P(c >= k | K >= k)
                     SGCR-eff: c counted with a per-segment path budget
                     (<= max(2 x reference segment length, 3 m)) so that a long
                     wandering trajectory does not collect boundaries by chance
+--compare / GOAL-ONLY  paired agreement with ORIG (FlipRate, SuccessKept,
+                    Kappa, McNemar_p, EndpointGap, |dNE|); see evaluate_paired
 All rates carry a bootstrap 95% CI over episodes.
 """
 import argparse
 import csv
+import math
 
 import numpy as np
 
@@ -252,6 +256,70 @@ def evaluate_goalonly(subgoals, orig, goal, goals, gt=None, radius=1.5, seed=0):
     return metrics, per
 
 
+# ---------------------------------------------------------------- paired agreement
+def cohen_kappa(a, b):
+    """Cohen's kappa of two binary vectors; nan when chance agreement is 1."""
+    a, b = np.asarray(a, dtype=np.float64), np.asarray(b, dtype=np.float64)
+    po = float(np.mean(a == b))
+    pa, pb = float(a.mean()), float(b.mean())
+    pe = pa * pb + (1 - pa) * (1 - pb)
+    return float("nan") if pe >= 1.0 else (po - pe) / (1 - pe)
+
+
+def mcnemar_exact(b, c):
+    """Two-sided exact McNemar p-value from the discordant counts b, c."""
+    n = b + c
+    if n == 0:
+        return 1.0
+    tail = sum(math.comb(n, i) for i in range(min(b, c) + 1)) / 2.0 ** n
+    return min(1.0, 2.0 * tail)
+
+
+def evaluate_paired(orig, other, ids=None, seed=0):
+    """Per-episode agreement of two runs on the same episodes (paraphrase arm, rerun, GOAL-ONLY).
+
+    Equal SR can hide heavy churn: the two runs may solve different episodes.
+    FlipRate     P(success differs) -- compare against an ORIG-vs-ORIG rerun
+                 (noise floor) before attributing it to the instruction change
+    SuccessKept  P(other succeeds | ORIG succeeds)
+    Kappa        Cohen's kappa of the success vectors (1 = same episodes, 0 = chance)
+    McNemar_p    exact test that the discordant pairs are symmetric (a real SR shift)
+    EndpointGap  xz distance between the two final positions (threshold-free)
+    |dNE|        |final distance to goal ORIG - other| (threshold-free)
+    """
+    rng = np.random.default_rng(seed)
+    per, metrics = {}, {}
+    common = [e for e in orig[1] if e in other[1] and (ids is None or e in ids)]
+    for e in common:
+        row = dict(orig_sr=orig[1][e]["success"], other_sr=other[1][e]["success"],
+                   ne_gap=abs(orig[1][e]["dtg"] - other[1][e]["dtg"]))
+        if orig[0].get(e) and other[0].get(e):
+            row["end_gap"] = dist_xz(orig[0][e][-1], other[0][e][-1])
+        per[e] = row
+    a = np.array([per[e]["orig_sr"] > 0 for e in common])
+    b = np.array([per[e]["other_sr"] > 0 for e in common])
+    n_both, n_orig, n_other = int(np.sum(a & b)), int(np.sum(a & ~b)), int(np.sum(~a & b))
+    count = lambda name, v: dict(name=name, n=len(common), mean=float(v), ci=[None, None])
+    metrics["SR_orig"] = rate("SR_orig", a, rng)
+    metrics["SR_other"] = rate("SR_other", b, rng)
+    metrics["Solved_both"] = count("Solved_both", n_both)
+    metrics["Solved_orig_only"] = count("Solved_orig_only", n_orig)
+    metrics["Solved_other_only"] = count("Solved_other_only", n_other)
+    metrics["FlipRate"] = rate("FlipRate", a != b, rng)
+    metrics["SuccessKept"] = rate("SuccessKept", b[a], rng)
+    kappas = []
+    for _ in range(1000):
+        idx = rng.integers(0, len(common), len(common))
+        kappas.append(cohen_kappa(a[idx], b[idx]))
+    kappas = [k for k in kappas if not np.isnan(k)]
+    ci = [float(np.percentile(kappas, 2.5)), float(np.percentile(kappas, 97.5))] if kappas else [None, None]
+    metrics["Kappa"] = dict(name="Kappa", n=len(common), mean=cohen_kappa(a, b) if common else float("nan"), ci=ci)
+    metrics["McNemar_p"] = count("McNemar_p", mcnemar_exact(n_orig, n_other))
+    metrics["EndpointGap_m"] = rate("EndpointGap_m", [per[e]["end_gap"] for e in common if "end_gap" in per[e]], rng)
+    metrics["|dNE|_m"] = rate("|dNE|_m", [per[e]["ne_gap"] for e in common], rng)
+    return metrics, per
+
+
 def format_table(metrics):
     lines = []
     def line(item, label=None):
@@ -278,6 +346,7 @@ def main():
     parser.add_argument("--flip-meta", default=str(data_path("flip")))
     parser.add_argument("--goalonly", help="GOAL-ONLY run output dir(s)")
     parser.add_argument("--goalonly-meta", default=str(data_path("goalonly")))
+    parser.add_argument("--compare", help="second run on the same episodes (paraphrase arm or ORIG rerun): paired agreement")
     parser.add_argument("--subgoals", default=str(data_path("subgoals")))
     parser.add_argument("--radius", type=float, default=1.5, help="boundary radius r_b in metres")
     parser.add_argument("--ids", help="restrict to an id list file")
@@ -309,6 +378,18 @@ def main():
         metrics.update({"goalonly:" + k: v for k, v in goal_metrics.items()})
         for e, row in goal_per.items():
             per.setdefault(e, {}).update({"goalonly_" + k: v for k, v in row.items()})
+        goal_paired, _ = evaluate_paired(_load(args.orig), _load(args.goalonly),
+                                         ids=set(load_json(args.goalonly_meta)["goalonly"]))
+        print("--- GOAL-ONLY paired agreement")
+        print(format_table(goal_paired))
+        metrics.update({"goalonly_paired:" + k: v for k, v in goal_paired.items()})
+    if args.compare:
+        paired, paired_per = evaluate_paired(_load(args.orig), _load(args.compare), ids=ids)
+        print("--- paired agreement (ORIG vs --compare)")
+        print(format_table(paired))
+        metrics.update({"paired:" + k: v for k, v in paired.items()})
+        for e, row in paired_per.items():
+            per.setdefault(e, {}).update({"paired_" + k: v for k, v in row.items()})
     if args.json:
         dump_json(dict(args=vars(args), metrics=metrics, episodes=per), args.json)
     if args.csv:
