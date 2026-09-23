@@ -94,8 +94,32 @@ python3 -m benchmark.awarevln import --results /path/to/awarevln/results --out b
 
 `benchmark.run_paraphrase awarevln --wait-hours 24` 等待至少 28 GB 空闲显存，
 随后按 A1→A4 顺序运行原 FP16 配置，完成每组后导入轨迹和评分。
+续跑时核对输入哈希及已完成轨迹，跳过已完成任务；分组结束后合并完整统计。
 进度见 `awarevln_status.json`，日志为 `awarevln_queue.log` 和 `awarevln_<arm>.log`。
 锁文件防止重复启动；不要删除仍被工作进程持有的锁文件。
 
 CA-Nav 仍需可用的 GPT-4 服务生成每组新的 `llm_reply.json`，之后用
 `VARIANT=para_id` 等参数运行其 `run_r2r/bench_local.sh`。旧解析端点本次返回 HTTP 405。
+
+## CA-Nav 使用 Qwen 解析（2026-09-23）
+
+运行入口：`.venv/bin/python -m benchmark.canav_qwen --gpus 1,2,3`。
+默认连接 `http://127.0.0.1:8302/v1`，模型为本地 Qwen3-VL-8B-Instruct
+（服务名 `qwen3-vl-8b`），使用上游解析提示词和 temperature=0。
+每条输出经结构校验后缓存，全部通过后才运行导航；导航沿用 `exp1_nogate`。
+
+为控制解析器变更的影响，该批次包含 Qwen 解析的 ORIG 与 A1～A4，共 1000 条。
+数据 split 使用 `val_unseen_200_qwen_*`，结果保存到 `benchmark/results/canav_qwen/`；
+与旧 GPT-4 解析的 `canav/` 分开。输入及提示词哈希、解析模型记录在 `manifest.json`。
+过程日志和可续跑解析缓存位于 `outputs/paraphrase_20260920/canav_qwen/`，
+进度见 `status.json`。A4 的既有语义疑点仍保留在该批次输入中。
+
+Qwen 解析若不符合结构约定，会带原始指令、失败响应和校验反馈重新请求（最多三次）；
+保留原始失败输出和纠错记录，不直接把不支持的方向词映射成另一个方向。
+解析进度按成功与失败分别统计；已成功的缓存会复用。
+
+校验以导航实际读取的字段为准：`decisions.directions` 未被当前 CA-Nav 导航器使用，
+因此保留 `turn around` 等字符串描述，不强制限制为 left/right/forward；
+实际使用的约束也按原导航器接受的类型校验：允许空约束；方向字符串保留，
+由上游处理 forward/backward、别名或未知方向默认分支。动作字符串同样原样保留，
+上游主要区分 `move away` 与其他值。结构校验不代表解析语义正确。

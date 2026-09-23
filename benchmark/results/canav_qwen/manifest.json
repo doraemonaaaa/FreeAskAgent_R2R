@@ -1,0 +1,16 @@
+{
+ "model": "qwen3-vl-8b",
+ "base_url": "http://127.0.0.1:8302/v1",
+ "temperature": 0,
+ "prompt_sha256": "eb9dfcf03e50fadf4aa5e2e90a67d2bd5c89cf1a912ec4dd736c2e61579305bf",
+ "inputs_sha256": "2989fb962aeb33d5851242cb2edbba3a80f51fc317990cae6be225fea5f363c4",
+ "parser": "Qwen3-VL-8B-Instruct",
+ "variants": [
+  "orig",
+  "para_id",
+  "para_terse",
+  "para_natural",
+  "para_lm_shift"
+ ],
+ "note": "New Qwen ORIG control; A4 903/1455 review concerns remain in unchanged inputs."
+}

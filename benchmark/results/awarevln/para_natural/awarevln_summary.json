@@ -1,0 +1,14 @@
+{
+ "results": "/data/pengyh/workspace/FreeAskAgent_R2R/outputs/paraphrase_20260920/awarevln_raw/awarevln/VLN-CE-v1/val_unseen_200_para_natural",
+ "n": 200,
+ "summary": {
+  "success": 0.635,
+  "oracle_success": 0.745,
+  "spl": 0.5480392001532683,
+  "distance_to_goal": 4.390753459651023,
+  "path_length": 12.944924248095486,
+  "steps_taken": 104.32,
+  "ndtw": 0.6378922032521926,
+  "sdtw": 0.5212316047129599
+ }
+}

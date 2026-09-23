@@ -90,12 +90,29 @@ def run_aware(args):
     assert manifest['paraphrase_sha256'] == hashlib.sha256(data_path('paraphrase').read_bytes()).hexdigest()
     python = '/data/pengyh/miniconda3/envs/awarevln-eval/bin/python'
     scoring_python = ROOT / '.venv/bin/python'
+    episodes = load_json(data_path('paraphrase'))['episodes']
+    expected = set(episodes)
     deadline = time.monotonic() + args.wait_hours * 3600
     for arm in ARMS:
         split = f'{SET}_{arm}'
         raw = RUN / 'awarevln_raw' / 'awarevln' / 'VLN-CE-v1' / split
         stats_file = raw / f'{split}_1-0.json'
-        if not stats_file.exists():
+        trace_file = raw / f'traj_{split}_1-0.jsonl'
+        completed = {}
+        if trace_file.exists():
+            letter = ('A1', 'A2', 'A3', 'A4')[ARMS.index(arm)]
+            for line in trace_file.read_text().splitlines():
+                row = json.loads(line)
+                eid = str(row['episode_id'])
+                assert eid in expected and eid not in completed, 'Unexpected/duplicate episode'
+                assert row['instruction'] == episodes[eid][letter]['instruction']
+                assert all(k in row['metric'] for k in ('success', 'spl', 'distance_to_goal', 'ndtw'))
+                completed[eid] = row['metric']
+        remaining = sorted(expected - completed.keys(), key=int)
+        if remaining:
+            # The upstream evaluator skips any existing stats file, even partial ones.
+            if stats_file.exists():
+                raise RuntimeError(f'Incomplete stats file requires inspection: {stats_file}')
             while True:
                 query = subprocess.check_output(['nvidia-smi', '--query-gpu=index,memory.free', '--format=csv,noheader,nounits'], text=True)
                 candidates = [(int(free.strip()), int(gpu.strip())) for gpu, free in
@@ -111,14 +128,23 @@ def run_aware(args):
                 time.sleep(60)
             env = dict(os.environ, GPU=str(gpu), VARIANT=arm, PYTHON=python,
                        RESULTS_DIR=str(RUN / 'awarevln_raw'), HF_HUB_OFFLINE='1',
-                       TRANSFORMERS_OFFLINE='1', PYTHONUNBUFFERED='1')
-            status(state='running', arm=arm, gpu=gpu, precision='FP16')
+                       TRANSFORMERS_OFFLINE='1', PYTHONUNBUFFERED='1',
+                       EPISODES=json.dumps(remaining))
+            status(state='running', arm=arm, gpu=gpu, precision='FP16',
+                   completed_before_resume=len(completed), remaining=len(remaining))
             with (RUN / f'awarevln_{arm}.log').open('a') as log:
                 result = subprocess.run(['bash', 'scripts/eval/bench_local.sh'],
                                         cwd=awarevln.AWARE, env=env, stdout=log, stderr=subprocess.STDOUT)
             if result.returncode:
                 status(state='failed', arm=arm, returncode=result.returncode)
                 return result.returncode
+            # The evaluator only writes this invocation's stats. Merge the prior
+            # completed episode metrics from its durable trajectory journal.
+            new_stats = load_json(stats_file)
+            assert set(new_stats) == set(remaining), 'Incomplete resumed evaluation'
+            dump_json(dict(completed, **new_stats), stats_file)
+        elif not stats_file.exists():
+            dump_json(completed, stats_file)
         if len(load_json(stats_file)) != 200:
             status(state='incomplete', arm=arm, stats=str(stats_file))
             return 3

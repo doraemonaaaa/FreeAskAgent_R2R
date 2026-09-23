@@ -74,7 +74,7 @@ CA-Nav 使用离线指令解析，运行 PARAPHRASE 前必须重新解析四组�
 ## 5. 当前状态和限制
 
 - **已完成**：v19、CA-Nav、AwareVLN 的 ORIG、FLIP、GOAL-ONLY；v19 另有重复 ORIG。
-- **PARAPHRASE**：四组数据已生成并通过自动校验，已有盲审记录；当前结果目录尚无四组导航评测结果。
+- **PARAPHRASE**：四组数据已生成并通过自动校验，已有盲审记录；AwareVLN 四组各 200 条导航评测已完成。CA-Nav 正使用 Qwen 重新解析，并补跑同解析器的 ORIG 对照；结果单独保存到 `results/canav_qwen/`。
 - **语义质量待复核**：抽样发现 A4 中任务 903、1455 有属性弱化或新增属性的疑点。
   自动校验及同模型家族盲审不能保证语义等价，详见 [数据审查记录](../docs/benchmark_data_review.md)。
 - **FLIP 限制**：样本较少；选样与评分的转向几何有已知差异，详见设计文档。
