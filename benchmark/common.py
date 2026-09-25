@@ -11,6 +11,10 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = Path(__file__).resolve().parent / "data"
 FGR2R_DIR = DATA_DIR / "fgr2r"
 R2R_DIR = ROOT.parent / "habitat" / "data" / "datasets" / "vln" / "mp3d" / "r2r" / "v1"
+# R2R-CE v1-3 val_unseen (CA-Nav's and AwareVLN's copies are byte-identical). Same
+# episodes, positions and texts as v1-2 above, but different start rotations; only
+# v1-3's agree with the instructions' first turn (see build_flip).
+R2R_V13_VAL_UNSEEN = ROOT.parent / "Reproductions" / "CA-Nav-code" / "data" / "datasets" / "R2R_VLNCE_v1-3_preprocessed" / "val_unseen" / "val_unseen.json.gz"
 EVAL_SETS = ROOT / "integrations" / "v3" / "eval_sets"
 # A final sub-instruction that names nothing ("and stop immediatly.", "Wait there.").
 # build_goalonly keeps the preceding chunk for these; build_paraphrase skips its

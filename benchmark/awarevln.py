@@ -2,7 +2,8 @@
 
 AwareVLN reads the instruction text at run time (no offline parse), so a
 variant is just an R2R_VLNCE_v1-3 split with the new ``instruction_text``;
-each variant uses its own eligible episode subset.
+each variant uses its own eligible episode subset. FLIP has its own episode set
+(build_flip, full val_unseen) and writes <set>_flip_orig and <set>_flip over it.
 
     python -m benchmark.awarevln build
     python -m benchmark.awarevln import --results <RESULTS_DIR>/awarevln/VLN-CE-v1/<split> --out benchmark/results/awarevln/<variant>
@@ -29,15 +30,17 @@ def build(args):
         base = json.load(handle)
     with gzip.open(str(AWARE_DATA / "val_unseen/val_unseen_gt.json.gz"), "rt") as handle:
         gt = json.load(handle)
-    tables = dict(
-        orig={eid: rec["instruction"] for eid, rec in subgoals.items()},
-    )
-    if args.flip:
-        tables["flip"] = {eid: v["instruction"] for eid, v in load_json(args.flip)["flip"].items()}
-    if args.goalonly:
-        tables["goalonly"] = {eid: v["instruction"] for eid, v in load_json(args.goalonly)["goalonly"].items()}
-    for variant, texts in tables.items():
-        split = "{}_{}".format(args.name, variant)
+    tables = {}
+    if "orig" in args.variants:
+        tables["{}_orig".format(args.name)] = {eid: rec["instruction"] for eid, rec in subgoals.items()}
+    if "flip" in args.variants and args.flip:
+        meta = load_json(args.flip)
+        flips = {eid: meta["flip"][eid] for eid in meta["balanced"]}
+        tables["{}_flip_orig".format(meta["name"])] = {eid: v["original_instruction"] for eid, v in flips.items()}
+        tables["{}_flip".format(meta["name"])] = {eid: v["instruction"] for eid, v in flips.items()}
+    if "goalonly" in args.variants and args.goalonly:
+        tables["{}_goalonly".format(args.name)] = {eid: v["instruction"] for eid, v in load_json(args.goalonly)["goalonly"].items()}
+    for split, texts in tables.items():
         directory = AWARE_DATA / split
         directory.mkdir(parents=True, exist_ok=True)
         data = dict(base)
@@ -80,7 +83,9 @@ def main():
     b = sub.add_parser("build")
     b.add_argument("--subgoals", default=str(data_path("subgoals")))
     b.add_argument("--name", default=DEFAULT_SET)
-    b.add_argument("--flip", default=str(data_path("flip")))
+    b.add_argument("--variants", default="orig,flip,goalonly", type=lambda v: v.split(","),
+                   help="comma list of orig, flip, goalonly")
+    b.add_argument("--flip", default=str(data_path("flip", "val_unseen")))
     b.add_argument("--goalonly", default=str(data_path("goalonly")))
     i = sub.add_parser("import")
     i.add_argument("--results", required=True, help="AwareVLN results dir holding traj_*.jsonl and <split>_N-i.json")

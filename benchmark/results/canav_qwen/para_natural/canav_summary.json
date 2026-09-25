@@ -1,0 +1,14 @@
+{
+ "exp": "exp_bench_qwen_para_natural",
+ "n": 200,
+ "summary": {
+  "success": 0.23,
+  "oracle_success": 0.515,
+  "spl": 0.092463519522674,
+  "distance_to_goal": 7.328474831134081,
+  "path_length": 29.10743059039116,
+  "steps_taken": 223.235,
+  "ndtw": 0.1435380693881317,
+  "sdtw": 0.07389514847059361
+ }
+}

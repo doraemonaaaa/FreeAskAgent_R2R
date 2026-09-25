@@ -1,62 +1,73 @@
-"""FLIP-k variant: reverse left/right in one turning sub-instruction.
+"""FLIP variant: reverse left/right in the FIRST sub-instruction, where every agent starts.
 
-    <habitat python> -m benchmark.build_flip [--min-turn 45] [--no-navmesh]
+    <habitat python> -m benchmark.build_flip [--name val_unseen] [--min-turn 45] [--no-navmesh]
 
-Selection (per episode, one segment k >= 2):
-  * the sub-instruction contains exactly one of "left" / "right";
-  * the reference path turns that way inside the segment: signed angle between
-    the incoming direction (last 1.5 m before B_{k-1}) and the displacement
-    over the first 5 m of the segment reaches |angle| >= min_turn with the
-    sign of the word (left < 0, right > 0 in habitat's x/z plane, verified on
-    FGR2R val_unseen: 46/50 "turn left/right" segments agree);
-  * the mirrored direction is navigable: a point 2 m from B_{k-1} along the
-    outgoing direction reflected about the incoming direction snaps to the
-    navmesh within 0.75 m (needs habitat_sim; --no-navmesh skips it);
-  * k = 1 is excluded: the incoming heading there is the dataset's start
-    rotation, which differs between R2R-CE v1-2 and v1-3.
-When several segments qualify the one with the largest turn is used.
+The turn is at the start position, which every agent occupies, so every
+selected episode is scorable for every system. (The earlier FLIP-k design
+flipped a later sentence and could only score agents that reached it, so each
+system was scored on a different, easier subset; it was retired 2026-09-24.)
+
+The reference heading is the dataset's start rotation. R2R-CE v1-2 (the FreeAskAgent
+runner's split) and v1-3 (CA-Nav, AwareVLN) share start positions but not start
+rotations (median 96 deg apart on val_unseen), and only v1-3 agrees with the
+instruction text: on first chunks saying "turn left/right" whose reference path
+turns >= 45 deg, the sign matches 24/32 with v1-3 and 6/26 with v1-2. So the
+v1-3 rotation is used, and the FreeAskAgent runner splits written here are the v1-2 episodes
+with ONLY start_rotation replaced by v1-3's (ORIG and FLIP-1 alike: the ORIG
+control has to be rerun on the same heading).
+
+Selection (per episode, sub-instruction k = 1 only):
+  * the chunk contains exactly one "left"/"right" token (a repeated word would
+    leave a mixed instruction after flipping the first occurrence);
+  * that token is a turn command ("turn left", "make a right", "go left",
+    "veer to the right", "take the first left", ...), not a landmark relation
+    ("with the table to your right", "the door on the left"): flipping a
+    relation changes which landmark is meant, not which way to turn;
+  * the reference path turns that way from the start heading: the largest
+    signed angle between the heading and the displacement to any point in the
+    first 5 m of the dense reference path has min_turn <= |angle| <= max_turn
+    and the sign of the word (left < 0, right > 0 in habitat's x/z plane); near
+    180 deg the side of a turn-around is arbitrary, hence the upper bound;
+  * the mirrored direction is navigable: a point 2 m from the start along the
+    outgoing direction reflected about the heading snaps to the navmesh within
+    0.75 m (needs habitat_sim; --no-navmesh skips it).
+``balanced`` lists an equal number of left and right episodes (the smaller
+count, chosen by a seeded shuffle) so a left/right bias cannot pass for
+instruction following.
 
 Outputs
-  benchmark/data/<set>/flip.json                 per-episode k, word, angle, flipped text, anchor point
-  <habitat r2r>/<set>_flip/<set>_flip.json.gz    split for the v19 runner (+ gt copy, + ids file)
-  CA-Nav / AwareVLN splits are written by benchmark.canav / benchmark.awarevln ``build --flip``.
+  benchmark/data/<set>/subgoals.json                 built for all ids of the split if missing
+  benchmark/data/<set>/rule/flip.json                per-episode word, angle, headings, chunk span, flipped text
+  benchmark/data/<set>/rule/ids/flip.txt             balanced episode ids
+  <habitat r2r>/<set>_flip{_orig,}/...json.gz        FreeAskAgent runner splits (balanced ids, v1-3 start rotation)
+  CA-Nav / AwareVLN inputs are written by benchmark.canav / benchmark.awarevln ``build``.
 """
 import argparse
+import gzip
+import json
+import random
 import re
 
 import numpy as np
 
-from .common import variant_parser, DEFAULT_SET, DIRECTION, R2R_DIR, data_path, ids_path, signed_angle, write_split, xz, dump_json, load_episodes, load_gt, load_json
+from .build_subgoals import build as build_subgoals
+from .common import (DIRECTION, R2R_V13_VAL_UNSEEN, R2R_DIR, data_path, dump_json, ids_path, load_episodes, load_gt, load_json,
+                     signed_angle, write_split, xz)
 
-WORD = DIRECTION
 OPPOSITE = {"left": "right", "right": "left"}
 
 
-def incoming_direction(pts, i, dist=1.5):
-    j, acc = i, 0.0
-    while j > 0 and acc < dist:
-        acc += np.linalg.norm(xz(pts[j]) - xz(pts[j - 1]))
-        j -= 1
-    v = xz(pts[i]) - xz(pts[j])
-    n = np.linalg.norm(v)
-    return v / n if n > 1e-6 else None
+TURN_COMMAND = re.compile(
+    r"\b(?:turn(?:ing)?|make|take|hang|go(?:ing)?|head(?:ing)?|veer|bear|swing|walk|move|step|exit|enter|proceed|continue)"
+    r"(?:\s+(?:a|an|the|another|first|second|next|immediate|slight|sharp|hard|quick|90|degree|degrees|to|towards|toward|your|out|up|down|straight|and|then|immediately|slightly|sharply|back|around|over|through|into|onto|off|in|at|another))*"
+    r"\s+(left|right)\b(?!\s+of\b)(?!\s+side\s+of\b)", re.IGNORECASE)
+RELATION = re.compile(r"\bwith\b[^,.;]*\b(?:left|right)\b|\b(?:on|at|by|from)\s+(?:the|your)\s+(?:far\s+)?(?:left|right)\b",
+                      re.IGNORECASE)
 
 
-def segment_turn(pts, i0, i1, inc, limit=5.0):
-    """Signed angle (and outgoing unit vector) of the largest heading change in the first ``limit`` m."""
-    best, best_vec, acc = 0.0, None, 0.0
-    for j in range(i0 + 1, i1 + 1):
-        acc += np.linalg.norm(xz(pts[j]) - xz(pts[j - 1]))
-        if acc > limit:
-            break
-        v = xz(pts[j]) - xz(pts[i0])
-        n = np.linalg.norm(v)
-        if n < 0.5:
-            continue
-        a = signed_angle(inc, v / n)
-        if abs(a) > abs(best):
-            best, best_vec = a, v / n
-    return best, best_vec
+def is_turn_command(text):
+    """The (single) left/right token of ``text`` follows a motion verb and is not a landmark relation."""
+    return TURN_COMMAND.search(text) is not None and RELATION.search(text) is None
 
 
 def flip_text(text, span, word):
@@ -83,72 +94,136 @@ def navigable(pathfinders, scene_id, point, tol=0.75):
     return float(np.linalg.norm(snapped - np.asarray(point))) <= tol and abs(snapped[1] - point[1]) < 0.5
 
 
+def heading_xz(rotation):
+    """Unit x/z forward vector (-z rotated) of an [x, y, z, w] start_rotation."""
+    u = np.asarray(rotation[:3], dtype=np.float64)
+    w = float(rotation[3])
+    v = np.array([0.0, 0.0, -1.0])
+    f = v + 2.0 * np.cross(u, np.cross(u, v) + w * v)
+    f = np.array([f[0], f[2]])
+    return f / np.linalg.norm(f)
+
+
+def start_turn(points, heading, limit=5.0):
+    """Largest signed angle from the start heading to any point in the first ``limit`` m (>= 0.5 m away)."""
+    best, best_vec, walked = 0.0, None, 0.0
+    for j in range(1, len(points)):
+        walked += float(np.linalg.norm(xz(points[j]) - xz(points[j - 1])))
+        if walked > limit:
+            break
+        v = xz(points[j]) - xz(points[0])
+        n = float(np.linalg.norm(v))
+        if n < 0.5:
+            continue
+        angle = signed_angle(heading, v / n)
+        if abs(angle) > abs(best):
+            best, best_vec = angle, v / n
+    return best, best_vec
+
+
 def main():
-    parser = variant_parser(__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--name", default="val_unseen", help="eval set name under benchmark/data/")
+    parser.add_argument("--split", default="val_unseen")
     parser.add_argument("--min-turn", type=float, default=45.0)
+    parser.add_argument("--max-turn", type=float, default=135.0)
     parser.add_argument("--no-navmesh", action="store_true")
+    parser.add_argument("--no-splits", action="store_true")
+    parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
 
-    subgoals = load_json(args.subgoals)["episodes"]
-    gt = load_gt(args.split)
     episodes, raw = load_episodes(args.split)
+    gt = load_gt(args.split)
+    sg_path = data_path("subgoals", args.name)
+    if not sg_path.exists():
+        built, skipped = build_subgoals(list(episodes), args.split)
+        dump_json(dict(split=args.split, ids_file="all ids of {}".format(args.split),
+                       provenance="derived from the FGR2R human sub-instruction annotation (Hong et al. 2020)",
+                       episodes=built, skipped=skipped), sg_path)
+        print("wrote", sg_path, "episodes", len(built), "skipped", len(skipped))
+    subgoals = load_json(sg_path)["episodes"]
+    with gzip.open(str(R2R_V13_VAL_UNSEEN), "rt") as handle:
+        v13 = {str(e["episode_id"]): e for e in json.load(handle)["episodes"]}
+
     pathfinders = {}
-    out, rejected = {}, {"no_word": 0, "k1_only": 0, "weak_turn": 0, "wrong_sign": 0, "not_navigable": 0}
+    out = {}
+    rejected = {"no_word": 0, "repeated_or_both_words": 0, "no_span": 0, "not_turn_command": 0, "weak_turn": 0, "turn_around": 0, "wrong_sign": 0, "not_navigable": 0}
     for eid, rec in subgoals.items():
-        pts = gt[eid]
-        best = None
-        had_word = had_k1 = False
-        for s in rec["subgoals"]:
-            words = {w.lower() for w in WORD.findall(s["text"])}
-            if len(words) != 1 or not s["span"]:
-                continue
-            had_word = True
-            k, word = s["index"], words.pop()
-            if k == 1:
-                had_k1 = True
-                continue
-            i0, i1 = rec["subgoals"][k - 2]["gt_index"], s["gt_index"]
-            inc = incoming_direction(pts, i0)
-            if inc is None:
-                continue
-            angle, out_vec = segment_turn(pts, i0, i1, inc)
-            if abs(angle) < args.min_turn:
-                rejected["weak_turn"] += 1
-                continue
-            if (angle < 0) != (word == "left"):
-                rejected["wrong_sign"] += 1
-                continue
-            # mirror the outgoing direction about the incoming direction
-            mirrored = 2 * np.dot(out_vec, inc) * inc - out_vec
-            anchor = np.asarray(pts[i0], dtype=np.float64)
-            probe = anchor + np.array([mirrored[0] * 2.0, 0.0, mirrored[1] * 2.0])
-            if not args.no_navmesh and not navigable(pathfinders, rec["scene_id"], probe):
-                rejected["not_navigable"] += 1
-                continue
-            if best is None or abs(angle) > abs(best["turn_deg"]):
-                best = dict(k=k, word=word, turn_deg=float(angle), anchor_xyz=[float(v) for v in anchor],
-                            incoming_xz=[float(v) for v in inc], outgoing_xz=[float(v) for v in out_vec],
-                            mirrored_xz=[float(v) for v in mirrored], original_text=s["text"],
-                            instruction=flip_text(rec["instruction"], s["span"], word))
-        if best:
-            out[eid] = best
-        elif not had_word:
+        first = rec["subgoals"][0]
+        found = [w.lower() for w in DIRECTION.findall(first["text"])]
+        if not found:
             rejected["no_word"] += 1
-        elif had_k1:
-            rejected["k1_only"] += 1
-    meta = dict(name=args.name, split=args.split, min_turn=args.min_turn, navmesh=not args.no_navmesh,
-                provenance="rule-based minimal pair: exactly one left/right word replaced, everything else byte-identical",
-                flip_split="{}_flip".format(args.name), flip=out, rejected=rejected)
+            continue
+        if len(found) != 1:
+            rejected["repeated_or_both_words"] += 1
+            continue
+        if not first["span"]:
+            rejected["no_span"] += 1
+            continue
+        if not is_turn_command(first["text"]):
+            rejected["not_turn_command"] += 1
+            continue
+        word = found[0]
+        heading = heading_xz(v13[eid]["start_rotation"])
+        angle, out_vec = start_turn(gt[eid], heading)
+        if abs(angle) < args.min_turn:
+            rejected["weak_turn"] += 1
+            continue
+        if abs(angle) > args.max_turn:
+            rejected["turn_around"] += 1
+            continue
+        if (angle < 0) != (word == "left"):
+            rejected["wrong_sign"] += 1
+            continue
+        mirrored = 2 * np.dot(out_vec, heading) * heading - out_vec
+        start = np.asarray(gt[eid][0], dtype=np.float64)
+        probe = start + np.array([mirrored[0] * 2.0, 0.0, mirrored[1] * 2.0])
+        if not args.no_navmesh and not navigable(pathfinders, rec["scene_id"], probe):
+            rejected["not_navigable"] += 1
+            continue
+        v12_heading = heading_xz(episodes[eid]["start_rotation"])
+        out[eid] = dict(k=1, word=word, flipped=OPPOSITE[word], turn_deg=float(angle),
+                        start_xyz=[float(v) for v in start], incoming_xz=[float(v) for v in heading],
+                        outgoing_xz=[float(v) for v in out_vec], mirrored_xz=[float(v) for v in mirrored],
+                        start_rotation_v13=v13[eid]["start_rotation"],
+                        v12_heading_offset_deg=signed_angle(heading, v12_heading),
+                        scene=rec["scene_id"].split("/")[1], original_text=first["text"], span=first["span"],
+                        original_instruction=rec["instruction"],
+                        instruction=flip_text(rec["instruction"], first["span"], word))
+
+    lefts = sorted(e for e, v in out.items() if v["word"] == "left")
+    rights = sorted(e for e, v in out.items() if v["word"] == "right")
+    rng = random.Random(args.seed)
+    rng.shuffle(lefts)
+    rng.shuffle(rights)
+    m = min(len(lefts), len(rights))
+    balanced = sorted(lefts[:m] + rights[:m], key=int)
+
+    meta = dict(name=args.name, split=args.split, k=1, min_turn=args.min_turn, max_turn=args.max_turn, navmesh=not args.no_navmesh, seed=args.seed,
+                heading_source="R2R_VLNCE_v1-3 start_rotation (FreeAskAgent runner splits: v1-2 episodes with this rotation)",
+                provenance="rule-based minimal pair: the single left/right word of sub-instruction 1 replaced, everything else byte-identical",
+                n_candidates=len(out), n_left=len(lefts), n_right=len(rights), balanced=balanced,
+                flip=out, rejected=rejected)
     path = data_path("flip", args.name)
     dump_json(meta, path)
-    words = [v["word"] for v in out.values()]
-    print("flip episodes={} (left {}, right {}) rejected={}".format(len(out), words.count("left"), words.count("right"), rejected))
+    scenes = {out[e]["scene"] for e in balanced}
+    offsets = np.abs([out[e]["v12_heading_offset_deg"] for e in balanced])
+    print("candidates={} (left {}, right {}) balanced={} over {} scenes; rejected={}".format(
+        len(out), len(lefts), len(rights), len(balanced), len(scenes), rejected))
+    print("v1-2 start heading off by >45 deg on {}/{} balanced episodes".format(int((offsets > 45).sum()), len(balanced)))
     print("wrote", path)
+
+    ids = ids_path("flip", args.name)
+    ids.parent.mkdir(parents=True, exist_ok=True)
+    ids.write_text("# FLIP balanced episode ids ({} left + {} right), set {}\n".format(m, m, args.name)
+                   + "".join(e + "\n" for e in balanced))
+    print("wrote ids", ids)
     if not args.no_splits:
-        directory = write_split(meta["flip_split"], raw, episodes, gt, {eid: v["instruction"] for eid, v in out.items()})
-        ids = ids_path("flip", args.name)
-        ids.write_text("# episode ids present in split {}_flip\n".format(args.name) + "".join(eid + "\n" for eid in out))
-        print("wrote split", directory, "ids", ids)
+        rotated = {e: dict(episodes[e], start_rotation=out[e]["start_rotation_v13"]) for e in balanced}
+        for suffix, texts in (("flip_orig", {e: subgoals[e]["instruction"] for e in balanced}),
+                              ("flip", {e: out[e]["instruction"] for e in balanced})):
+            directory = write_split("{}_{}".format(args.name, suffix), raw, rotated, gt, texts)
+            print("wrote split", directory)
 
 
 if __name__ == "__main__":

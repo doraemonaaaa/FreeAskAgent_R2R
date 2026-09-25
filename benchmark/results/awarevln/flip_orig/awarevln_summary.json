@@ -1,0 +1,14 @@
+{
+ "results": "/data/pengyh/workspace/FreeAskAgent_R2R/outputs/flip_start_20260924/awarevln_raw/awarevln/VLN-CE-v1/val_unseen_flip_orig",
+ "n": 82,
+ "summary": {
+  "success": 0.6463414634146342,
+  "oracle_success": 0.7804878048780488,
+  "spl": 0.5984831408258058,
+  "distance_to_goal": 3.8871468578169988,
+  "path_length": 12.22004793360886,
+  "steps_taken": 106.45121951219512,
+  "ndtw": 0.6839493979898126,
+  "sdtw": 0.5671625613460305
+ }
+}

@@ -5,20 +5,19 @@
 以下命令在项目根目录执行。数据生成需要本地 R2R-CE 数据；FLIP 构造还需要
 安装 Habitat-Sim 的 Python 环境和场景 navmesh。推理使用对应系统的运行环境。
 仅重算归档指标可使用项目 `.venv/bin/python`（需要 NumPy，fastdtw 可选）。
-代码块中的 `<cfg.yaml>`、`<out_flip>` 等是需替换的占位符。
+代码块中的 `<cfg.yaml>`、`<out_orig>` 等是需替换的占位符。
 
 ```bash
 cd /data/pengyh/workspace/FreeAskAgent_R2R
 
 # 数据已生成；更换评测集时重新构造
 python3 -m benchmark.build_subgoals --ids integrations/v3/eval_sets/val_unseen_200.txt
-python3 -m benchmark.build_flip
 python3 -m benchmark.build_goalonly
 python3 -m benchmark.selfcheck
 
-# 运行 FLIP；GOAL-ONLY 使用 goalonly 对应 split 和 ids
-SPLIT=val_unseen_200_flip EPISODE_IDS=@benchmark/data/val_unseen_200/rule/ids/flip.txt \
-  TRACE_JSONL=1 V3_CONFIG=<cfg.yaml> OUTPUT_DIR=<out_flip> \
+# 运行 GOAL-ONLY
+SPLIT=val_unseen_200_goalonly EPISODE_IDS=@benchmark/data/val_unseen_200/rule/ids/goalonly.txt \
+  TRACE_JSONL=1 V3_CONFIG=<cfg.yaml> OUTPUT_DIR=<out_goalonly> \
   bash integrations/v3/run_r2r_ce_inference_only_multigpu.sh
 
 # PARAPHRASE 四个 arm 都要跑，para_id 是对照组
@@ -29,17 +28,57 @@ for ARM in para_id para_terse para_natural para_lm_shift; do
 done
 
 # 用归档轨迹重算
-python3 -m benchmark.metrics --orig benchmark/results/v19/orig \
-  --flip benchmark/results/v19/flip --goalonly benchmark/results/v19/goalonly \
-  --json /tmp/v19_metrics.json --csv /tmp/v19_per_episode.csv
+python3 -m benchmark.metrics --orig benchmark/results/freeaskagent/orig \
+  --goalonly benchmark/results/freeaskagent/goalonly \
+  --json /tmp/freeaskagent_metrics.json --csv /tmp/freeaskagent_per_episode.csv
 ```
 
 CA-Nav / AwareVLN 的适配入口分别为 `python3 -m benchmark.canav build` 和
-`python3 -m benchmark.awarevln build`，支持 ORIG、FLIP、GOAL-ONLY；`import` 子命令导入轨迹。
+`python3 -m benchmark.awarevln build`，支持 ORIG、FLIP、GOAL-ONLY（`--variants` 可选其中几项）；
+`import` 子命令导入轨迹。
 PARAPHRASE 可将每个 arm 的轨迹传给 `metrics --orig`，使用同一组子目标边界评分。
 CA-Nav 的 PARAPHRASE 必须先重新解析改写指令。
 
 nDTW 优先使用 fastdtw，未安装时使用精确 DTW；两者不完全相同，跨实验比较时应统一环境。
+
+## FLIP(起点转弯,2026-09-24)
+
+FLIP 使用自己的集合:从全量 val_unseen 中选第一句含转弯指令、且参考路径在起点
+前 5 m 内按该词方向转 45°–135° 的 episode,左右配平后 82 集。转弯发生在起点,
+每个系统的每一集都能评分。起始朝向统一用 R2R-CE v1-3(v1-2 的朝向与指令不符),
+所以 **ORIG 对照也要在同一批 episode、同一朝向上重跑**(`flip_orig`)。
+
+```bash
+# 数据(需要 habitat_sim 和 navmesh;CA-Nav 环境可用)
+/data/pengyh/miniconda3/envs/CA-Nav/bin/python -m benchmark.build_flip     # data/val_unseen/rule/flip.json + FreeAskAgent splits
+python3 -m benchmark.canav build --variants flip                             # CA-Nav: val_unseen_flip{_orig,}
+python3 -m benchmark.awarevln build --variants flip                          # AwareVLN: val_unseen_flip{_orig,}
+
+# FreeAskAgent(两次运行都用 v1-3 起始朝向的 split)
+for V in flip_orig flip; do
+  SPLIT=val_unseen_$V EPISODE_IDS=@benchmark/data/val_unseen/rule/ids/flip.txt \
+    TRACE_JSONL=1 V3_CONFIG=<cfg.yaml> OUTPUT_DIR=<out_$V> \
+    bash integrations/v3/run_r2r_ce_inference_only_multigpu.sh
+done
+
+# CA-Nav(在 CA-Nav-code 下;实验名不能用旧的 exp_bench_flip,评测会跳过目录里已有的 episode)
+SET=val_unseen VARIANT=flip_orig EXP_NAME=exp_startflip_orig bash run_r2r/bench_local.sh
+SET=val_unseen VARIANT=flip      EXP_NAME=exp_startflip      bash run_r2r/bench_local.sh
+
+# AwareVLN(在 AwareVLN/evaluation 下)
+SET=val_unseen VARIANT=flip_orig GPU=<id> bash scripts/eval/bench_local.sh
+SET=val_unseen VARIANT=flip      GPU=<id> bash scripts/eval/bench_local.sh
+
+# 导入到 results/<system>/{flip_orig,flip}/ 后评分
+python3 -m benchmark.canav import --exp exp_startflip_orig --out benchmark/results/canav/flip_orig
+python3 -m benchmark.metrics --orig benchmark/results/<system>/flip_orig --flip benchmark/results/<system>/flip
+```
+
+评分(`metrics.evaluate_flip`):每次运行的每一集按离开起点的方向归为按指令词转 /
+反着转 / 直行(< 30°)/ 没离开起点四类,四类之和为 1;两次运行合并给出
+MeanFollow、Blind(不看方向词时的期望)与 WordEffect = MeanFollow − Blind
+(完全跟随约 +0.5,不看方向词为 0),以及按 left / right 分开的跟随率。
+CA-Nav 的 FLIP 只改解析里包含该方向词的那条子指令中的这一个词。
 
 ## 数据构建与改写导入
 
@@ -64,12 +103,13 @@ python3 -m benchmark.build_paraphrase ingest
 | `common.py` / `compact_trace.py` | 公共读写与几何 / 轨迹归档压缩 |
 | `data/fgr2r/` | 第三方人工标注及 LICENSE |
 | `data/<set>/subgoals.json` | 所有实验共用的子目标边界 |
-| `data/<set>/rule/` | FLIP、GOAL-ONLY 元数据和 `ids/` |
+| `data/<set>/rule/` | GOAL-ONLY 元数据和 `ids/`;FLIP 在 `data/val_unseen/rule/` |
+| `data/val_unseen/subgoals.json` | 全量 val_unseen 的子目标边界(FLIP 用) |
 | `data/<set>/llm/` | PARAPHRASE 元数据、生成批次、`ids/` 和 `review/` |
-| `results/<model>/orig/`、`flip/`、`goalonly/` | 原始轨迹和日志 |
+| `results/<model>/orig/`、`goalonly/`、`flip_orig/`、`flip/` | 原始轨迹和日志 |
 | `results/<model>/metrics*.json` | 指标及逐任务结果 |
 | `results/<model>/per_episode.csv` | ORIG 逐任务指标 |
-| `results/v19/orig2/` | 第二次 ORIG，估计 47 集 FLIP 子集的随机波动 |
+| `results/freeaskagent/orig2/` | 第二次 ORIG(47 集),估计随机波动 |
 
 增加评测集时新建 `data/<set>/`；数据路径统一由 `common.data_path`、`ids_path`、
 `gen_dir` 管理。`rule/` 是规则变换，`llm/` 是整体措辞改写；元数据中的

@@ -4,7 +4,7 @@
 
 Episodes with K = 1 are excluded (nothing to remove). Writes
   benchmark/data/<set>/goalonly.json          per-episode text + removed prefix
-  <habitat r2r>/<set>_goalonly/...            split for the v19 runner (+ gt, + ids file)
+  <habitat r2r>/<set>_goalonly/...            split for the FreeAskAgent runner (+ gt, + ids file)
 CA-Nav / AwareVLN inputs: ``benchmark.canav build`` / ``benchmark.awarevln build`` (they read this json).
 """
 import argparse

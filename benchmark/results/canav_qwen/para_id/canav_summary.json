@@ -1,0 +1,14 @@
+{
+ "exp": "exp_bench_qwen_para_id",
+ "n": 200,
+ "summary": {
+  "success": 0.245,
+  "oracle_success": 0.535,
+  "spl": 0.09754922851864825,
+  "distance_to_goal": 7.220732699707151,
+  "path_length": 28.094239324331284,
+  "steps_taken": 216.565,
+  "ndtw": 0.16779851952864128,
+  "sdtw": 0.07451855797750392
+ }
+}

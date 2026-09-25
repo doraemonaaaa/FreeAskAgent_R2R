@@ -2,7 +2,7 @@
 
     python -m benchmark.compact_trace SRC_DIR DST_DIR
 
-A v19 ``rank_*_trace.jsonl`` line carries the whole decision payload (camera
+A FreeAskAgent ``rank_*_trace.jsonl`` line carries the whole decision payload (camera
 pose, prompt, VLM reply): ~11 KB per step, ~38 GB for the six 200-set runs.
 ``common.load_run`` reads five fields per line and nothing else, so archiving
 the full payload buys nothing and costs three orders of magnitude.

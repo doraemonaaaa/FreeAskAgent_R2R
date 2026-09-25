@@ -1,7 +1,6 @@
 """Subgoal-level instruction-following metrics from runner traces.
 
-    python -m benchmark.metrics --orig OUT_DIR[,OUT_DIR] [--flip OUT_DIR] [--goalonly OUT_DIR] \
-        [--compare OUT_DIR] \
+    python -m benchmark.metrics --orig OUT_DIR[,OUT_DIR] [--goalonly OUT_DIR] [--compare OUT_DIR] \
         [--subgoals benchmark/data/<set>/subgoals.json] \
         [--radius 1.5] [--json out.json]
 
@@ -14,6 +13,9 @@ ORIG run            SR, SGCR = mean(c / K), SGCR@k = P(c >= k | K >= k)
                     SGCR-eff: c counted with a per-segment path budget
                     (<= max(2 x reference segment length, 3 m)) so that a long
                     wandering trajectory does not collect boundaries by chance
+FLIP                python -m benchmark.metrics --orig <flip_orig run> --flip <flip run>:
+                    turn at the start per run (follow / opposite / straight / none),
+                    MeanFollow, Blind, WordEffect; see evaluate_flip
 --compare / GOAL-ONLY  paired agreement with ORIG (FlipRate, SuccessKept,
                     Kappa, McNemar_p, EndpointGap, |dNE|); see evaluate_paired
 All rates carry a bootstrap 95% CI over episodes.
@@ -24,8 +26,9 @@ import math
 
 import numpy as np
 
+from .build_flip import start_turn
 from .common import (SUCCESS_DISTANCE_M, data_path, dist_xz, dump_json, load_gt, load_json,
-                      load_run, ndtw, path_walked, signed_angle, xz)
+                      load_run, ndtw, path_walked)
 
 
 # ---------------------------------------------------------------- per-episode scoring
@@ -123,101 +126,81 @@ def evaluate(subgoals, orig, radius=1.5, ids=None, seed=0):
     return metrics, per
 
 
-# ---------------------------------------------------------------- FLIP-k
-def turn_at_anchor(positions, anchor_step, fallback_incoming, scan_m=5.0, in_m=1.5, min_turn=30.0):
-    """Signed turn the agent makes after reaching the anchor: 'left', 'right' or 'straight'.
+# ---------------------------------------------------------------- FLIP
+TURN_THRESHOLD_DEG = 30.0
 
-    Incoming = displacement over the last ``in_m`` of walked path before the
-    anchor; outgoing = displacement from the anchor to each later point within
-    ``scan_m`` of walked path (points >= 0.5 m away); the largest-magnitude angle
-    decides. None when the agent walks less than 0.5 m after the anchor.
 
-    NOT bit-identical to build_flip's selection geometry, which walks the
-    incoming window with a 2D arc accumulator (and overshoots it by one segment)
-    where this uses the 3D cumulative arc. Measured on the 47 flip episodes the
-    two incoming headings differ on 4, by at most 5.5 deg. Unifying them shifts
-    AwareVLN's TurnMatch by ~2.5 points and leaves v19 / CA-Nav unchanged, so the
-    split is kept deliberate rather than silently "fixed": the released flip set
-    was selected with build_flip's version, and these numbers are already
-    published. Change both together or neither.
+def classify_start_turn(positions, heading, given):
+    """Which way the agent left the start relative to the start heading, against the word it was given.
+
+    Same geometry as build_flip.start_turn (largest signed angle to any point
+    within the first 5 m of x/z path, points >= 0.5 m from the start), applied
+    to the agent's positions instead of the reference path. Returns
+    (category, angle): 'follow' / 'opposite' / 'straight' (|angle| < 30 deg) /
+    'none' (never got 0.5 m from the start within those 5 m).
     """
-    walked = path_walked(positions)
-    j = anchor_step
-    while j > 0 and walked[anchor_step] - walked[j] < in_m:
-        j -= 1
-    inc = xz(positions[anchor_step]) - xz(positions[j])
-    if np.linalg.norm(inc) < 0.5:
-        inc = np.asarray(fallback_incoming, dtype=np.float64)
-    inc = inc / np.linalg.norm(inc)
-    best, moved = None, False
-    for t in range(anchor_step + 1, len(positions)):
-        if walked[t] - walked[anchor_step] > scan_m:
-            break
-        out = xz(positions[t]) - xz(positions[anchor_step])
-        n = np.linalg.norm(out)
-        if n < 0.5:
-            continue
-        moved = True
-        angle = signed_angle(inc, out / n)
-        if best is None or abs(angle) > abs(best):
-            best = angle
-    if not moved:
-        return None, None
-    if abs(best) < min_turn:
-        return "straight", best
-    return ("left" if best < 0 else "right"), best
+    angle, vec = start_turn(positions, np.asarray(heading, dtype=np.float64))
+    if vec is None:
+        return "none", None
+    if abs(angle) < TURN_THRESHOLD_DEG:
+        return "straight", angle
+    side = "left" if angle < 0 else "right"
+    return ("follow" if side == given else "opposite"), angle
 
 
-def evaluate_flip(subgoals, orig, flip, flips, radius=1.5, seed=0):
-    """FLIP-k metrics (paired ORIG / FLIP runs on the flip episodes).
+def evaluate_flip(orig, flip, meta, ids=None, seed=0):
+    """FLIP: paired ORIG / FLIP runs, turn at the start (build_flip), every episode scored.
 
-    Reached      the agent reached B_{k-1} in order (in the ORIG / FLIP run)
-    TurnMatch    ORIG run: turn after B_{k-1} agrees with the original word;
-                 FLIP run: agrees with the flipped word (both | reached, moved >= 2 m)
-    FlipFollow   FLIP run turned the flipped way while the ORIG run turned the original way
-    Bk-reached   the original B_k was still reached afterwards (ORIG vs FLIP run)
+    Per run, each episode is one of follow / opposite / straight / none (the
+    four rates sum to 1; "follow" = turned the way of the word THAT run was
+    given). Pooled over both runs:
+    MeanFollow  mean follow rate of the two runs (1 = always turns as told)
+    Blind       what a system that ignores the word (same turn in both runs)
+                would score: (1 - mean non-turn rate) / 2
+    WordEffect  MeanFollow - Blind, per episode (0 = word ignored, ~0.5 = perfect)
+    BothFollow  followed in both runs; SameSide = turned the same physical side
+                in both runs (left/right, whatever the word)
+    FollowGiven_left/right  follow rate by the word given, pooled over both runs
+                (a left/right bias shows up here; the episode set is balanced)
     """
     rng = np.random.default_rng(seed)
-    per, metrics = {}, {}
-    ids = [e for e in flips if e in orig[0] and e in flip[0] and e in subgoals]
-    for e in ids:
-        meta = flips[e]
-        k = meta["k"]
-        bounds = subgoals[e]["subgoals"]
-        row = dict(k=k, word=meta["word"], flipped=("right" if meta["word"] == "left" else "left"),
-                   sr=orig[1].get(e, {}).get("success"), flip_sr=flip[1].get(e, {}).get("success"))
-        for tag, run in (("orig", orig), ("flip", flip)):
+    flips = meta["flip"]
+    wanted = meta["balanced"] if ids is None else [e for e in meta["balanced"] if e in ids]
+    eps = [e for e in wanted if e in orig[0] and e in flip[0]]
+    per = {}
+    for e in eps:
+        v = flips[e]
+        row = dict(word=v["word"], flipped=v["flipped"],
+                   orig_sr=orig[1].get(e, {}).get("success"), flip_sr=flip[1].get(e, {}).get("success"))
+        for tag, run, given in (("orig", orig, v["word"]), ("flip", flip, v["flipped"])):
             positions = run[0][e]
-            entries = entry_steps(positions, [b["boundary_xyz"] for b in bounds], radius)
-            anchor = entries[k - 2]
-            row[tag + "_reached"] = anchor is not None
-            row[tag + "_bk"] = entries[k - 1] is not None
-            if anchor is not None:
-                # refine: the step nearest to B_{k-1} within the next 3 m of walked path
-                walked = path_walked(positions)
-                point = bounds[k - 2]["boundary_xyz"]
-                anchor = min((t for t in range(anchor, len(positions)) if walked[t] - walked[entries[k - 2]] <= 3.0),
-                             key=lambda t: dist_xz(positions[t], point))
-                turn, angle = turn_at_anchor(positions, anchor, meta["incoming_xz"])
-                row[tag + "_turn"], row[tag + "_angle"] = turn, angle
-            else:
-                row[tag + "_turn"], row[tag + "_angle"] = None, None
+            row[tag + "_start_offset_m"] = dist_xz(positions[0], v["start_xyz"])
+            category, angle = classify_start_turn(positions, v["incoming_xz"], given)
+            row[tag + "_turn"], row[tag + "_angle"] = category, angle
         per[e] = row
-    both = [e for e in ids if per[e]["orig_turn"] and per[e]["flip_turn"]]
-    metrics["n_flip_episodes"] = dict(name="n", n=len(ids), mean=float(len(ids)), ci=[None, None])
-    metrics["Reached_orig"] = rate("Reached_orig", [per[e]["orig_reached"] for e in ids], rng)
-    metrics["Reached_flip"] = rate("Reached_flip", [per[e]["flip_reached"] for e in ids], rng)
-    moved_o = [e for e in ids if per[e]["orig_turn"]]
-    moved_f = [e for e in ids if per[e]["flip_turn"]]
-    metrics["TurnMatch_orig"] = rate("TurnMatch_orig", [per[e]["orig_turn"] == per[e]["word"] for e in moved_o], rng)
-    metrics["TurnMatch_flip"] = rate("TurnMatch_flip", [per[e]["flip_turn"] == per[e]["flipped"] for e in moved_f], rng)
-    metrics["TurnOriginalWord_flip"] = rate("TurnOriginalWord_flip", [per[e]["flip_turn"] == per[e]["word"] for e in moved_f], rng)
-    metrics["FlipFollow"] = rate("FlipFollow", [per[e]["orig_turn"] == per[e]["word"] and per[e]["flip_turn"] == per[e]["flipped"] for e in both], rng)
-    metrics["TurnChanged"] = rate("TurnChanged", [per[e]["orig_turn"] != per[e]["flip_turn"] for e in both], rng)
-    metrics["Bk_reached_orig"] = rate("Bk_reached_orig", [per[e]["orig_bk"] for e in ids], rng)
-    metrics["Bk_reached_flip"] = rate("Bk_reached_flip", [per[e]["flip_bk"] for e in ids], rng)
-    metrics["SR_orig(flip eps)"] = rate("SR_orig", [per[e]["sr"] for e in ids if per[e]["sr"] is not None], rng)
-    metrics["SR_flip"] = rate("SR_flip", [per[e]["flip_sr"] for e in ids if per[e]["flip_sr"] is not None], rng)
+
+    metrics = dict(n=dict(name="n", n=len(eps), mean=float(len(eps)), ci=[None, None]))
+    for tag in ("orig", "flip"):
+        for category in ("follow", "opposite", "straight", "none"):
+            key = "{}_{}".format(tag.upper(), category)
+            metrics[key] = rate(key, [per[e][tag + "_turn"] == category for e in eps], rng)
+    follow = lambda e, tag: per[e][tag + "_turn"] == "follow"
+    nonturn = lambda e, tag: per[e][tag + "_turn"] in ("straight", "none")
+    side = lambda e, tag: (per[e]["word"] if tag == "orig" else per[e]["flipped"]) if per[e][tag + "_turn"] == "follow" else \
+        ((per[e]["flipped"] if tag == "orig" else per[e]["word"]) if per[e][tag + "_turn"] == "opposite" else None)
+    metrics["MeanFollow"] = rate("MeanFollow", [(follow(e, "orig") + follow(e, "flip")) / 2 for e in eps], rng)
+    metrics["Blind"] = rate("Blind", [(1 - (nonturn(e, "orig") + nonturn(e, "flip")) / 2) / 2 for e in eps], rng)
+    metrics["WordEffect"] = rate("WordEffect", [(follow(e, "orig") + follow(e, "flip")) / 2
+                                                - (1 - (nonturn(e, "orig") + nonturn(e, "flip")) / 2) / 2 for e in eps], rng)
+    metrics["BothFollow"] = rate("BothFollow", [follow(e, "orig") and follow(e, "flip") for e in eps], rng)
+    metrics["SameSide"] = rate("SameSide", [side(e, "orig") is not None and side(e, "orig") == side(e, "flip") for e in eps], rng)
+    for word in ("left", "right"):
+        given = [follow(e, "orig") for e in eps if per[e]["word"] == word] + [follow(e, "flip") for e in eps if per[e]["flipped"] == word]
+        metrics["FollowGiven_" + word] = rate("FollowGiven_" + word, given, rng)
+    metrics["SR_orig"] = rate("SR_orig", [per[e]["orig_sr"] for e in eps if per[e]["orig_sr"] is not None], rng)
+    metrics["SR_flip"] = rate("SR_flip", [per[e]["flip_sr"] for e in eps if per[e]["flip_sr"] is not None], rng)
+    offsets = [per[e][t + "_start_offset_m"] for e in eps for t in ("orig", "flip")]
+    metrics["StartOffset_max_m"] = dict(name="StartOffset_max_m", n=len(offsets), mean=max(offsets, default=0.0), ci=[None, None])
     return metrics, per
 
 
@@ -342,34 +325,41 @@ def _load(spec):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--orig", required=True, help="ORIG run output dir(s), comma separated")
-    parser.add_argument("--flip", help="FLIP-k run output dir(s)")
-    parser.add_argument("--flip-meta", default=str(data_path("flip")))
+    parser.add_argument("--flip", help="FLIP run output dir(s); --orig is then the matching flip_orig run")
+    parser.add_argument("--flip-meta", default=str(data_path("flip", "val_unseen")))
     parser.add_argument("--goalonly", help="GOAL-ONLY run output dir(s)")
     parser.add_argument("--goalonly-meta", default=str(data_path("goalonly")))
     parser.add_argument("--compare", help="second run on the same episodes (paraphrase arm or ORIG rerun): paired agreement")
-    parser.add_argument("--subgoals", default=str(data_path("subgoals")))
+    parser.add_argument("--subgoals", help="default: the 200-set, or the FLIP set's subgoals when --flip is given")
     parser.add_argument("--radius", type=float, default=1.5, help="boundary radius r_b in metres")
     parser.add_argument("--ids", help="restrict to an id list file")
     parser.add_argument("--json", help="write metrics + per-episode rows here")
     parser.add_argument("--csv", help="write per-episode rows here")
     args = parser.parse_args()
 
+    flip_meta = load_json(args.flip_meta) if args.flip else None
+    args.subgoals = args.subgoals or str(data_path("subgoals", flip_meta["name"]) if flip_meta else data_path("subgoals"))
     subgoals = load_json(args.subgoals)
     gt = load_gt(subgoals["split"])
     ids = None
     if args.ids:
         from .common import read_id_list
         ids = set(read_id_list(args.ids))
+    if flip_meta and ids is None:
+        ids = set(flip_meta["balanced"])
     metrics, per = evaluate(subgoals["episodes"], _load(args.orig), radius=args.radius, ids=ids)
     print(format_table(metrics))
     if args.flip:
-        flip_metrics, flip_per = evaluate_flip(subgoals["episodes"], _load(args.orig), _load(args.flip),
-                                               load_json(args.flip_meta)["flip"], radius=args.radius)
-        print("--- FLIP-k")
+        flip_metrics, flip_per = evaluate_flip(_load(args.orig), _load(args.flip), flip_meta, ids=ids)
+        print("--- FLIP (turn at the start)")
         print(format_table(flip_metrics))
         metrics.update({"flip:" + k: v for k, v in flip_metrics.items()})
         for e, row in flip_per.items():
-            per.setdefault(e, {}).update({"flip_" + k if not k.startswith(("orig_", "flip_")) else k: v for k, v in row.items()})
+            per.setdefault(e, {}).update({"flip_" + k: v for k, v in row.items()})
+        flip_paired, _ = evaluate_paired(_load(args.orig), _load(args.flip), ids=set(flip_per))
+        print("--- FLIP paired agreement (success)")
+        print(format_table(flip_paired))
+        metrics.update({"flip_paired:" + k: v for k, v in flip_paired.items()})
     if args.goalonly:
         goal_metrics, goal_per = evaluate_goalonly(subgoals["episodes"], _load(args.orig), _load(args.goalonly),
                                                    load_json(args.goalonly_meta)["goalonly"], gt=gt, radius=args.radius)

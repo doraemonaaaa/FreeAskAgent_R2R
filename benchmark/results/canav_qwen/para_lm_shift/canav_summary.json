@@ -1,0 +1,14 @@
+{
+ "exp": "exp_bench_qwen_para_lm_shift",
+ "n": 200,
+ "summary": {
+  "success": 0.25,
+  "oracle_success": 0.545,
+  "spl": 0.07277680087358196,
+  "distance_to_goal": 7.241088054329157,
+  "path_length": 31.516629722118378,
+  "steps_taken": 240.765,
+  "ndtw": 0.09797153937734909,
+  "sdtw": 0.03639220134410384
+ }
+}

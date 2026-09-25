@@ -1,14 +1,14 @@
 {
- "results": "/data/pengyh/workspace/Reproductions/AwareVLN/evaluation/eval_bench/awarevln/VLN-CE-v1/val_unseen_200_flip",
- "n": 47,
+ "results": "/data/pengyh/workspace/FreeAskAgent_R2R/outputs/flip_start_20260924/awarevln_raw/awarevln/VLN-CE-v1/val_unseen_flip",
+ "n": 82,
  "summary": {
-  "success": 0.5531914893617021,
-  "oracle_success": 0.6808510638297872,
-  "spl": 0.39663424740295156,
-  "distance_to_goal": 4.586537359876836,
-  "path_length": 12.668270547973348,
-  "steps_taken": 104.25531914893617,
-  "ndtw": 0.585851414261292,
-  "sdtw": 0.4125460947133733
+  "success": 0.4634146341463415,
+  "oracle_success": 0.5121951219512195,
+  "spl": 0.32817260859101255,
+  "distance_to_goal": 7.036737615560613,
+  "path_length": 16.607074651401014,
+  "steps_taken": 150.3170731707317,
+  "ndtw": 0.4038114787143705,
+  "sdtw": 0.2765057370262442
  }
 }
