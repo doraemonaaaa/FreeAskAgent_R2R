@@ -14,6 +14,10 @@
 WordEffect 是首要标准,SR / SGCR-eff 在服从程度相近时才用于排序。第一定律需要有人的场景,
 第三定律需要各系统统一记录碰撞与卡住,均待补。
 
+代价指标(不参与排名):轨迹每一步可带顶层字段 `tokens_in`、`tokens_out`、`model_calls`、`step_time_s`
+(`common.COST_FIELDS`),`metrics.evaluate_cost` 报告每集与每步的输入 / 输出 token、调用次数和耗时;
+输入与输出 token 分开,因为二者开销不同。目前三个系统都还没有写出这些字段,需要各自的运行器补记录。
+
 ## 当前实验
 
 - ORIG：原始指令，作为共享基线；随机系统增加一次相同配置运行，估计噪声底线。

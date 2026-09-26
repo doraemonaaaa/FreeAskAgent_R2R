@@ -1,9 +1,10 @@
 """Run the v3 RGB-D waypoint actor on Habitat R2R-CE with oracle local control.
 
 The actor receives RGB, depth, the instruction, and camera calibration, then
-returns a Habitat world-space waypoint.  ``ShortestPathFollower`` (navmesh) or
-the geometric follower (``--no-navmesh``) is strictly the low-level controller
-that converts that waypoint to one discrete R2R-CE action.
+returns a Habitat world-space waypoint.  The geometric follower (face the
+point, then step) is strictly the low-level controller that converts that
+waypoint to one discrete R2R-CE action; the agent never sees the simulator
+navmesh.
 
 The helpers live in ``integrations/v3/habitat_runner`` by function: settings
 (paths, shared geometry), sensors, actor_process, control, video, step_log,
@@ -25,7 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from integrations.v3.habitat_runner import settings  # noqa: E402  (quiets logs, sets sys.path)
 from integrations.v3.habitat_runner.settings import AGENTFLOW_ROOT, HABITAT_DATA, HABITAT_ROOT, ROOT, SUCCESS_DISTANCE_M  # noqa: E402
 from integrations.v3.habitat_runner.sensors import (  # noqa: E402
-    camera_intrinsics, camera_to_world_matrix, motion_overrides, navigable_window,
+    camera_intrinsics, camera_to_world_matrix, motion_overrides,
     render_preview_views, semantic_region_id, sensor_overrides, unpack_observation,
 )
 from integrations.v3.habitat_runner.actor_process import WaypointActorProcess  # noqa: E402
@@ -45,7 +46,6 @@ from integrations.v3.camera_model import CameraModel  # noqa: E402
 from integrations.v3.preview_protocol import execution_observation, preview_headings_for_request  # noqa: E402
 
 import habitat  # noqa: E402
-from habitat.tasks.nav.shortest_path_follower import ShortestPathFollower  # noqa: E402
 
 def main():
     parser = argparse.ArgumentParser(description="Run RGB-D waypoint Actor on Habitat R2R-CE")
@@ -151,24 +151,6 @@ def main():
         help="Persist one complete non-image model/memory decision per executed decision step.",
     )
     parser.add_argument("--record-video", action="store_true", help="Save RGB plus top-down trajectory MP4s.")
-    parser.add_argument(
-        "--navmesh", dest="navmesh", action=argparse.BooleanOptionalAction, default=True,
-        help="Use the simulator navmesh (yaml runner.navmesh). --no-navmesh is deployment mode: "
-        "the agent gets no navmesh traversability window and waypoints are executed by a "
-        "turn-then-forward follower instead of ShortestPathFollower.",
-    )
-    parser.add_argument(
-        "--navmesh-candidates", dest="navmesh_candidates", action=argparse.BooleanOptionalAction,
-        default=None,
-        help="Ablation override: give the agent the navmesh traversability window (candidate "
-        "filtering) regardless of --navmesh. Default: follow --navmesh.",
-    )
-    parser.add_argument(
-        "--navmesh-follower", dest="navmesh_follower", action=argparse.BooleanOptionalAction,
-        default=None,
-        help="Ablation override: execute waypoints with Habitat's ShortestPathFollower "
-        "regardless of --navmesh. Default: follow --navmesh.",
-    )
     parser.add_argument("--video-dir", type=Path, default=Path("videos"))
     parser.add_argument(
         "--clean-video",
@@ -219,11 +201,6 @@ def main():
     # Resolve the id list now: the evaluator chdirs into the Habitat root
     # before the episodes are selected, which breaks a relative @file path.
     episode_ids = parse_episode_ids(args.episode_ids)
-    # Ablation overrides default to the umbrella --navmesh flag.
-    if args.navmesh_candidates is None:
-        args.navmesh_candidates = args.navmesh
-    if args.navmesh_follower is None:
-        args.navmesh_follower = args.navmesh
     if not 0 <= args.rank < args.world_size:
         parser.error("--rank must be in [0, --world-size).")
     try:
@@ -436,10 +413,7 @@ def main():
                 # top-down map shows the whole intended route beside the
                 # executed one.
                 waypoint_targets = []
-                follower = (
-                    ShortestPathFollower(env.sim, args.waypoint_radius, return_one_hot=False)
-                    if args.navmesh_follower else GeometricFollower(env, args.waypoint_radius)
-                )
+                follower = GeometricFollower(env, args.waypoint_radius)
                 step_started = time.perf_counter()
                 while not env.episode_over:
                     position_before = (
@@ -461,8 +435,6 @@ def main():
                         preview_render_ms = (time.perf_counter() - preview_started) * 1000
                     waypoint, decision = actor.act(
                         rgb, depth, instruction, intrinsics, camera_to_world,
-                        navigable=(navigable_window(env, include_heights=bool(joint_views))
-                                   if args.navmesh_candidates else None),
                         **(
                             {
                                 "preview_views": joint_views,

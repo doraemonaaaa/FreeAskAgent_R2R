@@ -33,13 +33,12 @@ def turn_primitive(turn_deg):
 
 
 class GeometricFollower:
-    """Waypoint execution without the simulator navmesh (``--no-navmesh``).
+    """Waypoint execution as a real robot's local controller would do it.
 
-    The agent already plans on its own occupancy grid and hands over a point
-    at most ~1.5 m ahead along a free path, so the controller only has to do
-    what a real robot's local controller does: face the point, then step.
-    Same contract as ``ShortestPathFollower.get_next_action``: 0 when the
-    point is inside the goal radius, otherwise one primitive.
+    The agent already plans on its own occupancy grid and hands over the next
+    point along a free path, so the controller only has to face the point,
+    then step. ``get_next_action`` returns 0 when the point is inside the goal
+    radius, otherwise one primitive.
     """
 
     def __init__(self, env, goal_radius, turn_angle_deg=None):

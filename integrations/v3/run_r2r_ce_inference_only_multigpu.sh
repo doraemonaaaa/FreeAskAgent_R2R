@@ -45,9 +45,20 @@ if ((world_size < 1)); then
   echo "RANK_GPUS (or eval.rank_gpus in ${config_file}) must name at least one GPU." >&2
   exit 2
 fi
-if ((world_size > 8)) && [[ "${ALLOW_ENDPOINT_OVERSUBSCRIPTION:-0}" != "1" ]]; then
-  echo "Refusing ${world_size} rollout workers: the current v19 topology was validated with at most eight ranks." >&2
-  echo "Use more model replicas or set ALLOW_ENDPOINT_OVERSUBSCRIPTION=1 after a measured capacity test." >&2
+# Every rank keeps at most one model request in flight, so the endpoints
+# must accept at least world_size concurrent requests (replicas x
+# max_num_seqs, exported per role as CFG_<ROLE>_CAPACITY). Beyond that,
+# requests queue past the Captioner deadline and time out silently: a
+# timed-out step publishes no completion event and the agent never stops.
+capacity=""
+for role in OBSERVER DECISION PLANNER ACTOR SOM; do
+  var="CFG_${role}_CAPACITY"
+  [[ -n "${!var:-}" ]] || continue
+  if [[ -z "${capacity}" ]] || ((${!var} < capacity)); then capacity="${!var}"; fi
+done
+if [[ -n "${capacity}" ]] && ((world_size > capacity)) && [[ "${ALLOW_ENDPOINT_OVERSUBSCRIPTION:-0}" != "1" ]]; then
+  echo "Refusing ${world_size} rollout workers: the configured endpoints accept ${capacity} concurrent requests (replicas x max_num_seqs)." >&2
+  echo "Add replicas / raise max_num_seqs in config.yaml, or set ALLOW_ENDPOINT_OVERSUBSCRIPTION=1." >&2
   exit 2
 fi
 

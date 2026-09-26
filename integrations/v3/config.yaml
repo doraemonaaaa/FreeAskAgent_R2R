@@ -87,6 +87,12 @@ captioner:                                 # TemporalMemory / Captioner switches
   preview_backoff_max_steps: 16            # -> CAPTIONER_PREVIEW_BACKOFF_MAX_STEPS
   step_deadline_s: 30                      # -> CAPTIONER_STEP_DEADLINE_S
   # evidence_dir: /path                    # -> JOYAI_EVIDENCE_DIR (archive request images)
+  # Ablation: Temporal Memory as a raw 8-frame buffer (no observer history,
+  # summaries, action-start reference or execution history for the decision).
+  frame_buffer_only: false                 # -> VLN_ABLATE_TEMPORAL
+  # Ablation: no surrounding views at all (model cannot request a Preview, the
+  # final-stage gate confirms on CURRENT alone). Set opening_look_around: false too.
+  preview_disabled: false                  # -> VLN_ABLATE_PREVIEW
 
 agent:
   som: true                                # -> VLN_SOM (set-of-mark candidate selection on the occupancy map)
@@ -94,6 +100,9 @@ agent:
   structured_vlm_max_tokens: 192           # -> VLN_STRUCTURED_VLM_MAX_TOKENS
   vlm_image_max_pixels: 200704             # -> VLN_IMAGE_MAX_PIXELS (448*448)
   # frozen_plan_file: /path.json           # -> VLN_FROZEN_PLAN_FILE (replay a fixed subgoal plan)
+  # Ablation: Spatial Memory as a pose trail + one straight-line target (no
+  # occupancy grid, A*, frontiers or collision map).
+  trajectory_only_spatial_memory: false    # -> VLN_ABLATE_SPATIAL
 
 # Sensor geometry (camera height / pitch / FOV / resolution, depth range) is
 # hardware and lives in sensor_config.yaml (path relative to this file; the
@@ -120,8 +129,8 @@ spatial_memory:                            # occupancy grid + route geometry -> 
   snap_radius_m: 1.0                       # search radius for that snap
   max_snap_m: 2.0                          # farthest a target may move to reachable floor
   mark_radius_m: 0.15                      # disc radius of a collision mark
-  lookahead_m: 1.5                         # waypoint handed to the navmesh follower
-  deploy_lookahead_m: 0.5                  # waypoint handed to the turn-then-forward follower (no navmesh)
+  lookahead_m: 1.5                         # a kept route is re-attached to the agent within this distance
+  deploy_lookahead_m: 0.5                  # waypoint handed to the turn-then-forward follower
   blind_zone_m: 1.0                        # floor the pitched camera cannot see; trusted straight ahead only
   fov_half_deg: 40.0                       # unobserved floor inside this cone is walked, outside it is looked at first
 
@@ -171,14 +180,9 @@ runner:                                    # run_habitat.py argparse defaults
   waypoint_radius: 0.25
   actor: waypoint                          # waypoint | awarevln (serve_awarevln.py) | panohop (CWP look-around hops)
   record_video: false
-  # Habitat navmesh on/off (CLI: --navmesh / --no-navmesh).
-  #   true : agent gets a 6 m navmesh traversability window, waypoints run
-  #          through Habitat's ShortestPathFollower (40-set SR 0.200, 2026-09-10)
-  #   false: deployment mode, nothing a real robot lacks - agent answers
-  #          navigability from its own occupancy grid, waypoints run through a
-  #          turn-then-forward follower (40-set SR 0.050, 2026-09-11; the
-  #          follower still lacks collision recovery, see memory notes)
-  navmesh: false
+  # The agent gets nothing a real robot lacks: navigability comes from its
+  # own occupancy grid and waypoints run through the turn-then-forward
+  # follower (the simulator navmesh is never consulted).
   # Headings (deg, right positive) rendered for every surrounding-view request.
   # The model never picks a direction. Each view is 90 deg wide: the front five
   # overlap by half, 180 closes the rear gap (6 views, a full ring).

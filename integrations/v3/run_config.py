@@ -53,6 +53,8 @@ CAPTIONER_ENV = {
     "preview_backoff_max_steps": "CAPTIONER_PREVIEW_BACKOFF_MAX_STEPS",
     "step_deadline_s": "CAPTIONER_STEP_DEADLINE_S",
     "evidence_dir": "JOYAI_EVIDENCE_DIR",
+    "frame_buffer_only": "VLN_ABLATE_TEMPORAL",
+    "preview_disabled": "VLN_ABLATE_PREVIEW",
 }
 # agent.<key> -> environment variable.
 AGENT_ENV = {
@@ -61,13 +63,14 @@ AGENT_ENV = {
     "structured_vlm_max_tokens": "VLN_STRUCTURED_VLM_MAX_TOKENS",
     "vlm_image_max_pixels": "VLN_IMAGE_MAX_PIXELS",
     "frozen_plan_file": "VLN_FROZEN_PLAN_FILE",
+    "trajectory_only_spatial_memory": "VLN_ABLATE_SPATIAL",
 }
 # runner.<key> -> run_habitat.py argparse default of the same name.
 # camera_pitch_deg / depth_hfov are still accepted here for old configs and
 # then win over sensor_config.yaml.
 RUNNER_KEYS = (
     "camera_pitch_deg", "max_steps", "waypoint_radius", "depth_hfov", "actor",
-    "record_video", "navmesh", "navmesh_candidates", "navmesh_follower", "panohop_mode", "panohop_url", "panohop_model",
+    "record_video", "panohop_mode", "panohop_url", "panohop_model",
     "preview_yaws", "preview_scale",
 )
 # sensor_config.yaml <section>.<key> -> run_habitat.py argparse default.
@@ -275,6 +278,13 @@ class RunConfig:
             key = role.upper()
             lines.append(f"{prefix}{key}_MODEL={shlex.quote(spec['served_name'])}")
             lines.append(f"{prefix}{key}_URLS={shlex.quote(','.join(spec['base_urls']))}")
+            # Concurrent requests the role's endpoints accept in total
+            # (replicas x max_num_seqs); the launcher checks its rank count
+            # against the smallest one instead of a hard-coded limit.
+            serve = (self.services.get(spec.get("service", ""), {}) or {}).get("serve") or {}
+            capacity = len(spec["base_urls"]) * int(serve.get("max_num_seqs", 0) or 0)
+            if capacity:
+                lines.append(f"{prefix}{key}_CAPACITY={capacity}")
         eval_cfg = self.eval_section()
         for key in ("episode_set", "split", "world_size", "rank_gpus", "max_steps", "episodes"):
             if eval_cfg.get(key) is not None:

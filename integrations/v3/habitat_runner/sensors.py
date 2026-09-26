@@ -224,30 +224,3 @@ def render_preview_views(env, yaws_deg, hfov_deg, scale=1.0):
             saved.position, saved.rotation, reset_sensors=False
         )
     return views
-
-
-def navigable_window(env, radius_m=6.0, resolution_m=0.25, *, include_heights=False):
-    """Navmesh traversability on a grid around the agent, at its floor level."""
-    state = env.sim.get_agent_state()
-    pathfinder = env.sim.pathfinder
-    x0, y0, z0 = (float(v) for v in state.position)
-    cells = int(round(2 * radius_m / resolution_m))
-    origin = (x0 - radius_m, z0 - radius_m)
-    mask = np.zeros((cells, cells), dtype=np.bool_)
-    heights = np.full((cells, cells), np.nan, dtype=np.float32) if include_heights else None
-    for row in range(cells):
-        z = origin[1] + (row + 0.5) * resolution_m
-        for col in range(cells):
-            x = origin[0] + (col + 0.5) * resolution_m
-            mask[row, col] = pathfinder.is_navigable([x, y0, z], 0.5)
-            if heights is not None and mask[row, col]:
-                snapped = np.asarray(pathfinder.snap_point([x, y0, z]), dtype=float)
-                if np.isfinite(snapped).all():
-                    heights[row, col] = snapped[1]
-    result = {"origin_xz": origin, "resolution_m": resolution_m, "mask": mask}
-    if heights is not None:
-        result["height_m"] = heights
-        settings = getattr(pathfinder, "nav_mesh_settings", None)
-        result["height_cell_m"] = float(getattr(settings, "cell_height", 0.0))
-    return result
-

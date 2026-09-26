@@ -17,9 +17,9 @@ integrations/v3/
   habitat_runner/                 runner 按功能拆分的模块
     settings.py                   路径、静默日志、共享几何（转角/步长/相机模型）
     sensors.py                    Habitat 传感器 override、RGB-D 读取、内参、相机位姿、
-                                  preview 视角渲染、navmesh 可通行窗口
+                                  preview 视角渲染
     actor_process.py              WaypointActorProcess：通过 JSON-lines 管道驱动 worker
-    control.py                    waypoint / 转角 → 一个 Habitat 原语（含无 navmesh 的几何 follower）
+    control.py                    waypoint / 转角 → 一个 Habitat 原语（几何 follower：先朝向再前进）
     video.py                      俯视图、agent 自己的地图面板、帧叠加、subgoal 链
     step_log.py                   每步日志行、rank 汇总、JSONL 决策 trace
     episodes.py                   episode 选择与分片、config 加载
@@ -85,8 +85,8 @@ CUDA_VISIBLE_DEVICES=4 /data/pengyh/miniconda3/envs/habitat/bin/python integrati
   --episode-ids 121 --max-steps 40 --record-video --video-dir videos
 ```
 
-`--no-navmesh` 为部署模式：agent 得不到 navmesh 可通行窗口，waypoint 由转向-前进的几何
-follower 执行。`--navmesh-candidates` / `--navmesh-follower` 可分别覆盖（消融）。
+agent 只依赖自身传感器：可通行性来自它自己的占据栅格，waypoint 由转向-前进的几何
+follower 执行；模拟器 navmesh 只用于视频里的俯视图渲染，从不提供给 agent。
 
 ## 参数
 

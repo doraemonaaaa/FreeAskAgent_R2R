@@ -1,0 +1,1123 @@
+rank=0 physical_gpu=4 config=/data/pengyh/workspace/FreeAskAgent_R2R/outputs/para50_20260925/freeask_config.yaml
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+PluginManager::Manager: duplicate static plugin StbImageImporter, ignoring
+PluginManager::Manager: duplicate static plugin GltfImporter, ignoring
+PluginManager::Manager: duplicate static plugin BasisImporter, ignoring
+PluginManager::Manager: duplicate static plugin AssimpImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnySceneImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnyImageImporter, ignoring
+config: /data/pengyh/workspace/FreeAskAgent_R2R/outputs/para50_20260925/freeask_config.yaml (defaults: actor, base_url, camera_height_m, camera_pitch_deg, depth_hfov, depth_max_m, depth_min_m, depth_normalize, forward_step_m, image_height, image_width, max_steps, model_path, preview_scale, preview_yaws, record_video, turn_angle_deg, waypoint_radius; env: CAPTIONER_COMPLETION_SCREEN, CAPTIONER_DECISION_BASE_URL, CAPTIONER_DECISION_MODEL, CAPTIONER_INFERENCE_ONLY_COMPLETION, CAPTIONER_OPENING_LOOK_AROUND, CAPTIONER_PREVIEW_BACKOFF_MAX_STEPS, CAPTIONER_PREVIEW_CANDIDATES, CAPTIONER_PREVIEW_GATE_BACKOFF_MAX_M, CAPTIONER_PREVIEW_GATE_BACKOFF_START_M, CAPTIONER_PREVIEW_GATE_FREE_RINGS, CAPTIONER_PREVIEW_GATE_MAX_SKIPS, CAPTIONER_PREVIEW_GATE_MIN_MOVE_M, CAPTIONER_PREVIEW_IDLE_LIMIT, CAPTIONER_PREVIEW_IDLE_RESET_M, CAPTIONER_PREVIEW_MIN_MOVE_M, CAPTIONER_PREVIEW_MIN_TURN_DEG, CAPTIONER_PREVIEW_MOVE_BACKOFF_MAX_M, CAPTIONER_STEP_DEADLINE_S, JOYAI_API_BASE, JOYAI_MODEL_NAME, VLLM_BASE_URL, VLN_ABLATE_SPATIAL, VLN_ABLATE_TEMPORAL, VLN_COMPACT_SUBGOALS, VLN_IMAGE_MAX_PIXELS, VLN_NAV_PARAMS, VLN_ROBOT_PARAMS, VLN_SOM, VLN_SPATIAL_MEMORY_PARAMS, VLN_STRUCTURED_VLM_MAX_TOKENS)
+camera: 640x480 hfov=90 K=from-hfov distortion=none mount xyz=(0.0, 1.25, 0.0) rpy_deg=(0.0, -15.0, 0.0)
+2026-09-26 07:41:49,940 Initializing dataset R2RVLN-v1
+2026-09-26 07:41:49,947 initializing sim Sim-v0
+PluginManager::Manager: duplicate static plugin StbImageImporter, ignoring
+PluginManager::Manager: duplicate static plugin GltfImporter, ignoring
+PluginManager::Manager: duplicate static plugin BasisImporter, ignoring
+PluginManager::Manager: duplicate static plugin AssimpImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnySceneImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnyImageImporter, ignoring
+2026-09-26 07:42:01,796 Initializing task VLN-v0
+nDTW/SDTW on: 50 reference paths, fastdtw
+PluginManager::Manager: duplicate static plugin StbImageImporter, ignoring
+PluginManager::Manager: duplicate static plugin GltfImporter, ignoring
+PluginManager::Manager: duplicate static plugin BasisImporter, ignoring
+PluginManager::Manager: duplicate static plugin AssimpImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnySceneImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnyImageImporter, ignoring
+episode=134 instruction="So if you just head on down the hall and go past those two large wicker baskets, you'll see a sitting area up ahead with a large orange couch straight in front of you." start_position=[6.758969783782959, -2.427623987197876, -4.948939800262451] goal_position=[2.2433600425720215, -2.5755999088287354, -7.30279016494751] reference_geodesic=8.39946460723877
+episode=134 prepared_subgoals=4
+  [1] Walk down the hall
+      proof: The two large wicker baskets are directly ahead and within a step.
+  [2] Pass the two large wicker baskets
+      proof: The baskets are behind and to the sides, and the sitting area is ahead.
+  [3] Walk to the large orange couch
+      proof: The large orange couch is directly ahead and within a step.
+  [4] Stop beside the large orange couch
+      proof: The camera is beside the couch, and the couch fills the view
+ep=134 s=0 2607ms [sel=24 cap=2156 rest=390] sg=1->1 mode=NONE win=1 obs=1 | cap=wip act=(320,360) d=1.96 a=3 | preview=view-/6 yaw=+0 render=37ms | sp=frontier:active d=2.0 age=0 dtg=8.40 region=0_3
+ep=134 s=1 2108ms [sel=8 cap=2020 rest=80] sg=1->1 mode=GET_NOWHERE win=2 obs=2 | cap=wip/GET_NOWHERE act=(320,360) d=1.96 a=3 | sp=frontier:active d=2.0 age=1 dtg=8.40 region=0_3
+ep=134 s=2 1918ms [sel=5 cap=1829 rest=84] sg=1->1 mode=NONE win=3 obs=3 | cap=wip act=(320,360) d=1.96 a=3 | sp=frontier:active d=2.0 age=2 dtg=8.40 region=0_3
+ep=134 s=3 2701ms [sel=6 cap=2611 rest=84] sg=1->1 mode=NONE win=4 obs=4 | cap=wip act=(320,360) d=1.96 a=3 | sp=frontier:active d=2.0 age=3 dtg=8.40 region=0_3
+ep=134 s=4 2015ms [sel=4 cap=1919 rest=91] sg=1->1 mode=NONE win=5 obs=5 | cap=wip act=(320,360) d=1.96 a=3 | sp=frontier:active d=2.0 age=4 dtg=8.40 region=0_3
+ep=134 s=5 1580ms [sel=4 cap=1485 rest=91] sg=1->1 mode=NONE win=6 obs=6 | cap=wip act=(320,360) d=1.96 a=3 | sp=frontier:active d=2.0 age=5 dtg=8.40 region=0_3
+ep=134 s=6 3348ms [sel=4 cap=3251 rest=92] sg=1->1 mode=NONE win=7 obs=7 | cap=wip act=(320,360) d=1.96 a=1 | sp=frontier:active d=2.0 age=6 dtg=8.26 region=0_3
+ep=134 s=7 2149ms [sel=3 cap=2049 rest=97] sg=1->1 mode=NONE win=8 obs=8 | cap=wip act=(320,360) d=1.71 a=1 | sp=frontier:active d=1.7 age=7 dtg=8.24 region=0_2
+ep=134 s=8 3041ms [sel=10 cap=2579 rest=413] sg=1->1 mode=NONE win=8 obs=9 | cap=wip act=(160,180) d=1.46 a=1 | preview=view2/6 yaw=-45 render=39ms | sp=frontier:active d=1.5 age=8 dtg=8.30 region=0_2
+ep=134 s=9 1210ms [sel=4 cap=1111 rest=95] sg=1->1 mode=NONE win=8 obs=10 | cap=wip act=(320,360) d=1.21 a=1 | sp=frontier:active d=1.2 age=9 dtg=8.43 region=0_2
+ep=134 s=10 2004ms [sel=3 cap=1909 rest=92] sg=1->1 mode=NONE win=8 obs=11 | cap=wip act=(320,360) d=0.96 a=1 | sp=frontier:active d=1.0 age=10 dtg=8.60 region=0_2
+ep=134 s=11 1348ms [sel=3 cap=1261 rest=85] sg=1->1 mode=NONE win=8 obs=12 | cap=wip act=(320,360) d=0.72 a=3 | sp=frontier:active d=0.7 age=11 dtg=8.60 region=0_2
+ep=134 s=12 1444ms [sel=3 cap=1352 rest=89] sg=1->1 mode=NONE win=8 obs=13 | cap=wip act=(320,360) d=0.72 a=1 | sp=frontier:active d=0.7 age=12 dtg=8.75 region=0_2
+ep=134 s=13 3308ms [sel=617 cap=2605 rest=86] sg=1->1 mode=NONE win=8 obs=14 | cap=wip act=(320,360) d=1.27 a=3 | sp=som:active d=1.3 age=0 som=2/4 dtg=8.75 region=0_2
+ep=134 s=14 1881ms [sel=7 cap=1783 rest=91] sg=1->1 mode=NONE win=8 obs=15 | cap=wip act=(320,360) d=1.27 a=3 | sp=som:active d=1.3 age=1 dtg=8.75 region=0_2
+ep=134 s=15 2617ms [sel=4 cap=2518 rest=95] sg=1->1 mode=NONE win=8 obs=16 | cap=wip act=(320,360) d=1.27 a=3 | sp=som:active d=1.3 age=2 dtg=8.75 region=0_2
+ep=134 s=16 1783ms [sel=3 cap=1686 rest=94] sg=1->1 mode=NONE win=8 obs=17 | cap=wip act=(320,360) d=1.27 a=1 | sp=som:active d=1.3 age=3 dtg=8.76 region=0_2
+ep=134 s=17 1870ms [sel=3 cap=1777 rest=89] sg=1->1 mode=NONE win=8 obs=18 | cap=wip act=(320,360) d=1.02 a=1 | sp=som:active d=1.0 age=4 dtg=8.82 region=0_2
+ep=134 s=18 1909ms [sel=3 cap=1820 rest=85] sg=1->1 mode=NONE win=8 obs=19 | cap=wip act=(320,360) d=0.78 a=3 | sp=som:active d=0.8 age=5 dtg=8.82 region=0_2
+ep=134 s=19 2053ms [sel=3 cap=1969 rest=81] sg=1->1 mode=NONE win=8 obs=20 | cap=wip act=(320,360) d=0.78 a=1 | sp=som:active d=0.8 age=6 dtg=8.85 region=0_2
+ep=134 s=20 2137ms [sel=4 cap=2052 rest=80] sg=1->1 mode=NONE win=8 obs=21 | cap=wip act=(320,360) d=0.53 a=1 | sp=som:active d=0.5 age=7 dtg=8.91 region=0_2
+ep=134 s=21 2779ms [sel=49 cap=2282 rest=393] sg=1->1 mode=NONE win=8 obs=22 | cap=wip act=(160,180) d=3.52 a=3 | preview=view5/6 yaw=+90 render=55ms | sp=preview:active d=3.5 age=0 dtg=8.91 region=0_2
+ep=134 s=22 1677ms [sel=28 cap=1572 rest=78] sg=1->1 mode=NONE win=8 obs=23 | cap=wip act=(320,360) d=3.52 a=3 | sp=preview:active d=3.5 age=1 dtg=8.91 region=0_2
+ep=134 s=23 2401ms [sel=26 cap=2295 rest=79] sg=1->1 mode=NONE win=8 obs=24 | cap=wip act=(320,360) d=3.52 a=3 | sp=preview:active d=3.5 age=2 dtg=8.91 region=0_2
+ep=134 s=24 2603ms [sel=26 cap=2495 rest=81] sg=1->1 mode=NONE win=8 obs=25 | cap=wip act=(320,360) d=3.52 a=3 | sp=preview:active d=3.5 age=3 dtg=8.91 region=0_2
+ep=134 s=25 2579ms [sel=18 cap=2469 rest=93] sg=1->1 mode=NONE win=8 obs=26 | cap=wip act=(320,360) d=3.52 a=3 | sp=preview:active d=3.5 age=4 dtg=8.91 region=0_2
+ep=134 s=26 1658ms [sel=4 cap=1557 rest=97] sg=1->1 mode=NONE win=8 obs=27 | cap=wip act=(320,360) d=3.52 a=3 | sp=preview:active d=3.5 age=5 dtg=8.91 region=0_2
+ep=134 s=27 3798ms [sel=20 cap=3307 rest=435] sg=1->1 mode=NONE win=8 obs=28 | cap=wip act=PREVIEW a=2 | preview=view2/6 yaw=-15 render=35ms | sp=preview:active d=3.9 age=0 dtg=8.91 region=0_2
+ep=134 s=28 2726ms [sel=832 cap=1792 rest=103] sg=1->1 mode=NONE win=8 obs=29 | cap=wip act=(320,360) d=1.11 a=3 | sp=frontier:active d=1.1 age=0 som=2/6 dtg=8.91 region=0_2
+ep=134 s=29 1960ms [sel=12 cap=1852 rest=96] sg=1->1 mode=NONE win=8 obs=30 | cap=wip act=(320,360) d=1.11 a=3 | sp=frontier:active d=1.1 age=1 dtg=8.91 region=0_2
+ep=134 s=30 1724ms [sel=10 cap=1617 rest=97] sg=1->1 mode=NONE win=8 obs=31 | cap=wip act=(320,360) d=1.11 a=3 | sp=frontier:active d=1.1 age=2 dtg=8.91 region=0_2
+ep=134 s=31 3469ms [sel=4 cap=3368 rest=97] sg=1->1 mode=NONE win=8 obs=32 | cap=wip act=(320,360) d=1.11 a=3 | sp=frontier:active d=1.1 age=3 dtg=8.91 region=0_2
+ep=134 s=32 2557ms [sel=3 cap=2451 rest=104] sg=1->1 mode=NONE win=8 obs=33 | cap=wip act=(320,360) d=1.11 a=3 | sp=frontier:active d=1.1 age=4 dtg=8.91 region=0_2
+ep=134 s=33 2723ms [sel=3 cap=2618 rest=102] sg=1->1 mode=NONE win=8 obs=34 | cap=wip act=(320,360) d=1.11 a=1 | sp=frontier:active d=1.1 age=5 dtg=8.73 region=0_2
+ep=134 s=34 2768ms [sel=3 cap=2663 rest=102] sg=1->1 mode=NONE win=8 obs=35 | cap=wip act=(320,360) d=0.88 a=1 | sp=frontier:active d=0.9 age=6 dtg=8.57 region=0_2
+ep=134 s=35 3159ms [sel=3 cap=3054 rest=102] sg=1->1 mode=NONE win=8 obs=36 | cap=wip act=(320,360) d=0.67 a=1 | sp=frontier:active d=0.7 age=7 dtg=8.45 region=0_2
+ep=134 s=36 2681ms [sel=5 cap=2551 rest=125] sg=1->1 mode=NONE win=8 obs=37 | cap=wip act=(320,360) d=0.50 a=1 | sp=frontier:active d=0.5 age=8 dtg=8.36 region=0_2
+ep=134 s=37 3316ms [sel=640 cap=2581 rest=96] sg=1->1 mode=NONE win=8 obs=38 | cap=wip act=(320,360) d=0.53 a=1 | sp=frontier:active d=0.5 age=0 som=2/4 dtg=8.35 region=0_2
+ep=134 s=38 2738ms [sel=485 cap=2164 rest=90] sg=1->1 mode=NONE win=8 obs=39 | cap=wip act=(320,360) d=0.84 a=2 | sp=som:active d=0.8 age=0 som=1/3 dtg=8.35 region=0_2
+ep=134 s=39 4764ms [sel=3 cap=4666 rest=95] sg=1->1 mode=NONE win=8 obs=40 | cap=wip act=(320,360) d=0.84 a=2 | sp=som:active d=0.8 age=1 dtg=8.35 region=0_2
+ep=134 s=40 2418ms [sel=4 cap=2314 rest=100] sg=1->1 mode=NONE win=8 obs=41 | cap=wip act=(320,360) d=0.84 a=1 | sp=som:active d=0.8 age=2 dtg=8.27 region=0_2
+ep=134 s=41 1684ms [sel=3 cap=1583 rest=97] sg=1->1 mode=NONE win=8 obs=42 | cap=wip act=(320,360) d=0.60 a=2 | sp=som:active d=0.6 age=3 dtg=8.27 region=0_2
+ep=134 s=42 2413ms [sel=3 cap=2305 rest=105] sg=1->1 mode=NONE win=8 obs=43 | cap=wip act=(320,360) d=0.60 a=1 | sp=som:active d=0.6 age=4 dtg=8.21 region=0_2
+ep=134 s=43 2586ms [sel=614 cap=1869 rest=103] sg=1->1 mode=NONE win=8 obs=44 | cap=wip act=(320,360) d=5.00 a=2 | sp=frontier:active d=5.0 age=0 som=4/6 dtg=8.21 region=0_2
+ep=134 s=44 3459ms [sel=15 cap=3339 rest=105] sg=1->1 mode=NONE win=8 obs=45 | cap=wip act=(320,360) d=5.00 a=2 | sp=frontier:active d=5.0 age=1 dtg=8.21 region=0_2
+ep=134 s=45 2389ms [sel=11 cap=2273 rest=105] sg=1->1 mode=NONE win=8 obs=46 | cap=wip act=(320,360) d=5.00 a=2 | sp=frontier:active d=5.0 age=2 dtg=8.21 region=0_2
+ep=134 s=46 2889ms [sel=8 cap=2781 rest=100] sg=1->1 mode=NONE win=8 obs=47 | cap=wip act=(320,360) d=5.00 a=2 | sp=frontier:active d=5.0 age=3 dtg=8.21 region=0_2
+ep=134 s=47 3311ms [sel=19 cap=3201 rest=91] sg=1->1 mode=NONE win=8 obs=48 | cap=wip act=(320,360) d=5.00 a=2 | sp=frontier:active d=5.0 age=4 dtg=8.21 region=0_2
+ep=134 s=48 4242ms [sel=26 cap=4125 rest=91] sg=1->1 mode=NONE win=8 obs=49 | cap=wip act=(320,360) d=5.00 a=2 | sp=frontier:active d=5.0 age=5 dtg=8.21 region=0_2
+ep=134 s=49 4967ms [sel=31 cap=4850 rest=86] sg=1->1 mode=NONE win=8 obs=50 | cap=wip act=(320,360) d=5.00 a=2 | sp=frontier:active d=5.0 age=6 dtg=8.21 region=0_2
+ep=134 s=50 3338ms [sel=33 cap=3216 rest=89] sg=1->1 mode=NONE win=8 obs=51 | cap=wip act=(320,360) d=5.00 a=1 | sp=frontier:active d=5.0 age=7 dtg=7.98 region=0_2
+ep=134 s=51 2965ms [sel=34 cap=2852 rest=80] sg=1->1 mode=NONE win=8 obs=52 | cap=wip act=(320,360) d=5.01 a=3 | sp=frontier:active d=5.0 age=8 dtg=7.98 region=0_2
+ep=134 s=52 3122ms [sel=32 cap=3009 rest=81] sg=1->1 mode=NONE win=8 obs=53 | cap=wip act=(320,360) d=5.01 a=1 | sp=frontier:active d=5.0 age=9 dtg=7.75 region=0_2
+ep=134 s=53 2766ms [sel=32 cap=2662 rest=72] sg=1->1 mode=NONE win=8 obs=54 | cap=wip act=(320,360) d=4.96 a=1 | sp=frontier:active d=5.0 age=10 dtg=7.61 region=0_2
+ep=134 s=54 1883ms [sel=35 cap=1782 rest=66] sg=1->1 mode=NONE win=8 obs=55 | cap=wip act=(320,360) d=4.93 a=3 | sp=frontier:active d=4.9 age=11 dtg=7.61 region=0_2
+ep=134 s=55 2979ms [sel=34 cap=2874 rest=71] sg=1->1 mode=NONE win=8 obs=56 | cap=wip act=(320,360) d=4.93 a=3 | sp=frontier:active d=4.9 age=12 dtg=7.61 region=0_2
+ep=134 s=56 2028ms [sel=29 cap=1921 rest=78] sg=1->1 mode=NONE win=8 obs=57 | cap=wip act=(320,360) d=4.93 a=3 | sp=frontier:active d=4.9 age=13 dtg=7.61 region=0_2
+ep=134 s=57 2598ms [sel=8 cap=2500 rest=90] sg=1->1 mode=NONE win=8 obs=58 | cap=wip act=(320,360) d=4.93 a=1 | sp=frontier:active d=4.9 age=14 dtg=7.42 region=0_2
+ep=134 s=58 2450ms [sel=21 cap=2343 rest=86] sg=1->1 mode=NONE win=8 obs=59 | cap=wip act=(320,360) d=4.74 a=3 | sp=frontier:active d=4.7 age=15 dtg=7.42 region=0_2
+ep=134 s=59 2291ms [sel=4 cap=2193 rest=94] sg=1->1 mode=NONE win=8 obs=60 | cap=wip act=(320,360) d=4.74 a=1 | sp=frontier:active d=4.7 age=16 dtg=7.21 region=0_2
+ep=134 s=60 2489ms [sel=3 cap=2400 rest=86] sg=1->1 mode=NONE win=8 obs=61 | cap=wip act=(320,360) d=4.52 a=3 | sp=frontier:active d=4.5 age=17 dtg=7.21 region=0_2
+ep=134 s=61 2144ms [sel=3 cap=2049 rest=92] sg=1->1 mode=NONE win=8 obs=62 | cap=wip act=(320,360) d=4.52 a=1 | sp=frontier:active d=4.5 age=18 dtg=6.98 region=0_2
+ep=134 s=62 2070ms [sel=3 cap=1983 rest=84] sg=1->1 mode=NONE win=8 obs=63 | cap=wip act=(320,360) d=4.28 a=1 | sp=frontier:active d=4.3 age=19 dtg=6.74 region=0_2
+ep=134 s=63 2865ms [sel=3 cap=2781 rest=81] sg=1->1 mode=NONE win=8 obs=64 | cap=wip act=(320,360) d=4.03 a=3 | sp=frontier:active d=4.0 age=20 dtg=6.74 region=0_2
+ep=134 s=64 2481ms [sel=3 cap=2387 rest=90] sg=1->1 mode=NONE win=8 obs=65 | cap=wip act=(320,360) d=4.03 a=1 | sp=frontier:active d=4.0 age=21 dtg=6.50 region=0_2
+ep=134 s=65 2480ms [sel=4 cap=2387 rest=89] sg=1->1 mode=NONE win=8 obs=66 | cap=wip act=(320,360) d=3.78 a=1 | sp=frontier:active d=3.8 age=22 dtg=6.25 region=0_2
+ep=134 s=66 2144ms [sel=3 cap=2055 rest=86] sg=1->1 mode=NONE win=8 obs=67 | cap=wip act=(320,360) d=3.53 a=1 | sp=frontier:active d=3.5 age=23 dtg=6.00 region=0_2
+ep=134 s=67 2207ms [sel=4 cap=2117 rest=87] sg=1->1 mode=NONE win=8 obs=68 | cap=wip act=(320,360) d=3.28 a=1 | sp=frontier:active d=3.3 age=24 dtg=5.75 region=0_2
+ep=134 s=68 2395ms [sel=555 cap=1758 rest=82] sg=1->1 mode=NONE win=8 obs=69 | cap=wip act=(320,360) d=3.03 a=1 | sp=som:active d=3.0 age=0 som=3/7 dtg=5.51 region=0_2
+ep=134 s=69 1758ms [sel=3 cap=1676 rest=79] sg=1->1 mode=NONE win=8 obs=70 | cap=wip act=(320,360) d=2.78 a=1 | sp=som:active d=2.8 age=1 dtg=5.26 region=0_2
+ep=134 s=70 2416ms [sel=3 cap=2330 rest=83] sg=1->1 mode=NONE win=8 obs=71 | cap=wip act=(320,360) d=2.53 a=1 | sp=som:active d=2.5 age=2 dtg=5.02 region=0_2
+ep=134 s=71 2742ms [sel=3 cap=2656 rest=83] sg=1->1 mode=NONE win=8 obs=72 | cap=wip act=(320,360) d=2.28 a=1 | sp=som:active d=2.3 age=3 dtg=4.77 region=0_2
+ep=134 s=72 2212ms [sel=3 cap=2127 rest=82] sg=1->1 mode=NONE win=8 obs=73 | cap=wip act=(320,360) d=2.03 a=1 | sp=som:active d=2.0 age=4 dtg=4.53 region=0_2
+ep=134 s=73 2201ms [sel=3 cap=2112 rest=86] sg=1->1 mode=NONE win=8 obs=74 | cap=wip act=(320,360) d=1.78 a=1 | sp=som:active d=1.8 age=5 dtg=4.30 region=0_2
+ep=134 s=74 2757ms [sel=4 cap=2666 rest=87] sg=1->1 mode=NONE win=8 obs=75 | cap=wip act=(320,360) d=1.53 a=1 | sp=som:active d=1.5 age=6 dtg=4.07 region=0_2
+ep=134 s=75 3193ms [sel=4 cap=3097 rest=93] sg=1->1 mode=NONE win=8 obs=76 | cap=wip act=(320,360) d=1.28 a=1 | sp=som:active d=1.3 age=7 dtg=3.87 region=0_2
+ep=134 s=76 2212ms [sel=3 cap=2119 rest=90] sg=1->1 mode=NONE win=8 obs=77 | cap=wip act=(320,360) d=1.03 a=1 | sp=som:active d=1.0 age=8 dtg=3.70 region=0_2
+ep=134 s=77 1525ms [sel=3 cap=1436 rest=87] sg=1->1 mode=NONE win=8 obs=78 | cap=wip act=(320,360) d=0.79 a=1 | sp=som:active d=0.8 age=9 dtg=3.63 region=0_2
+ep=134 s=78 2243ms [sel=3 cap=2152 rest=88] sg=1->1 mode=NONE win=8 obs=79 | cap=wip act=(320,360) d=0.54 a=1 | sp=som:active d=0.5 age=10 dtg=3.59 region=0_2
+ep=134 s=79 6078ms [sel=772 cap=5181 rest=125] sg=1->1 mode=NONE win=8 obs=80 | cap=wip act=(320,360) d=0.70 a=1 | sp=som:active d=0.7 age=0 som=1/6 dtg=3.56 region=0_2
+ep=134 s=80 3706ms [sel=713 cap=2911 rest=82] sg=1->1 mode=NONE win=8 obs=81 | cap=wip act=(320,360) d=3.20 a=3 | sp=som:active d=3.2 age=0 som=4/6 dtg=3.56 region=0_2
+ep=134 s=81 1807ms [sel=3 cap=1724 rest=80] sg=1->1 mode=NONE win=8 obs=82 | cap=wip act=(320,360) d=3.20 a=3 | sp=som:active d=3.2 age=1 dtg=3.56 region=0_2
+ep=134 s=82 1865ms [sel=3 cap=1777 rest=86] sg=1->1 mode=NONE win=8 obs=83 | cap=wip act=(320,360) d=3.20 a=1 | sp=som:active d=3.2 age=2 dtg=3.43 region=0_2
+ep=134 s=83 2223ms [sel=3 cap=2138 rest=82] sg=1->1 mode=NONE win=8 obs=84 | cap=wip act=(320,360) d=2.95 a=3 | sp=som:active d=2.9 age=3 dtg=3.43 region=0_2
+ep=134 s=84 2794ms [sel=3 cap=2701 rest=90] sg=1->1 mode=NONE win=8 obs=85 | cap=wip act=(320,360) d=2.95 a=1 | sp=som:active d=2.9 age=4 dtg=3.26 region=0_2
+ep=134 s=85 5109ms [sel=38 cap=4621 rest=415] sg=1->1 mode=NONE win=8 obs=86 | cap=wip act=(160,180) d=3.45 a=3 | preview=view4/6 yaw=+45 render=35ms | sp=preview:active d=3.5 age=0 dtg=3.26 region=0_2
+ep=134 s=86 3276ms [sel=3 cap=3148 rest=125] sg=1->1 mode=NONE win=8 obs=87 | cap=wip act=(320,360) d=3.45 a=3 | sp=preview:active d=3.5 age=1 dtg=3.26 region=0_2
+ep=134 s=87 2252ms [sel=3 cap=2149 rest=100] sg=1->1 mode=NONE win=8 obs=88 | cap=wip act=(320,360) d=3.45 a=1 | sp=preview:active d=3.5 age=2 dtg=3.03 region=0_2
+ep=134 s=88 2023ms [sel=3 cap=1932 rest=88] sg=1->1 mode=NONE win=8 obs=89 | cap=wip act=(320,360) d=3.21 a=3 | sp=preview:active d=3.2 age=3 dtg=3.03 region=0_2
+ep=134 s=89 4595ms [sel=3 cap=4508 rest=84] sg=1->1 mode=NONE win=8 obs=90 | cap=wip act=(320,360) d=3.21 a=1 | sp=preview:active d=3.2 age=4 dtg=2.78 region=0_2
+ep=134 s=90 2107ms [sel=3 cap=2022 rest=81] sg=1->1 mode=NONE win=8 obs=91 | cap=wip act=(320,360) d=2.96 a=1 | sp=preview:active d=3.0 age=5 dtg=2.53 region=0_2
+ep=134 s=91 2331ms [sel=3 cap=2245 rest=84] sg=1->1 mode=NONE win=8 obs=92 | cap=wip act=(320,360) d=2.71 a=1 | sp=preview:active d=2.7 age=6 dtg=2.28 region=0_2
+ep=134 s=92 2096ms [sel=3 cap=2010 rest=83] sg=1->1 mode=NONE win=8 obs=93 | cap=wip act=(320,360) d=2.46 a=1 | sp=preview:active d=2.5 age=7 dtg=2.03 region=0_2
+ep=134 s=93 2486ms [sel=3 cap=2402 rest=82] sg=1->1 mode=NONE win=8 obs=94 | cap=wip act=(320,360) d=2.21 a=1 | sp=preview:active d=2.2 age=8 dtg=1.78 region=0_0
+ep=134 s=94 2808ms [sel=3 cap=2727 rest=79] sg=1->1 mode=NONE win=8 obs=95 | cap=wip act=(320,360) d=1.97 a=1 | sp=preview:active d=2.0 age=9 dtg=1.54 region=0_0
+ep=134 s=95 2709ms [sel=3 cap=2623 rest=83] sg=1->1 mode=NONE win=8 obs=96 | cap=wip act=(320,360) d=1.72 a=1 | sp=preview:active d=1.7 age=10 dtg=1.29 region=0_0
+ep=134 s=96 1904ms [sel=3 cap=1811 rest=91] sg=1->1 mode=NONE win=8 obs=97 | cap=wip act=(320,360) d=1.47 a=1 | sp=preview:active d=1.5 age=11 dtg=1.05 region=0_0
+ep=134 s=97 2908ms [sel=3 cap=2814 rest=91] sg=1->1 mode=NONE win=8 obs=98 | cap=wip act=(320,360) d=1.22 a=1 | sp=preview:active d=1.2 age=12 dtg=0.81 region=0_0
+ep=134 s=98 4523ms [sel=630 cap=3809 rest=83] sg=1->1 mode=NONE win=8 obs=99 | cap=wip act=(320,360) d=2.99 a=3 | sp=som:active d=3.0 age=0 som=3/8 dtg=0.81 region=0_0
+ep=134 s=99 4180ms [sel=3 cap=4078 rest=99] sg=1->1 mode=NONE win=8 obs=100 | cap=wip act=(320,360) d=2.99 a=1 | sp=som:active d=3.0 age=1 dtg=0.56 region=0_0
+ep=134 s=100 2073ms [sel=3 cap=1972 rest=98] sg=1->1 mode=NONE win=8 obs=101 | cap=wip act=(320,360) d=2.74 a=1 | sp=som:active d=2.7 age=2 dtg=0.31 region=0_0
+ep=134 s=101 3043ms [sel=3 cap=2936 rest=105] sg=1->1 mode=NONE win=8 obs=102 | cap=wip act=(320,360) d=2.50 a=1 | sp=som:active d=2.5 age=3 dtg=0.08 region=0_0
+ep=134 s=102 1632ms [sel=3 cap=1525 rest=104] sg=1->1 mode=NONE win=8 obs=103 | cap=wip act=(320,360) d=2.25 a=1 | sp=som:active d=2.2 age=4 dtg=0.20 region=0_0
+ep=134 s=103 2547ms [sel=3 cap=2443 rest=101] sg=1->1 mode=NONE win=8 obs=104 | cap=wip act=(320,360) d=2.00 a=2 | sp=som:active d=2.0 age=5 dtg=0.20 region=0_0
+ep=134 s=104 1683ms [sel=4 cap=1581 rest=98] sg=1->1 mode=NONE win=8 obs=105 | cap=wip act=(320,360) d=2.00 a=1 | sp=som:active d=2.0 age=6 dtg=0.45 region=0_0
+ep=134 s=105 1951ms [sel=3 cap=1852 rest=96] sg=1->1 mode=NONE win=8 obs=106 | cap=wip act=(320,360) d=1.75 a=1 | sp=som:active d=1.8 age=7 dtg=0.70 region=0_0
+ep=134 s=106 1757ms [sel=4 cap=1654 rest=99] sg=1->1 mode=NONE win=8 obs=107 | cap=wip act=(320,360) d=1.50 a=1 | sp=som:active d=1.5 age=8 dtg=0.95 region=0_0
+ep=134 s=107 2077ms [sel=3 cap=1980 rest=94] sg=1->1 mode=NONE win=8 obs=108 | cap=wip act=(320,360) d=1.26 a=1 | sp=som:active d=1.3 age=9 dtg=1.20 region=0_0
+ep=134 s=108 1550ms [sel=3 cap=1456 rest=92] sg=1->1 mode=NONE win=8 obs=109 | cap=wip act=(320,360) d=1.01 a=1 | sp=som:active d=1.0 age=10 dtg=1.45 region=0_0
+ep=134 s=109 2281ms [sel=3 cap=2184 rest=94] sg=1->1 mode=NONE win=8 obs=110 | cap=wip act=(320,360) d=0.76 a=1 | sp=som:active d=0.8 age=11 dtg=1.70 region=0_0
+ep=134 s=110 2297ms [sel=3 cap=2198 rest=96] sg=1->1 mode=NONE win=8 obs=111 | cap=wip act=(320,360) d=0.52 a=3 | sp=som:active d=0.5 age=12 dtg=1.70 region=0_0
+ep=134 s=111 2624ms [sel=3 cap=2518 rest=103] sg=1->1 mode=NONE win=8 obs=112 | cap=wip act=(320,360) d=0.52 a=1 | sp=som:active d=0.5 age=13 dtg=1.94 region=0_0
+ep=134 s=112 2500ms [sel=855 cap=1543 rest=101] sg=1->1 mode=NONE win=8 obs=113 | cap=wip act=(320,360) d=2.56 a=1 | sp=som:active d=2.6 age=0 som=3/7 dtg=2.19 region=0_0
+ep=134 s=113 2330ms [sel=3 cap=2224 rest=103] sg=1->1 mode=NONE win=8 obs=114 | cap=wip act=(320,360) d=2.31 a=2 | sp=som:active d=2.3 age=1 dtg=2.19 region=0_0
+ep=134 s=114 4533ms [sel=3 cap=4439 rest=91] sg=1->1 mode=NONE win=8 obs=115 | cap=wip act=(320,360) d=2.31 a=1 | sp=som:active d=2.3 age=2 dtg=2.44 region=0_0
+ep=134 s=115 2778ms [sel=3 cap=2682 rest=93] sg=1->1 mode=NONE win=8 obs=116 | cap=wip act=(320,360) d=2.06 a=1 | sp=som:active d=2.1 age=3 dtg=2.69 region=0_0
+ep=134 s=116 4097ms [sel=3 cap=4000 rest=94] sg=1->1 mode=NONE win=8 obs=117 | cap=wip act=(320,360) d=1.81 a=1 | sp=som:active d=1.8 age=4 dtg=2.94 region=0_0
+ep=134 s=117 3448ms [sel=9 cap=2880 rest=525] sg=1->1 mode=NONE win=8 obs=118 | cap=wip act=(160,180) d=1.56 a=1 | preview=view4/6 yaw=+45 render=35ms | sp=som:active d=1.6 age=5 dtg=3.19 region=0_0
+ep=134 s=118 2753ms [sel=3 cap=2653 rest=97] sg=1->1 mode=NONE win=8 obs=119 | cap=wip act=(320,360) d=1.31 a=1 | sp=som:active d=1.3 age=6 dtg=3.44 region=0_0
+ep=134 s=119 4644ms [sel=4 cap=4546 rest=94] sg=1->1 mode=NONE win=8 obs=120 | cap=wip act=(320,360) d=1.06 a=1 | sp=som:active d=1.1 age=7 dtg=3.69 region=0_0
+ep=134 s=120 3019ms [sel=3 cap=2910 rest=106] sg=1->1 mode=NONE win=8 obs=121 | cap=wip act=(320,360) d=0.81 a=1 | sp=som:active d=0.8 age=8 dtg=3.94 region=0_0
+ep=134 s=121 1995ms [sel=4 cap=1899 rest=92] sg=1->1 mode=NONE win=8 obs=122 | cap=wip act=(320,360) d=0.56 a=1 | sp=som:active d=0.6 age=9 dtg=4.19 region=0_0
+ep=134 s=122 3575ms [sel=798 cap=2681 rest=95] sg=1->1 mode=NONE win=8 obs=123 | cap=wip act=(363,313) d=1.99 a=1 | sp=straight_ahead:reached d=0.4 age=0 som=2/4 dtg=4.37 region=0_0
+ep=134 s=123 3601ms [sel=855 cap=2659 rest=87] sg=1->1 mode=NONE win=8 obs=124 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=straight_ahead:reached d=0.4 age=1 ovr=1 door_evts=3 som=2/4 dtg=4.37 region=0_0
+ep=134 s=124 3754ms [sel=0 cap=3661 rest=92] sg=1->1 mode=NONE win=8 obs=125 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=- ovr=1 door_evts=3 dtg=4.37 region=0_0
+ep=134 s=125 2497ms [sel=0 cap=2397 rest=101] sg=1->1 mode=NONE win=8 obs=126 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=- ovr=1 door_evts=3 dtg=4.37 region=0_0
+ep=134 s=126 2247ms [sel=0 cap=2141 rest=105] sg=1->1 mode=NONE win=8 obs=127 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=- ovr=1 door_evts=3 dtg=4.37 region=0_0
+ep=134 s=127 2696ms [sel=0 cap=2600 rest=96] sg=1->1 mode=NONE win=8 obs=128 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=- ovr=1 door_evts=3 dtg=4.37 region=0_0
+ep=134 s=128 3468ms [sel=0 cap=3372 rest=96] sg=1->1 mode=NONE win=8 obs=129 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=- ovr=1 door_evts=3 dtg=4.37 region=0_0
+ep=134 s=129 5074ms [sel=0 cap=4983 rest=91] sg=1->1 mode=NONE win=8 obs=130 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=- ovr=1 door_evts=3 dtg=4.37 region=0_0
+ep=134 s=130 2889ms [sel=0 cap=2374 rest=480] sg=1->1 mode=NONE win=8 obs=131 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | preview=view-/6 yaw=+0 render=35ms | sp=- ovr=1 door_evts=3 dtg=4.37 region=0_0
+ep=134 s=131 2256ms [sel=0 cap=2169 rest=88] sg=1->1 mode=NONE win=8 obs=132 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=- ovr=1 door_evts=3 dtg=4.37 region=0_0
+ep=134 s=132 2936ms [sel=751 cap=2094 rest=91] sg=1->1 mode=NONE win=8 obs=133 | cap=wip act=(320,360) d=2.97 a=2 | sp=som:active d=3.0 age=0 som=1/8 dtg=4.37 region=0_0
+ep=134 s=133 2655ms [sel=3 cap=2555 rest=97] sg=1->1 mode=NONE win=8 obs=134 | cap=wip act=(320,360) d=2.97 a=2 | sp=som:active d=3.0 age=1 dtg=4.37 region=0_0
+ep=134 s=134 2248ms [sel=3 cap=2151 rest=93] sg=1->1 mode=NONE win=8 obs=135 | cap=wip act=(320,360) d=2.97 a=1 | sp=som:active d=3.0 age=2 dtg=4.12 region=0_0
+ep=134 s=135 2297ms [sel=4 cap=2197 rest=96] sg=1->1 mode=NONE win=8 obs=136 | cap=wip act=(320,360) d=2.73 a=2 | sp=som:active d=2.7 age=3 dtg=4.12 region=0_0
+ep=134 s=136 2304ms [sel=3 cap=2203 rest=97] sg=1->1 mode=NONE win=8 obs=137 | cap=wip act=(320,360) d=2.73 a=1 | sp=som:active d=2.7 age=4 dtg=3.87 region=0_0
+ep=134 s=137 3094ms [sel=4 cap=2988 rest=102] sg=1->1 mode=NONE win=8 obs=138 | cap=wip act=(320,360) d=2.48 a=1 | sp=som:active d=2.5 age=5 dtg=3.62 region=0_0
+ep=134 s=138 1440ms [sel=3 cap=1343 rest=93] sg=1->1 mode=NONE win=8 obs=139 | cap=wip act=(320,360) d=2.23 a=1 | sp=som:active d=2.2 age=6 dtg=3.37 region=0_0
+ep=134 s=139 2577ms [sel=3 cap=2479 rest=95] sg=1->1 mode=NONE win=8 obs=140 | cap=wip act=(320,360) d=1.98 a=1 | sp=som:active d=2.0 age=7 dtg=3.12 region=0_0
+ep=134 s=140 2111ms [sel=3 cap=2014 rest=95] sg=1->1 mode=NONE win=8 obs=141 | cap=wip act=(320,360) d=1.73 a=1 | sp=som:active d=1.7 age=8 dtg=2.87 region=0_0
+ep=134 s=141 5006ms [sel=3 cap=4904 rest=99] sg=1->1 mode=NONE win=8 obs=142 | cap=wip act=(320,360) d=1.48 a=1 | sp=som:active d=1.5 age=9 dtg=2.62 region=0_0
+ep=134 s=142 3399ms [sel=3 cap=3301 rest=95] sg=1->1 mode=NONE win=8 obs=143 | cap=wip act=(320,360) d=1.23 a=1 | sp=som:active d=1.2 age=10 dtg=2.37 region=0_0
+ep=134 s=143 3151ms [sel=595 cap=2462 rest=94] sg=1->1 mode=NONE win=8 obs=144 | cap=wip act=(320,360) d=2.98 a=1 | sp=som:active d=3.0 age=0 som=2/7 dtg=2.12 region=0_0
+ep=134 s=144 1303ms [sel=4 cap=1207 rest=91] sg=1->1 mode=NONE win=8 obs=145 | cap=wip act=(320,360) d=2.73 a=1 | sp=som:active d=2.7 age=1 dtg=1.88 region=0_0
+ep=134 s=145 1336ms [sel=5 cap=1235 rest=96] sg=1->1 mode=NONE win=8 obs=146 | cap=wip act=(320,360) d=2.48 a=1 | sp=som:active d=2.5 age=2 dtg=1.63 region=0_0
+ep=134 s=146 1329ms [sel=4 cap=1232 rest=93] sg=1->1 mode=NONE win=8 obs=147 | cap=wip act=(320,360) d=2.23 a=1 | sp=som:active d=2.2 age=3 dtg=1.38 region=0_0
+ep=134 s=147 2988ms [sel=4 cap=2894 rest=90] sg=1->1 mode=NONE win=8 obs=148 | cap=wip act=(320,360) d=1.98 a=1 | sp=som:active d=2.0 age=4 dtg=1.13 region=0_0
+ep=134 s=148 2780ms [sel=3 cap=2689 rest=88] sg=1->1 mode=NONE win=8 obs=149 | cap=wip act=(320,360) d=1.73 a=1 | sp=som:active d=1.7 age=5 dtg=0.88 region=0_0
+ep=134 s=149 2147ms [sel=3 cap=2059 rest=85] sg=1->1 mode=NONE win=8 obs=150 | cap=wip act=(320,360) d=1.48 a=1 | sp=som:active d=1.5 age=6 dtg=0.63 region=0_0
+ep=134 s=150 1937ms [sel=3 cap=1842 rest=92] sg=1->1 mode=NONE win=8 obs=151 | cap=wip act=(320,360) d=1.23 a=1 | sp=som:active d=1.2 age=7 dtg=0.39 region=0_0
+ep=134 s=151 3048ms [sel=3 cap=2949 rest=96] sg=1->1 mode=NONE win=8 obs=152 | cap=wip act=(320,360) d=0.98 a=1 | sp=som:active d=1.0 age=8 dtg=0.17 region=0_0
+ep=134 s=152 1434ms [sel=3 cap=1335 rest=96] sg=1->1 mode=NONE win=8 obs=153 | cap=wip act=(320,360) d=0.73 a=1 | sp=som:active d=0.7 age=9 dtg=0.17 region=0_0
+ep=134 s=153 2239ms [sel=559 cap=1586 rest=94] sg=1->1 mode=NONE win=8 obs=154 | cap=wip act=(320,360) d=2.99 a=1 | sp=som:active d=3.0 age=0 som=3/8 dtg=0.39 region=0_0
+ep=134 s=154 1801ms [sel=4 cap=1705 rest=92] sg=1->1 mode=NONE win=8 obs=155 | cap=wip act=(320,360) d=2.74 a=2 | sp=som:active d=2.7 age=1 dtg=0.39 region=0_0
+ep=134 s=155 1958ms [sel=4 cap=1845 rest=109] sg=1->1 mode=NONE win=8 obs=156 | cap=wip act=(320,360) d=2.74 a=1 | sp=som:active d=2.7 age=2 dtg=0.64 region=0_0
+ep=134 s=156 2860ms [sel=4 cap=2756 rest=101] sg=1->1 mode=NONE win=8 obs=157 | cap=wip act=(320,360) d=2.49 a=1 | sp=som:active d=2.5 age=3 dtg=0.89 region=0_0
+ep=134 s=157 2919ms [sel=3 cap=2819 rest=97] sg=1->1 mode=NONE win=8 obs=158 | cap=wip act=(320,360) d=2.25 a=1 | sp=som:active d=2.2 age=4 dtg=1.14 region=0_0
+ep=134 s=158 1878ms [sel=3 cap=1783 rest=93] sg=1->1 mode=NONE win=8 obs=159 | cap=wip act=(320,360) d=2.00 a=3 | sp=som:active d=2.0 age=5 dtg=1.14 region=0_0
+ep=134 s=159 4849ms [sel=3 cap=4743 rest=103] sg=1->1 mode=NONE win=8 obs=160 | cap=wip act=(320,360) d=2.00 a=1 | sp=som:active d=2.0 age=6 dtg=1.39 region=0_0
+ep=134 s=160 1869ms [sel=3 cap=1768 rest=98] sg=1->1 mode=NONE win=8 obs=161 | cap=wip act=(320,360) d=1.75 a=1 | sp=som:active d=1.8 age=7 dtg=1.63 region=0_0
+ep=134 s=161 1676ms [sel=4 cap=1579 rest=93] sg=1->1 mode=NONE win=8 obs=162 | cap=wip act=(320,360) d=1.50 a=1 | sp=som:active d=1.5 age=8 dtg=1.88 region=0_2
+ep=134 s=162 3021ms [sel=5 cap=2926 rest=91] sg=1->1 mode=NONE win=8 obs=163 | cap=wip act=(320,360) d=1.25 a=1 | sp=som:active d=1.3 age=9 dtg=2.12 region=0_2
+ep=134 s=163 1583ms [sel=4 cap=1490 rest=90] sg=1->1 mode=NONE win=8 obs=164 | cap=wip act=(320,360) d=1.00 a=1 | sp=som:active d=1.0 age=10 dtg=2.37 region=0_2
+ep=134 s=164 2099ms [sel=4 cap=2006 rest=89] sg=1->1 mode=NONE win=8 obs=165 | cap=wip act=(320,360) d=0.75 a=1 | sp=som:active d=0.8 age=11 dtg=2.62 region=0_2
+ep=134 s=165 2301ms [sel=3 cap=2209 rest=90] sg=1->1 mode=NONE win=8 obs=166 | cap=wip act=(320,360) d=0.50 a=1 | sp=som:active d=0.5 age=12 dtg=2.87 region=0_2
+ep=134 s=166 3186ms [sel=1032 cap=2064 rest=90] sg=1->1 mode=NONE win=8 obs=167 | cap=wip act=(320,360) d=0.85 a=1 | sp=som:active d=0.9 age=0 som=2/6 dtg=3.12 region=0_2
+ep=134 s=167 3467ms [sel=3 cap=3392 rest=73] sg=1->1 mode=NONE win=8 obs=168 | cap=wip act=(320,360) d=0.60 a=1 | sp=som:active d=0.6 age=1 dtg=3.37 region=0_2
+ep=134 s=168 3099ms [sel=773 cap=2256 rest=69] sg=1->1 mode=NONE win=8 obs=169 | cap=wip act=(320,360) d=3.10 a=3 | sp=frontier:active d=3.1 age=0 som=2/5 dtg=3.37 region=0_2
+ep=134 s=169 1813ms [sel=30 cap=1708 rest=75] sg=1->1 mode=NONE win=8 obs=170 | cap=wip act=(320,360) d=3.10 a=3 | sp=frontier:active d=3.1 age=1 dtg=3.37 region=0_2
+ep=134 s=170 3054ms [sel=29 cap=2940 rest=85] sg=1->1 mode=NONE win=8 obs=171 | cap=wip act=(320,360) d=3.10 a=3 | sp=frontier:active d=3.1 age=2 dtg=3.37 region=0_2
+ep=134 s=171 2568ms [sel=23 cap=2463 rest=82] sg=1->1 mode=NONE win=8 obs=172 | cap=wip act=(320,360) d=3.10 a=3 | sp=frontier:active d=3.1 age=3 dtg=3.37 region=0_2
+ep=134 s=172 2602ms [sel=19 cap=2494 rest=90] sg=1->1 mode=NONE win=8 obs=173 | cap=wip act=(320,360) d=3.10 a=3 | sp=frontier:active d=3.1 age=4 dtg=3.37 region=0_2
+ep=134 s=173 2951ms [sel=13 cap=2846 rest=92] sg=1->1 mode=NONE win=8 obs=174 | cap=wip act=(320,360) d=3.10 a=3 | sp=frontier:active d=3.1 age=5 dtg=3.37 region=0_2
+ep=134 s=174 3499ms [sel=3 cap=3410 rest=86] sg=1->1 mode=NONE win=8 obs=175 | cap=wip act=(320,360) d=3.10 a=3 | sp=frontier:active d=3.1 age=6 dtg=3.37 region=0_2
+ep=134 s=175 2247ms [sel=3 cap=2154 rest=90] sg=1->1 mode=NONE win=8 obs=176 | cap=wip act=(320,360) d=3.10 a=3 | sp=frontier:active d=3.1 age=7 dtg=3.37 region=0_2
+ep=134 s=176 2066ms [sel=10 cap=1967 rest=90] sg=1->1 mode=NONE win=8 obs=177 | cap=wip act=(320,360) d=3.10 a=1 | sp=frontier:active d=3.1 age=8 dtg=3.23 region=0_2
+ep=134 s=177 2200ms [sel=11 cap=2096 rest=93] sg=1->1 mode=NONE win=8 obs=178 | cap=wip act=(320,360) d=2.96 a=1 | sp=frontier:active d=3.0 age=9 dtg=3.11 region=0_2
+ep=134 s=178 1783ms [sel=14 cap=1673 rest=96] sg=1->1 mode=NONE win=8 obs=179 | cap=wip act=(320,360) d=2.84 a=3 | sp=frontier:active d=2.8 age=10 dtg=3.11 region=0_2
+ep=134 s=179 1545ms [sel=16 cap=1425 rest=104] sg=1->1 mode=NONE win=8 obs=180 | cap=wip act=(320,360) d=2.84 a=1 | sp=frontier:active d=2.8 age=11 dtg=2.94 region=0_2
+ep=134 s=180 2239ms [sel=16 cap=2121 rest=102] sg=1->1 mode=NONE win=8 obs=181 | cap=wip act=(320,360) d=2.79 a=1 | sp=frontier:active d=2.8 age=12 dtg=2.79 region=0_2
+ep=134 s=181 2387ms [sel=18 cap=2272 rest=98] sg=1->1 mode=NONE win=8 obs=182 | cap=wip act=(320,360) d=2.77 a=2 | sp=frontier:active d=2.8 age=13 dtg=2.79 region=0_2
+ep=134 s=182 2425ms [sel=15 cap=2313 rest=97] sg=1->1 mode=NONE win=8 obs=183 | cap=wip act=(320,360) d=2.77 a=1 | sp=frontier:active d=2.8 age=14 dtg=2.72 region=0_2
+ep=134 s=183 2345ms [sel=16 cap=2233 rest=96] sg=1->1 mode=NONE win=8 obs=184 | cap=wip act=(320,360) d=2.70 a=2 | sp=frontier:active d=2.7 age=15 dtg=2.72 region=0_2
+ep=134 s=184 2612ms [sel=14 cap=2496 rest=102] sg=1->1 mode=NONE win=8 obs=185 | cap=wip act=(320,360) d=2.70 a=2 | sp=frontier:active d=2.7 age=16 dtg=2.72 region=0_2
+ep=134 s=185 3139ms [sel=13 cap=3022 rest=104] sg=1->1 mode=NONE win=8 obs=186 | cap=wip act=(320,360) d=2.70 a=1 | sp=frontier:active d=2.7 age=17 dtg=2.80 region=0_2
+ep=134 s=186 3051ms [sel=14 cap=2933 rest=104] sg=1->1 mode=NONE win=8 obs=187 | cap=wip act=(320,360) d=2.54 a=1 | sp=frontier:active d=2.5 age=18 dtg=2.94 region=0_2
+ep=134 s=187 2626ms [sel=14 cap=2506 rest=106] sg=1->1 mode=NONE win=8 obs=188 | cap=wip act=(320,360) d=2.39 a=2 | sp=frontier:active d=2.4 age=19 dtg=2.94 region=0_2
+ep=134 s=188 3938ms [sel=12 cap=3812 rest=114] sg=1->1 mode=NONE win=8 obs=189 | cap=wip act=(320,360) d=2.39 a=1 | sp=frontier:active d=2.4 age=20 dtg=3.16 region=0_2
+ep=134 s=189 1769ms [sel=14 cap=1642 rest=113] sg=1->1 mode=NONE win=8 obs=190 | cap=wip act=(320,360) d=2.21 a=2 | sp=frontier:active d=2.2 age=21 dtg=3.16 region=0_2
+ep=134 s=190 2266ms [sel=5 cap=2151 rest=111] sg=1->1 mode=NONE win=8 obs=191 | cap=wip act=(320,360) d=2.21 a=2 | sp=frontier:active d=2.2 age=22 dtg=3.16 region=0_2
+ep=134 s=191 3746ms [sel=4 cap=3626 rest=116] sg=1->1 mode=NONE win=8 obs=192 | cap=wip act=(320,360) d=2.21 a=1 | sp=frontier:active d=2.2 age=23 dtg=3.41 region=0_2
+ep=134 s=192 3055ms [sel=4 cap=2940 rest=111] sg=1->1 mode=NONE win=8 obs=193 | cap=wip act=(320,360) d=1.97 a=2 | sp=frontier:active d=2.0 age=24 dtg=3.41 region=0_2
+ep=134 s=193 3016ms [sel=4 cap=2890 rest=123] sg=1->1 mode=NONE win=8 obs=194 | cap=wip act=(320,360) d=1.97 a=1 | sp=frontier:active d=2.0 age=25 dtg=3.65 region=0_2
+ep=134 s=194 3870ms [sel=891 cap=2847 rest=132] sg=1->1 mode=NONE win=8 obs=195 | cap=wip act=(320,360) d=1.86 a=1 | sp=som:active d=1.9 age=0 som=2/7 dtg=3.89 region=0_2
+ep=134 s=195 2344ms [sel=4 cap=2221 rest=119] sg=1->1 mode=NONE win=8 obs=196 | cap=wip act=(320,360) d=1.61 a=3 | sp=som:active d=1.6 age=1 dtg=3.89 region=0_2
+ep=134 s=196 2752ms [sel=3 cap=2631 rest=118] sg=1->1 mode=NONE win=8 obs=197 | cap=wip act=(320,360) d=1.61 a=1 | sp=som:active d=1.6 age=2 dtg=4.14 region=0_2
+ep=134 s=197 2882ms [sel=3 cap=2765 rest=114] sg=1->1 mode=NONE win=8 obs=198 | cap=wip act=(320,360) d=1.36 a=1 | sp=som:active d=1.4 age=3 dtg=4.39 region=0_2
+ep=134 s=198 1722ms [sel=3 cap=1612 rest=107] sg=1->1 mode=NONE win=8 obs=199 | cap=wip act=(320,360) d=1.11 a=1 | sp=som:active d=1.1 age=4 dtg=4.64 region=0_2
+ep=134 s=199 3610ms [sel=3 cap=3500 rest=107] sg=1->1 mode=NONE win=8 obs=200 | cap=wip act=(320,360) d=0.86 a=1 | sp=som:active d=0.9 age=5 dtg=4.89 region=0_2
+ep=134 s=200 2534ms [sel=4 cap=2424 rest=106] sg=1->1 mode=NONE win=8 obs=201 | cap=wip act=(320,360) d=0.62 a=1 | sp=som:active d=0.6 age=6 dtg=5.14 region=0_2
+ep=134 s=201 4767ms [sel=743 cap=3924 rest=101] sg=1->1 mode=NONE win=8 obs=202 | cap=wip act=(320,360) d=2.97 a=3 | sp=som:active d=3.0 age=0 som=3/8 dtg=5.14 region=0_2
+ep=134 s=202 3492ms [sel=4 cap=3383 rest=106] sg=1->1 mode=GET_NOWHERE win=8 obs=203 | cap=wip/GET_NOWHERE act=(320,360) d=2.97 a=3 | sp=som:active d=3.0 age=1 dtg=5.14 region=0_2
+ep=134 s=203 3574ms [sel=3 cap=3466 rest=106] sg=1->1 mode=NONE win=8 obs=204 | cap=wip act=(320,360) d=2.97 a=1 | sp=som:active d=3.0 age=2 dtg=5.36 region=0_2
+ep=134 s=204 3171ms [sel=5 cap=2636 rest=491] sg=1->1 mode=NONE win=8 obs=205 | cap=wip act=PREVIEW a=2 | preview=view3/6 yaw=+0 render=39ms | sp=som:active d=2.7 age=3 ovr=2 door_evts=3 dtg=5.36 region=0_2
+ep=134 s=205 3519ms [sel=575 cap=2836 rest=107] sg=1->1 mode=NONE win=8 obs=206 | cap=wip act=(320,360) d=3.06 a=3 | sp=som:active d=3.1 age=0 som=4/7 dtg=5.36 region=0_2
+ep=134 s=206 3740ms [sel=3 cap=3623 rest=115] sg=1->1 mode=NONE win=8 obs=207 | cap=wip act=(320,360) d=3.06 a=3 | sp=som:active d=3.1 age=1 dtg=5.36 region=0_2
+ep=134 s=207 4297ms [sel=3 cap=4189 rest=105] sg=1->1 mode=NONE win=8 obs=208 | cap=wip act=(320,360) d=3.06 a=1 | sp=som:active d=3.1 age=2 dtg=5.55 region=0_2
+ep=134 s=208 3280ms [sel=4 cap=3168 rest=108] sg=1->1 mode=NONE win=8 obs=209 | cap=wip act=(320,360) d=2.82 a=1 | sp=som:active d=2.8 age=3 dtg=5.74 region=0_2
+ep=134 s=209 3358ms [sel=4 cap=3247 rest=107] sg=1->1 mode=NONE win=8 obs=210 | cap=wip act=(320,360) d=2.57 a=1 | sp=som:active d=2.6 age=4 dtg=5.94 region=0_4
+ep=134 s=210 4717ms [sel=3 cap=4604 rest=110] sg=1->1 mode=NONE win=8 obs=211 | cap=wip act=(320,360) d=2.32 a=1 | sp=som:active d=2.3 age=5 dtg=6.15 region=0_4
+ep=134 s=211 2635ms [sel=4 cap=2523 rest=108] sg=1->1 mode=NONE win=8 obs=212 | cap=wip act=(320,360) d=2.07 a=1 | sp=som:active d=2.1 age=6 dtg=6.36 region=0_4
+ep=134 s=212 4637ms [sel=631 cap=3894 rest=112] sg=1->2 mode=NONE win=8 obs=213 | cap=DONE act=(320,360) d=2.79 a=1 | sp=som:active d=2.8 age=0 som=4/8 dtg=6.57 region=0_4
+ep=134 s=213 1594ms [sel=3 cap=1478 rest=113] sg=2->2 mode=NONE win=8 obs=214 | cap=wip act=(320,360) d=2.54 a=2 | sp=som:active d=2.5 age=1 dtg=6.57 region=0_4
+ep=134 s=214 1949ms [sel=3 cap=1831 rest=116] sg=2->2 mode=NONE win=8 obs=215 | cap=wip act=(320,360) d=2.54 a=1 | sp=som:active d=2.5 age=2 dtg=6.82 region=0_4
+ep=134 s=215 2235ms [sel=4 cap=2117 rest=114] sg=2->2 mode=NONE win=8 obs=216 | cap=wip act=(320,360) d=2.30 a=1 | sp=som:active d=2.3 age=3 dtg=7.06 region=0_4
+ep=134 s=216 2479ms [sel=4 cap=2368 rest=107] sg=2->2 mode=NONE win=8 obs=217 | cap=wip act=(320,360) d=2.06 a=1 | sp=som:active d=2.1 age=4 dtg=7.30 region=0_4
+ep=134 s=217 1968ms [sel=4 cap=1862 rest=102] sg=2->2 mode=NONE win=8 obs=218 | cap=wip act=(320,360) d=1.82 a=1 | sp=som:active d=1.8 age=5 dtg=7.56 region=0_4
+ep=134 s=218 2153ms [sel=3 cap=2050 rest=100] sg=2->2 mode=NONE win=8 obs=219 | cap=wip act=(320,360) d=1.59 a=3 | sp=som:active d=1.6 age=6 dtg=7.56 region=0_4
+ep=134 s=219 1879ms [sel=3 cap=1789 rest=88] sg=2->2 mode=NONE win=8 obs=220 | cap=wip act=(320,360) d=1.59 a=1 | sp=som:active d=1.6 age=7 dtg=7.81 region=0_4
+ep=134 s=220 2077ms [sel=3 cap=1986 rest=88] sg=2->2 mode=NONE win=8 obs=221 | cap=wip act=(320,360) d=1.34 a=1 | sp=som:active d=1.3 age=8 dtg=7.88 region=0_4
+ep=134 s=221 1757ms [sel=3 cap=1667 rest=87] sg=2->2 mode=NONE win=8 obs=222 | cap=wip act=(320,360) d=1.28 a=1 | sp=som:active d=1.3 age=9 dtg=7.89 region=0_4
+ep=134 s=222 1989ms [sel=0 cap=1692 rest=297] sg=2->2 mode=NONE win=8 obs=223 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.3 age=10 ovr=3 door_evts=3 dtg=7.89 region=0_4
+ep=134 s=223 3504ms [sel=0 cap=3404 rest=99] sg=2->2 mode=NONE win=8 obs=224 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.3 age=11 ovr=3 door_evts=3 dtg=7.89 region=0_4
+ep=134 s=224 2298ms [sel=0 cap=2191 rest=107] sg=2->2 mode=NONE win=8 obs=225 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.3 age=12 ovr=3 door_evts=3 dtg=7.89 region=0_4
+ep=134 s=225 2257ms [sel=0 cap=2145 rest=112] sg=2->2 mode=NONE win=8 obs=226 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.3 age=13 ovr=3 door_evts=3 dtg=7.89 region=0_4
+ep=134 s=226 1814ms [sel=0 cap=1697 rest=118] sg=2->2 mode=NONE win=8 obs=227 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.3 age=14 ovr=3 door_evts=3 dtg=7.89 region=0_4
+ep=134 s=227 1790ms [sel=0 cap=1665 rest=125] sg=2->2 mode=GET_NOWHERE win=8 obs=228 | cap=wip/GET_NOWHERE act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.3 age=15 ovr=3 door_evts=3 dtg=7.89 region=0_4
+ep=134 s=228 2196ms [sel=0 cap=2077 rest=118] sg=2->2 mode=NONE win=8 obs=229 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.3 age=16 ovr=3 door_evts=3 dtg=7.89 region=0_4
+ep=134 s=229 1993ms [sel=0 cap=1876 rest=117] sg=2->2 mode=NONE win=8 obs=230 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.3 age=17 ovr=3 door_evts=3 dtg=7.89 region=0_4
+ep=134 s=230 2974ms [sel=0 cap=2852 rest=123] sg=2->2 mode=NONE win=8 obs=231 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.3 age=18 ovr=3 door_evts=3 dtg=7.89 region=0_4
+ep=134 s=231 2732ms [sel=0 cap=2605 rest=126] sg=2->2 mode=NONE win=8 obs=232 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.3 age=19 ovr=3 door_evts=3 dtg=7.89 region=0_4
+ep=134 s=232 4084ms [sel=0 cap=3960 rest=123] sg=2->2 mode=NONE win=8 obs=233 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.3 age=20 ovr=3 door_evts=3 dtg=7.89 region=0_4
+ep=134 s=233 3270ms [sel=25 cap=2732 rest=476] sg=2->2 mode=NONE win=8 obs=234 | cap=wip act=(320,360) d=1.28 a=3 | preview=view-/6 yaw=+0 render=37ms | sp=som:active d=1.3 age=21 dtg=7.89 region=0_4
+ep=134 s=234 1812ms [sel=28 cap=1685 rest=99] sg=2->2 mode=NONE win=8 obs=235 | cap=wip act=(320,360) d=1.28 a=3 | sp=som:active d=1.3 age=22 dtg=7.89 region=0_4
+ep=134 s=235 2852ms [sel=24 cap=2730 rest=98] sg=2->2 mode=NONE win=8 obs=236 | cap=wip act=(320,360) d=1.28 a=3 | sp=som:active d=1.3 age=23 dtg=7.89 region=0_4
+ep=134 s=236 3163ms [sel=21 cap=3027 rest=114] sg=2->2 mode=NONE win=8 obs=237 | cap=wip act=(320,360) d=1.28 a=3 | sp=som:active d=1.3 age=24 dtg=7.89 region=0_4
+ep=134 s=237 2605ms [sel=20 cap=2452 rest=133] sg=2->2 mode=NONE win=8 obs=238 | cap=wip act=(320,360) d=1.28 a=1 | sp=som:active d=1.3 age=25 dtg=7.78 region=0_4
+ep=134 s=238 2110ms [sel=19 cap=1974 rest=117] sg=2->2 mode=NONE win=8 obs=239 | cap=wip act=(320,360) d=1.49 a=3 | sp=som:active d=1.5 age=26 dtg=7.78 region=0_4
+ep=134 s=239 5796ms [sel=19 cap=5674 rest=103] sg=2->2 mode=NONE win=8 obs=240 | cap=wip act=(320,360) d=1.49 a=1 | sp=som:active d=1.5 age=27 dtg=7.78 region=0_4
+ep=134 s=240 3209ms [sel=587 cap=2527 rest=95] sg=2->2 mode=NONE win=8 obs=241 | cap=wip act=(320,360) d=2.09 a=1 | sp=som:active d=2.1 age=0 som=2/6 dtg=7.81 region=0_4
+ep=134 s=241 2554ms [sel=4 cap=2438 rest=113] sg=2->2 mode=NONE win=8 obs=242 | cap=wip act=(320,360) d=1.84 a=1 | sp=som:active d=1.8 age=1 dtg=7.93 region=0_4
+ep=134 s=242 2994ms [sel=4 cap=2892 rest=98] sg=2->2 mode=NONE win=8 obs=243 | cap=wip act=(320,360) d=1.59 a=1 | sp=som:active d=1.6 age=2 dtg=8.10 region=0_4
+ep=134 s=243 2669ms [sel=3 cap=2557 rest=109] sg=2->2 mode=NONE win=8 obs=244 | cap=wip act=(320,360) d=1.34 a=1 | sp=som:active d=1.3 age=3 dtg=8.31 region=0_4
+ep=134 s=244 2713ms [sel=3 cap=2615 rest=95] sg=2->2 mode=NONE win=8 obs=245 | cap=wip act=(320,360) d=1.09 a=1 | sp=som:active d=1.1 age=4 dtg=8.53 region=0_4
+ep=134 s=245 3771ms [sel=3 cap=3698 rest=70] sg=2->2 mode=NONE win=8 obs=246 | cap=wip act=(320,360) d=0.84 a=1 | sp=som:active d=0.8 age=5 dtg=8.76 region=0_4
+ep=134 s=246 2782ms [sel=4 cap=2387 rest=354] sg=2->2 mode=NONE win=8 obs=247 | cap=wip act=(320,360) d=0.60 a=1 | preview=view-/6 yaw=+0 render=37ms | sp=som:active d=0.6 age=6 dtg=9.00 region=0_4
+ep=134 s=247 3257ms [sel=612 cap=2575 rest=70] sg=2->2 mode=NONE win=8 obs=248 | cap=wip act=(320,360) d=1.36 a=3 | sp=frontier:active d=1.4 age=0 som=1/5 dtg=9.00 region=0_4
+ep=134 s=248 1453ms [sel=4 cap=1379 rest=70] sg=2->2 mode=NONE win=8 obs=249 | cap=wip act=(320,360) d=1.36 a=3 | sp=frontier:active d=1.4 age=1 dtg=9.00 region=0_4
+ep=134 s=249 3534ms [sel=3 cap=3462 rest=68] sg=2->2 mode=NONE win=8 obs=250 | cap=wip act=(320,360) d=1.36 a=3 | sp=frontier:active d=1.4 age=2 dtg=9.00 region=0_4
+ep=134 s=250 2172ms [sel=3 cap=2094 rest=75] sg=2->2 mode=NONE win=8 obs=251 | cap=wip act=(320,360) d=1.36 a=1 | sp=frontier:active d=1.4 age=3 dtg=9.09 region=0_4
+ep=134 s=251 2784ms [sel=5 cap=2706 rest=73] sg=2->2 mode=NONE win=8 obs=252 | cap=wip act=(320,360) d=1.34 a=3 | sp=frontier:active d=1.3 age=4 dtg=9.09 region=0_4
+ep=134 s=252 9363ms [sel=4 cap=9278 rest=82] sg=2->2 mode=NONE win=8 obs=253 | cap=wip act=(320,360) d=1.34 a=1 | sp=frontier:active d=1.3 age=5 dtg=9.14 region=0_4
+ep=134 s=253 2573ms [sel=0 cap=2351 rest=221] sg=2->2 mode=NONE win=8 obs=254 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=frontier:active d=1.3 age=6 ovr=3 door_evts=3 dtg=9.14 region=0_4
+ep=134 s=254 2972ms [sel=0 cap=2880 rest=91] sg=2->2 mode=NONE win=8 obs=255 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=frontier:active d=1.3 age=7 ovr=3 door_evts=3 dtg=9.14 region=0_4
+ep=134 s=255 2945ms [sel=0 cap=2850 rest=94] sg=2->2 mode=NONE win=8 obs=256 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=frontier:active d=1.3 age=8 ovr=3 door_evts=3 dtg=9.14 region=0_4
+ep=134 s=256 2049ms [sel=0 cap=1952 rest=97] sg=2->2 mode=NONE win=8 obs=257 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=frontier:active d=1.3 age=9 ovr=3 door_evts=3 dtg=9.14 region=0_4
+ep=134 s=257 2277ms [sel=0 cap=2178 rest=99] sg=2->2 mode=NONE win=8 obs=258 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=frontier:active d=1.3 age=10 ovr=3 door_evts=3 dtg=9.14 region=0_4
+ep=134 s=258 2234ms [sel=0 cap=2128 rest=107] sg=2->2 mode=NONE win=8 obs=259 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=frontier:active d=1.3 age=11 ovr=3 door_evts=3 dtg=9.14 region=0_4
+ep=134 s=259 3354ms [sel=15 cap=3231 rest=108] sg=2->2 mode=NONE win=8 obs=260 | cap=wip act=(320,360) d=1.33 a=3 | sp=frontier:active d=1.3 age=12 dtg=9.14 region=0_4
+ep=134 s=260 2380ms [sel=23 cap=2246 rest=111] sg=2->2 mode=NONE win=8 obs=261 | cap=wip act=(320,360) d=1.33 a=1 | sp=frontier:active d=1.3 age=13 dtg=8.93 region=0_4
+ep=134 s=261 2766ms [sel=21 cap=2638 rest=107] sg=2->2 mode=NONE win=8 obs=262 | cap=wip act=(320,360) d=1.38 a=1 | sp=frontier:active d=1.4 age=14 dtg=8.73 region=0_4
+ep=134 s=262 3080ms [sel=21 cap=2951 rest=107] sg=2->2 mode=NONE win=8 obs=263 | cap=wip act=(320,360) d=1.47 a=2 | sp=frontier:active d=1.5 age=15 dtg=8.73 region=0_4
+ep=134 s=263 3680ms [sel=20 cap=3553 rest=107] sg=2->2 mode=NONE win=8 obs=264 | cap=wip act=(320,360) d=1.47 a=2 | sp=frontier:active d=1.5 age=16 dtg=8.73 region=0_4
+ep=134 s=264 1696ms [sel=18 cap=1571 rest=108] sg=2->2 mode=NONE win=8 obs=265 | cap=wip act=(320,360) d=1.47 a=1 | sp=frontier:active d=1.5 age=17 dtg=8.66 region=0_4
+ep=134 s=265 2866ms [sel=20 cap=2744 rest=103] sg=2->2 mode=NONE win=8 obs=266 | cap=wip act=(320,360) d=1.47 a=2 | sp=frontier:active d=1.5 age=18 dtg=8.66 region=0_4
+ep=134 s=266 2383ms [sel=17 cap=2270 rest=97] sg=2->2 mode=NONE win=8 obs=267 | cap=wip act=(320,360) d=1.47 a=1 | sp=frontier:active d=1.5 age=19 dtg=8.70 region=0_4
+ep=134 s=267 3783ms [sel=887 cap=2805 rest=91] sg=2->2 mode=NONE win=8 obs=268 | cap=wip act=(320,360) d=1.90 a=3 | sp=som:active d=1.9 age=0 som=3/7 dtg=8.70 region=0_4
+ep=134 s=268 3209ms [sel=3 cap=3109 rest=98] sg=2->2 mode=NONE win=8 obs=269 | cap=wip act=(320,360) d=1.90 a=3 | sp=som:active d=1.9 age=1 dtg=8.70 region=0_4
+ep=134 s=269 1901ms [sel=130 cap=1667 rest=104] sg=2->2 mode=GET_NOWHERE win=8 obs=270 | cap=wip/GET_NOWHERE act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.9 age=2 ovr=3 door_evts=3 dtg=8.70 region=0_4
+ep=134 s=270 2876ms [sel=0 cap=2769 rest=108] sg=2->2 mode=NONE win=8 obs=271 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.9 age=3 ovr=3 door_evts=3 dtg=8.70 region=0_4
+ep=134 s=271 3165ms [sel=0 cap=3052 rest=113] sg=2->2 mode=NONE win=8 obs=272 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.9 age=4 ovr=3 door_evts=3 dtg=8.70 region=0_4
+ep=134 s=272 1557ms [sel=0 cap=1445 rest=112] sg=2->2 mode=NONE win=8 obs=273 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.9 age=5 ovr=3 door_evts=3 dtg=8.70 region=0_4
+ep=134 s=273 1557ms [sel=0 cap=1442 rest=115] sg=2->2 mode=NONE win=8 obs=274 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.9 age=6 ovr=3 door_evts=3 dtg=8.70 region=0_4
+ep=134 s=274 1393ms [sel=19 cap=1264 rest=111] sg=2->2 mode=NONE win=8 obs=275 | cap=wip act=(320,360) d=1.90 a=3 | sp=som:active d=1.9 age=7 dtg=8.70 region=0_4
+ep=134 s=275 1877ms [sel=22 cap=1743 rest=112] sg=2->2 mode=NONE win=8 obs=276 | cap=wip act=(320,360) d=1.90 a=1 | sp=som:active d=1.9 age=8 dtg=8.47 region=0_4
+ep=134 s=276 3346ms [sel=23 cap=2814 rest=466] sg=2->2 mode=NONE win=8 obs=277 | cap=wip act=(320,360) d=1.94 a=2 | preview=view-/6 yaw=+0 render=42ms | sp=som:active d=1.9 age=9 dtg=8.47 region=0_4
+ep=134 s=277 2604ms [sel=22 cap=2468 rest=114] sg=2->2 mode=NONE win=8 obs=278 | cap=wip act=(320,360) d=1.94 a=2 | sp=som:active d=1.9 age=10 dtg=8.47 region=0_4
+ep=134 s=278 3129ms [sel=14 cap=2997 rest=117] sg=2->2 mode=NONE win=8 obs=279 | cap=wip act=(320,360) d=1.94 a=1 | sp=som:active d=1.9 age=11 dtg=8.22 region=0_4
+ep=134 s=279 4979ms [sel=16 cap=4848 rest=114] sg=2->2 mode=NONE win=8 obs=280 | cap=wip act=(320,360) d=1.87 a=2 | sp=som:active d=1.9 age=12 dtg=8.22 region=0_4
+ep=134 s=280 3049ms [sel=11 cap=2509 rest=492] sg=2->2 mode=NONE win=8 obs=281 | cap=wip act=(320,360) d=1.87 a=1 | preview=view-/6 yaw=+0 render=37ms | sp=som:active d=1.9 age=13 dtg=8.01 region=0_4
+ep=134 s=281 3340ms [sel=11 cap=3203 rest=126] sg=2->2 mode=NONE win=8 obs=282 | cap=wip act=(320,360) d=1.77 a=2 | sp=som:active d=1.8 age=14 dtg=8.01 region=0_4
+ep=134 s=282 2317ms [sel=6 cap=2197 rest=114] sg=2->2 mode=NONE win=8 obs=283 | cap=wip act=(320,360) d=1.77 a=1 | sp=som:active d=1.8 age=15 dtg=7.90 region=0_4
+ep=134 s=283 2255ms [sel=8 cap=2132 rest=115] sg=2->2 mode=NONE win=8 obs=284 | cap=wip act=(320,360) d=1.64 a=1 | sp=som:active d=1.6 age=16 dtg=7.85 region=0_4
+ep=134 s=284 3070ms [sel=8 cap=2943 rest=119] sg=2->2 mode=NONE win=8 obs=285 | cap=wip act=(320,360) d=1.54 a=1 | sp=som:active d=1.5 age=17 dtg=7.85 region=0_4
+ep=134 s=285 3656ms [sel=9 cap=3531 rest=116] sg=2->2 mode=NONE win=8 obs=286 | cap=wip act=(320,360) d=1.48 a=1 | sp=som:active d=1.5 age=18 dtg=7.88 region=0_4
+ep=134 s=286 2842ms [sel=12 cap=2712 rest=118] sg=2->2 mode=NONE win=8 obs=287 | cap=wip act=(320,360) d=1.45 a=2 | sp=som:active d=1.5 age=19 dtg=7.88 region=0_4
+ep=134 s=287 3604ms [sel=9 cap=3480 rest=115] sg=2->2 mode=NONE win=8 obs=288 | cap=wip act=(320,360) d=1.45 a=2 | sp=som:active d=1.5 age=20 dtg=7.88 region=0_4
+ep=134 s=288 4019ms [sel=9 cap=3901 rest=109] sg=2->2 mode=NONE win=8 obs=289 | cap=wip act=(320,360) d=1.45 a=1 | sp=som:active d=1.5 age=21 dtg=7.88 region=0_4
+ep=134 s=289 3305ms [sel=8 cap=3191 rest=105] sg=2->2 mode=NONE win=8 obs=290 | cap=wip act=(320,360) d=1.51 a=2 | sp=som:active d=1.5 age=22 dtg=7.88 region=0_4
+ep=134 s=290 2909ms [sel=6 cap=2804 rest=99] sg=2->2 mode=NONE win=8 obs=291 | cap=wip act=(320,360) d=1.51 a=1 | sp=som:active d=1.5 age=23 dtg=7.88 region=0_4
+ep=134 s=291 2122ms [sel=0 cap=1851 rest=271] sg=2->2 mode=NONE win=8 obs=292 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.5 age=24 ovr=3 door_evts=3 dtg=7.88 region=0_4
+ep=134 s=292 3737ms [sel=0 cap=3606 rest=131] sg=2->2 mode=NONE win=8 obs=293 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.5 age=25 ovr=3 door_evts=3 dtg=7.88 region=0_4
+ep=134 s=293 2719ms [sel=0 cap=2606 rest=113] sg=2->2 mode=NONE win=8 obs=294 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:stagnant d=1.5 age=26 ovr=3 door_evts=3 dtg=7.88 region=0_4
+ep=134 s=294 4019ms [sel=0 cap=3897 rest=122] sg=2->2 mode=NONE win=8 obs=295 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:stagnant d=1.5 age=27 ovr=3 door_evts=3 dtg=7.88 region=0_4
+ep=134 s=295 4937ms [sel=0 cap=4413 rest=487] sg=2->2 mode=NONE win=8 obs=296 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | preview=view-/6 yaw=+0 render=37ms | sp=som:stagnant d=1.5 age=28 ovr=3 door_evts=3 dtg=7.88 region=0_4
+ep=134 s=296 1812ms [sel=0 cap=1691 rest=121] sg=2->2 mode=NONE win=8 obs=297 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:stagnant d=1.5 age=29 ovr=3 door_evts=3 dtg=7.88 region=0_4
+ep=134 s=297 3141ms [sel=0 cap=3023 rest=118] sg=2->2 mode=NONE win=8 obs=298 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:stagnant d=1.5 age=30 ovr=3 door_evts=3 dtg=7.88 region=0_4
+ep=134 s=298 3034ms [sel=0 cap=2507 rest=490] sg=2->2 mode=NONE win=8 obs=299 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | preview=view-/6 yaw=+0 render=37ms | sp=som:stagnant d=1.5 age=31 ovr=3 door_evts=3 dtg=7.88 region=0_4
+ep=134 s=299 1558ms [sel=0 cap=1430 rest=128] sg=2->2 mode=NONE win=8 obs=300 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:stagnant d=1.5 age=32 ovr=3 door_evts=3 dtg=7.88 region=0_4
+ep=134 s=300 1613ms [sel=0 cap=1489 rest=125] sg=2->2 mode=NONE win=8 obs=301 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:stagnant d=1.5 age=33 ovr=3 door_evts=3 dtg=7.88 region=0_4
+ep=134 s=301 3371ms [sel=840 cap=2410 rest=121] sg=2->2 mode=NONE win=8 obs=302 | cap=wip act=(320,360) d=2.95 a=3 | sp=som:active d=3.0 age=0 som=5/8 dtg=7.88 region=0_4
+ep=134 s=302 2435ms [sel=6 cap=2329 rest=100] sg=2->2 mode=NONE win=8 obs=303 | cap=wip act=(320,360) d=2.95 a=1 | sp=som:active d=3.0 age=1 dtg=7.64 region=0_4
+ep=134 s=303 2953ms [sel=3 cap=2851 rest=99] sg=2->2 mode=NONE win=8 obs=304 | cap=wip act=(320,360) d=2.72 a=1 | sp=som:active d=2.7 age=2 dtg=7.35 region=0_4
+ep=134 s=304 1884ms [sel=3 cap=1775 rest=106] sg=2->2 mode=NONE win=8 obs=305 | cap=wip act=(320,360) d=2.48 a=1 | sp=som:active d=2.5 age=3 dtg=7.13 region=0_4
+ep=134 s=305 1324ms [sel=4 cap=1208 rest=112] sg=2->2 mode=NONE win=8 obs=306 | cap=wip act=(320,360) d=2.25 a=2 | sp=som:active d=2.2 age=4 dtg=7.13 region=0_4
+ep=134 s=306 1897ms [sel=4 cap=1782 rest=111] sg=2->2 mode=NONE win=8 obs=307 | cap=wip act=(320,360) d=2.25 a=1 | sp=som:active d=2.2 age=5 dtg=6.89 region=0_4
+ep=134 s=307 3364ms [sel=3 cap=3253 rest=108] sg=2->2 mode=NONE win=8 obs=308 | cap=wip act=(320,360) d=2.00 a=1 | sp=som:active d=2.0 age=6 dtg=6.64 region=0_4
+ep=134 s=308 1357ms [sel=4 cap=1244 rest=109] sg=2->2 mode=NONE win=8 obs=309 | cap=wip act=(320,360) d=1.75 a=1 | sp=som:active d=1.8 age=7 dtg=6.40 region=0_4
+ep=134 s=309 2399ms [sel=3 cap=2282 rest=114] sg=2->2 mode=NONE win=8 obs=310 | cap=wip act=(320,360) d=1.50 a=1 | sp=som:active d=1.5 age=8 dtg=6.16 region=0_4
+ep=134 s=310 2169ms [sel=3 cap=2042 rest=124] sg=2->2 mode=NONE win=8 obs=311 | cap=wip act=(320,360) d=1.26 a=2 | sp=som:active d=1.3 age=9 dtg=6.16 region=0_4
+ep=134 s=311 2097ms [sel=3 cap=1975 rest=119] sg=2->2 mode=NONE win=8 obs=312 | cap=wip act=(320,360) d=1.26 a=1 | sp=som:active d=1.3 age=10 dtg=5.91 region=0_4
+ep=134 s=312 2053ms [sel=3 cap=1930 rest=120] sg=2->2 mode=NONE win=8 obs=313 | cap=wip act=(320,360) d=1.01 a=1 | sp=som:active d=1.0 age=11 dtg=5.66 region=0_2
+ep=134 s=313 1370ms [sel=3 cap=1246 rest=122] sg=2->2 mode=NONE win=8 obs=314 | cap=wip act=(320,360) d=0.76 a=1 | sp=som:active d=0.8 age=12 dtg=5.41 region=0_2
+ep=134 s=314 1477ms [sel=3 cap=1359 rest=115] sg=2->2 mode=NONE win=8 obs=315 | cap=wip act=(320,360) d=0.51 a=1 | sp=som:active d=0.5 age=13 dtg=5.16 region=0_2
+ep=134 s=315 2541ms [sel=665 cap=1759 rest=117] sg=2->2 mode=NONE win=8 obs=316 | cap=wip act=(320,360) d=2.56 a=2 | sp=som:active d=2.6 age=0 som=4/7 dtg=5.16 region=0_2
+ep=134 s=316 2491ms [sel=3 cap=2372 rest=116] sg=2->2 mode=NONE win=8 obs=317 | cap=wip act=(320,360) d=2.56 a=1 | sp=som:active d=2.6 age=1 dtg=4.92 region=0_2
+ep=134 s=317 2382ms [sel=3 cap=2261 rest=118] sg=2->2 mode=NONE win=8 obs=318 | cap=wip act=(320,360) d=2.31 a=1 | sp=som:active d=2.3 age=2 dtg=4.68 region=0_2
+ep=134 s=318 3158ms [sel=583 cap=2466 rest=108] sg=2->2 mode=NONE win=8 obs=319 | cap=wip act=(320,360) d=3.36 a=1 | sp=som:active d=3.4 age=0 som=2/8 dtg=4.44 region=0_2
+ep=134 s=319 6544ms [sel=3 cap=6439 rest=102] sg=2->2 mode=NONE win=8 obs=320 | cap=wip act=(320,360) d=3.11 a=1 | sp=som:active d=3.1 age=1 dtg=4.20 region=0_2
+ep=134 s=320 2826ms [sel=3 cap=2722 rest=101] sg=2->2 mode=NONE win=8 obs=321 | cap=wip act=(320,360) d=2.86 a=1 | sp=som:active d=2.9 age=2 dtg=3.96 region=0_2
+ep=134 s=321 2464ms [sel=3 cap=2367 rest=94] sg=2->2 mode=NONE win=8 obs=322 | cap=wip act=(320,360) d=2.61 a=1 | sp=som:active d=2.6 age=3 dtg=3.73 region=0_2
+ep=134 s=322 2878ms [sel=3 cap=2789 rest=87] sg=2->2 mode=NONE win=8 obs=323 | cap=wip act=(320,360) d=2.36 a=1 | sp=som:active d=2.4 age=4 dtg=3.51 region=0_2
+ep=134 s=323 2798ms [sel=3 cap=2705 rest=90] sg=2->2 mode=NONE win=8 obs=324 | cap=wip act=(320,360) d=2.12 a=3 | sp=som:active d=2.1 age=5 dtg=3.51 region=0_2
+ep=134 s=324 2218ms [sel=3 cap=2123 rest=93] sg=2->2 mode=NONE win=8 obs=325 | cap=wip act=(320,360) d=2.12 a=1 | sp=som:active d=2.1 age=6 dtg=3.27 region=0_2
+ep=134 s=325 2326ms [sel=3 cap=2233 rest=90] sg=2->2 mode=NONE win=8 obs=326 | cap=wip act=(320,360) d=1.87 a=3 | sp=som:active d=1.9 age=7 dtg=3.27 region=0_2
+ep=134 s=326 2620ms [sel=3 cap=2520 rest=98] sg=2->2 mode=NONE win=8 obs=327 | cap=wip act=(320,360) d=1.87 a=1 | sp=som:active d=1.9 age=8 dtg=3.02 region=0_2
+ep=134 s=327 3542ms [sel=4 cap=3053 rest=444] sg=2->2 mode=NONE win=8 obs=328 | cap=wip act=(320,360) d=1.64 a=3 | preview=view-/6 yaw=+0 render=42ms | sp=som:active d=1.6 age=9 dtg=3.02 region=0_2
+ep=134 s=328 2408ms [sel=3 cap=2310 rest=95] sg=2->2 mode=NONE win=8 obs=329 | cap=wip act=(320,360) d=1.64 a=1 | sp=som:active d=1.6 age=10 dtg=2.78 region=0_2
+ep=134 s=329 3080ms [sel=5 cap=2983 rest=91] sg=2->2 mode=NONE win=8 obs=330 | cap=wip act=(320,360) d=1.45 a=1 | sp=som:active d=1.5 age=11 dtg=2.55 region=0_2
+ep=134 s=330 3736ms [sel=6 cap=3633 rest=98] sg=2->2 mode=NONE win=8 obs=331 | cap=wip act=(320,360) d=1.29 a=1 | sp=som:active d=1.3 age=12 dtg=2.37 region=0_2
+ep=134 s=331 1751ms [sel=8 cap=1649 rest=94] sg=2->2 mode=NONE win=8 obs=332 | cap=wip act=(320,360) d=1.17 a=2 | sp=som:active d=1.2 age=13 dtg=2.37 region=0_2
+ep=134 s=332 2278ms [sel=6 cap=2173 rest=99] sg=2->2 mode=NONE win=8 obs=333 | cap=wip act=(320,360) d=1.17 a=2 | sp=som:active d=1.2 age=14 dtg=2.37 region=0_2
+ep=134 s=333 2855ms [sel=4 cap=2748 rest=103] sg=2->2 mode=NONE win=8 obs=334 | cap=wip act=(320,360) d=1.17 a=1 | sp=som:active d=1.2 age=15 dtg=2.19 region=0_2
+ep=134 s=334 2132ms [sel=5 cap=2029 rest=98] sg=2->2 mode=NONE win=8 obs=335 | cap=wip act=(320,360) d=0.97 a=2 | sp=som:active d=1.0 age=16 dtg=2.19 region=0_2
+ep=134 s=335 3361ms [sel=3 cap=3258 rest=99] sg=2->2 mode=NONE win=8 obs=336 | cap=wip act=(320,360) d=0.97 a=1 | sp=som:active d=1.0 age=17 dtg=1.98 region=0_2
+ep=134 s=336 4742ms [sel=3 cap=4640 rest=99] sg=2->2 mode=NONE win=8 obs=337 | cap=wip act=(320,360) d=0.76 a=2 | sp=som:active d=0.8 age=18 dtg=1.98 region=0_2
+ep=134 s=337 2468ms [sel=18 cap=1941 rest=471] sg=2->2 mode=NONE win=8 obs=338 | cap=wip act=(160,180) d=3.55 a=2 | preview=view2/6 yaw=-30 render=38ms | sp=preview:active d=3.6 age=0 dtg=1.98 region=0_2
+ep=134 s=338 1746ms [sel=3 cap=1642 rest=101] sg=2->2 mode=NONE win=8 obs=339 | cap=wip act=(320,360) d=3.55 a=1 | sp=preview:active d=3.6 age=1 dtg=1.73 region=0_0
+ep=134 s=339 2270ms [sel=3 cap=2172 rest=95] sg=2->2 mode=NONE win=8 obs=340 | cap=wip act=(320,360) d=3.31 a=1 | sp=preview:active d=3.3 age=2 dtg=1.49 region=0_0
+ep=134 s=340 2055ms [sel=5 cap=1944 rest=107] sg=2->2 mode=NONE win=8 obs=341 | cap=wip act=(320,360) d=3.07 a=1 | sp=preview:active d=3.1 age=3 dtg=1.24 region=0_0
+ep=134 s=341 2449ms [sel=3 cap=2351 rest=95] sg=2->2 mode=NONE win=8 obs=342 | cap=wip act=(320,360) d=2.83 a=1 | sp=preview:active d=2.8 age=4 dtg=0.99 region=0_0
+ep=134 s=342 2877ms [sel=3 cap=2777 rest=97] sg=2->2 mode=NONE win=8 obs=343 | cap=wip act=(320,360) d=2.59 a=2 | sp=preview:active d=2.6 age=5 dtg=0.99 region=0_0
+ep=134 s=343 5246ms [sel=3 cap=5146 rest=97] sg=2->2 mode=NONE win=8 obs=344 | cap=wip act=(320,360) d=2.59 a=1 | sp=preview:active d=2.6 age=6 dtg=0.74 region=0_0
+ep=134 s=344 1474ms [sel=3 cap=1374 rest=97] sg=2->2 mode=NONE win=8 obs=345 | cap=wip act=(320,360) d=2.34 a=1 | sp=preview:active d=2.3 age=7 dtg=0.49 region=0_0
+ep=134 s=345 1252ms [sel=3 cap=1153 rest=96] sg=2->2 mode=NONE win=8 obs=346 | cap=wip act=(320,360) d=2.09 a=1 | sp=preview:active d=2.1 age=8 dtg=0.25 region=0_0
+ep=134 s=346 2286ms [sel=581 cap=1601 rest=104] sg=2->3 mode=NONE win=8 obs=347 | cap=DONE act=(320,360) d=2.17 a=3 | sp=som:active d=2.2 age=0 som=4/8 dtg=0.25 region=0_0
+ep=134 s=347 1315ms [sel=3 cap=1209 rest=103] sg=3->3 mode=NONE win=8 obs=348 | cap=wip act=(320,360) d=2.17 a=3 | sp=som:active d=2.2 age=1 dtg=0.25 region=0_0
+ep=134 s=348 1296ms [sel=3 cap=1188 rest=105] sg=3->3 mode=NONE win=8 obs=349 | cap=wip act=(320,360) d=2.17 a=1 | sp=som:active d=2.2 age=2 dtg=0.04 region=0_0
+ep=134 s=349 1300ms [sel=3 cap=1189 rest=109] sg=3->3 mode=NONE win=8 obs=350 | cap=wip act=(320,360) d=1.92 a=3 | sp=som:active d=1.9 age=3 dtg=0.04 region=0_0
+ep=134 s=350 1805ms [sel=3 cap=1690 rest=112] sg=3->3 mode=NONE win=8 obs=351 | cap=wip act=(320,360) d=1.92 a=1 | sp=som:active d=1.9 age=4 dtg=0.26 region=0_0
+ep=134 s=351 3998ms [sel=3 cap=3886 rest=109] sg=3->3 mode=NONE win=8 obs=352 | cap=wip act=(320,360) d=1.67 a=1 | sp=som:active d=1.7 age=5 dtg=0.51 region=0_0
+ep=134 s=352 1419ms [sel=3 cap=1305 rest=111] sg=3->3 mode=NONE win=8 obs=353 | cap=wip act=(320,360) d=1.43 a=1 | sp=som:active d=1.4 age=6 dtg=0.76 region=0_0
+ep=134 s=353 2433ms [sel=4 cap=2316 rest=113] sg=3->3 mode=NONE win=8 obs=354 | cap=wip act=(320,360) d=1.20 a=2 | sp=som:active d=1.2 age=7 dtg=0.76 region=0_0
+ep=134 s=354 1288ms [sel=3 cap=1171 rest=114] sg=3->3 mode=NONE win=8 obs=355 | cap=wip act=(320,360) d=1.20 a=1 | sp=som:active d=1.2 age=8 dtg=1.00 region=0_0
+ep=134 s=355 3154ms [sel=662 cap=2376 rest=116] sg=3->4 mode=NONE win=8 obs=356 | cap=DONE act=(320,360) d=3.29 a=3 | sp=som:active d=3.3 age=0 som=2/8 dtg=1.00 region=0_0
+ep=134 s=356 2912ms [sel=17 cap=2783 rest=112] sg=4->4 mode=NONE win=8 obs=357 | cap=wip act=(320,360) d=3.29 a=3 | sp=som:active d=3.3 age=1 dtg=1.00 region=0_0
+ep=134 s=357 9236ms [sel=1176 cap=7472 rest=552] sg=4->None mode=NONE win=8 obs=358 | cap=DONE act=STOP | preview=view-/6 yaw=+0 render=36ms | sp=som:active d=3.3 age=2 ovr=4 door_evts=3 dtg=1.00 region=0_0
+rank=0 [1/6] id=134 steps=358 success=1.000 spl=0.176 dtg=1.00 osr=1 path_length=47.62 ndtw=0.007 sdtw=0.007
+PluginManager::Manager: duplicate static plugin StbImageImporter, ignoring
+PluginManager::Manager: duplicate static plugin GltfImporter, ignoring
+PluginManager::Manager: duplicate static plugin BasisImporter, ignoring
+PluginManager::Manager: duplicate static plugin AssimpImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnySceneImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnyImageImporter, ignoring
+episode=371 instruction="Okay so head on through the dining room and the kitchen air, making your way to the short flight of stairs. Then go up that short flight of stairs. And wait by the door that's at the top of the stairs." start_position=[-0.6155629754066467, -0.535740852355957, 14.96619987487793] goal_position=[-2.248199939727783, 0.5473843812942505, 6.074480056762695] reference_geodesic=9.303671836853027
+episode=371 prepared_subgoals=3
+  [1] Go through the dining room and kitchen area
+      proof: The camera has passed the kitchen and the short flight of stairs is directly ahead.
+  [2] Go up the short flight of stairs
+      proof: The camera has passed the stairs: they are below and behind it and the upper hallway fills the view.
+  [3] Wait by the door at the top of the stairs
+      proof: The door is directly ahead of the camera, within a step and the camera is stationary beside it
+ep=371 s=0 3041ms [sel=29 cap=2506 rest=471] sg=1->1 mode=NONE win=1 obs=1 | cap=wip act=(160,180) d=3.59 a=3 | preview=view4/6 yaw=+90 render=35ms | sp=preview:active d=3.6 age=0 dtg=9.30 region=0_15
+ep=371 s=1 2285ms [sel=10 cap=2183 rest=92] sg=1->1 mode=NONE win=2 obs=2 | cap=wip act=(320,360) d=3.59 a=1 | sp=preview:active d=3.6 age=1 dtg=9.35 region=0_15
+ep=371 s=2 2882ms [sel=9 cap=2783 rest=90] sg=1->1 mode=NONE win=3 obs=3 | cap=wip act=(320,360) d=3.37 a=3 | sp=preview:active d=3.4 age=2 dtg=9.35 region=0_15
+ep=371 s=3 2280ms [sel=9 cap=2183 rest=88] sg=1->1 mode=NONE win=4 obs=4 | cap=wip act=(320,360) d=3.37 a=1 | sp=preview:active d=3.4 age=3 dtg=9.35 region=0_15
+ep=371 s=4 2427ms [sel=9 cap=2330 rest=88] sg=1->1 mode=NONE win=5 obs=5 | cap=wip act=(320,360) d=3.12 a=1 | sp=preview:active d=3.1 age=4 dtg=9.47 region=0_15
+ep=371 s=5 2723ms [sel=9 cap=2610 rest=103] sg=1->1 mode=NONE win=6 obs=6 | cap=wip act=(320,360) d=2.88 a=1 | sp=preview:active d=2.9 age=5 dtg=9.67 region=None
+ep=371 s=6 2303ms [sel=6 cap=2187 rest=110] sg=1->1 mode=NONE win=7 obs=7 | cap=wip act=(320,360) d=2.63 a=1 | sp=preview:active d=2.6 age=6 dtg=9.03 region=0_16
+ep=371 s=7 3501ms [sel=3 cap=3395 rest=103] sg=1->1 mode=NONE win=8 obs=8 | cap=wip act=(320,360) d=2.39 a=3 | sp=preview:active d=2.4 age=7 dtg=9.03 region=0_16
+ep=371 s=8 2173ms [sel=3 cap=2067 rest=103] sg=1->1 mode=NONE win=8 obs=9 | cap=wip act=(320,360) d=2.39 a=1 | sp=preview:active d=2.4 age=8 dtg=8.96 region=0_16
+ep=371 s=9 2224ms [sel=4 cap=2115 rest=106] sg=1->1 mode=NONE win=8 obs=10 | cap=wip act=(320,360) d=2.14 a=1 | sp=preview:active d=2.1 age=9 dtg=8.89 region=0_16
+ep=371 s=10 2280ms [sel=4 cap=1728 rest=514] sg=1->1 mode=NONE win=8 obs=11 | cap=wip act=(320,360) d=1.89 a=1 | preview=view-/6 yaw=+0 render=34ms | sp=preview:active d=1.9 age=10 dtg=8.84 region=0_16
+ep=371 s=11 2444ms [sel=3 cap=2340 rest=101] sg=1->1 mode=NONE win=8 obs=12 | cap=wip act=(320,360) d=1.64 a=1 | sp=preview:active d=1.6 age=11 dtg=8.78 region=0_16
+ep=371 s=12 2115ms [sel=3 cap=2014 rest=98] sg=1->1 mode=NONE win=8 obs=13 | cap=wip act=(320,360) d=1.39 a=1 | sp=preview:active d=1.4 age=12 dtg=8.74 region=0_16
+ep=371 s=13 6012ms [sel=628 cap=5282 rest=102] sg=1->1 mode=NONE win=8 obs=14 | cap=wip act=(320,360) d=1.53 a=2 | sp=frontier:active d=1.5 age=0 som=4/8 dtg=8.74 region=0_16
+ep=371 s=14 5484ms [sel=22 cap=5361 rest=100] sg=1->1 mode=NONE win=8 obs=15 | cap=wip act=(320,360) d=1.53 a=2 | sp=frontier:active d=1.5 age=1 dtg=8.74 region=0_16
+ep=371 s=15 3972ms [sel=22 cap=3847 rest=103] sg=1->1 mode=NONE win=8 obs=16 | cap=wip act=(320,360) d=1.53 a=2 | sp=frontier:active d=1.5 age=2 dtg=8.74 region=0_16
+ep=371 s=16 3892ms [sel=14 cap=3772 rest=106] sg=1->1 mode=NONE win=8 obs=17 | cap=wip act=(320,360) d=1.53 a=2 | sp=frontier:active d=1.5 age=3 dtg=8.74 region=0_16
+ep=371 s=17 8438ms [sel=12 cap=8318 rest=108] sg=1->1 mode=NONE win=8 obs=18 | cap=wip act=(320,360) d=1.53 a=2 | sp=frontier:active d=1.5 age=4 dtg=8.74 region=0_16
+ep=371 s=18 5802ms [sel=11 cap=5678 rest=112] sg=1->1 mode=NONE win=8 obs=19 | cap=wip act=(320,360) d=1.53 a=1 | sp=frontier:active d=1.5 age=5 dtg=9.01 region=0_16
+ep=371 s=19 3246ms [sel=11 cap=3125 rest=110] sg=1->1 mode=NONE win=8 obs=20 | cap=wip act=(320,360) d=1.28 a=1 | sp=frontier:active d=1.3 age=6 dtg=9.24 region=0_16
+ep=371 s=20 1745ms [sel=12 cap=1621 rest=112] sg=1->1 mode=NONE win=8 obs=21 | cap=wip act=(320,360) d=1.04 a=1 | sp=frontier:active d=1.0 age=7 dtg=9.47 region=0_16
+ep=371 s=21 1965ms [sel=10 cap=1846 rest=109] sg=1->1 mode=NONE win=8 obs=22 | cap=wip act=(320,360) d=0.79 a=2 | sp=frontier:active d=0.8 age=8 dtg=9.47 region=0_16
+ep=371 s=22 2344ms [sel=10 cap=2224 rest=110] sg=1->1 mode=NONE win=8 obs=23 | cap=wip act=(320,360) d=0.79 a=1 | sp=frontier:active d=0.8 age=9 dtg=9.72 region=0_16
+ep=371 s=23 3288ms [sel=5 cap=3170 rest=112] sg=1->1 mode=NONE win=8 obs=24 | cap=wip act=(320,360) d=0.54 a=1 | sp=frontier:active d=0.5 age=10 dtg=9.97 region=0_16
+ep=371 s=24 4211ms [sel=621 cap=3483 rest=107] sg=1->1 mode=NONE win=8 obs=25 | cap=wip act=(320,360) d=2.92 a=1 | sp=som:active d=2.9 age=0 som=4/8 dtg=10.22 region=0_16
+ep=371 s=25 3481ms [sel=6 cap=3372 rest=103] sg=1->1 mode=NONE win=8 obs=26 | cap=wip act=(320,360) d=2.70 a=1 | sp=som:active d=2.7 age=1 dtg=10.47 region=0_16
+ep=371 s=26 3422ms [sel=6 cap=3317 rest=99] sg=1->1 mode=NONE win=8 obs=27 | cap=wip act=(320,360) d=2.48 a=2 | sp=som:active d=2.5 age=2 dtg=10.47 region=0_16
+ep=371 s=27 2062ms [sel=6 cap=1962 rest=95] sg=1->1 mode=NONE win=8 obs=28 | cap=wip act=(320,360) d=2.48 a=1 | sp=som:active d=2.5 age=3 dtg=10.71 region=0_14
+ep=371 s=28 3231ms [sel=3 cap=3135 rest=93] sg=1->1 mode=NONE win=8 obs=29 | cap=wip act=(320,360) d=2.23 a=2 | sp=som:active d=2.2 age=4 dtg=10.71 region=0_14
+ep=371 s=29 2521ms [sel=3 cap=2422 rest=96] sg=1->1 mode=NONE win=8 obs=30 | cap=wip act=(320,360) d=2.23 a=1 | sp=som:active d=2.2 age=5 dtg=10.94 region=0_14
+ep=371 s=30 2434ms [sel=3 cap=2329 rest=102] sg=1->1 mode=NONE win=8 obs=31 | cap=wip act=(320,360) d=1.98 a=1 | sp=som:active d=2.0 age=6 dtg=11.17 region=0_14
+ep=371 s=31 2745ms [sel=3 cap=2648 rest=94] sg=1->1 mode=NONE win=8 obs=32 | cap=wip act=(320,360) d=1.74 a=1 | sp=som:active d=1.7 age=7 dtg=11.41 region=0_14
+ep=371 s=32 2815ms [sel=3 cap=2719 rest=93] sg=1->1 mode=NONE win=8 obs=33 | cap=wip act=(320,360) d=1.49 a=1 | sp=som:active d=1.5 age=8 dtg=11.65 region=0_14
+ep=371 s=33 3218ms [sel=3 cap=3124 rest=91] sg=1->1 mode=NONE win=8 obs=34 | cap=wip act=(320,360) d=1.24 a=1 | sp=som:active d=1.2 age=9 dtg=11.89 region=0_14
+ep=371 s=34 2169ms [sel=3 cap=2078 rest=89] sg=1->1 mode=NONE win=8 obs=35 | cap=wip act=(320,360) d=0.99 a=1 | sp=som:active d=1.0 age=10 dtg=12.14 region=0_14
+ep=371 s=35 2773ms [sel=3 cap=2683 rest=87] sg=1->1 mode=NONE win=8 obs=36 | cap=wip act=(320,360) d=0.74 a=1 | sp=som:active d=0.7 age=11 dtg=12.39 region=0_14
+ep=371 s=36 2968ms [sel=1003 cap=1875 rest=89] sg=1->1 mode=NONE win=8 obs=37 | cap=wip act=(320,360) d=3.06 a=2 | sp=som:active d=3.1 age=0 som=3/8 dtg=12.39 region=0_14
+ep=371 s=37 4297ms [sel=3 cap=3787 rest=473] sg=1->1 mode=NONE win=8 obs=38 | cap=wip act=(320,360) d=3.06 a=2 | preview=view-/6 yaw=+0 render=34ms | sp=som:active d=3.1 age=1 dtg=12.39 region=0_14
+ep=371 s=38 2672ms [sel=3 cap=2571 rest=97] sg=1->1 mode=NONE win=8 obs=39 | cap=wip act=(320,360) d=3.06 a=1 | sp=som:active d=3.1 age=2 dtg=12.59 region=0_14
+ep=371 s=39 4415ms [sel=3 cap=4314 rest=98] sg=1->1 mode=NONE win=8 obs=40 | cap=wip act=(320,360) d=2.81 a=1 | sp=som:active d=2.8 age=3 dtg=12.81 region=0_14
+ep=371 s=40 1907ms [sel=3 cap=1799 rest=106] sg=1->1 mode=NONE win=8 obs=41 | cap=wip act=(320,360) d=2.57 a=1 | sp=som:active d=2.6 age=4 dtg=13.03 region=0_14
+ep=371 s=41 2019ms [sel=3 cap=1918 rest=98] sg=1->1 mode=NONE win=8 obs=42 | cap=wip act=(320,360) d=2.33 a=1 | sp=som:active d=2.3 age=5 dtg=13.25 region=0_14
+ep=371 s=42 4094ms [sel=3 cap=3994 rest=96] sg=1->1 mode=NONE win=8 obs=43 | cap=wip act=(320,360) d=2.09 a=1 | sp=som:active d=2.1 age=6 dtg=13.48 region=0_14
+ep=371 s=43 4265ms [sel=675 cap=3496 rest=94] sg=1->2 mode=NONE win=8 obs=44 | cap=DONE act=(320,360) d=3.04 a=1 | sp=som:active d=3.0 age=0 som=3/8 dtg=13.72 region=0_14
+ep=371 s=44 1455ms [sel=3 cap=1357 rest=95] sg=2->2 mode=NONE win=8 obs=45 | cap=wip act=(320,360) d=2.79 a=1 | sp=som:active d=2.8 age=1 dtg=13.95 region=0_14
+ep=371 s=45 1508ms [sel=3 cap=1412 rest=93] sg=2->2 mode=NONE win=8 obs=46 | cap=wip act=(320,360) d=2.54 a=1 | sp=som:active d=2.5 age=2 dtg=14.20 region=0_14
+ep=371 s=46 2008ms [sel=3 cap=1912 rest=94] sg=2->2 mode=NONE win=8 obs=47 | cap=wip act=(320,360) d=2.30 a=1 | sp=som:active d=2.3 age=3 dtg=14.44 region=0_14
+ep=371 s=47 3751ms [sel=3 cap=3651 rest=97] sg=2->2 mode=NONE win=8 obs=48 | cap=wip act=(320,360) d=2.05 a=1 | sp=som:active d=2.0 age=4 dtg=14.69 region=0_14
+ep=371 s=48 3124ms [sel=3 cap=3025 rest=96] sg=2->2 mode=NONE win=8 obs=49 | cap=wip act=(320,360) d=1.80 a=1 | sp=som:active d=1.8 age=5 dtg=14.94 region=0_14
+ep=371 s=49 2772ms [sel=848 cap=1826 rest=98] sg=2->3 mode=NONE win=8 obs=50 | cap=DONE act=(320,360) d=1.12 a=3 | sp=som:active d=1.1 age=0 som=5/8 dtg=14.94 region=0_14
+ep=371 s=50 2447ms [sel=4 cap=2346 rest=98] sg=3->3 mode=NONE win=8 obs=51 | cap=wip act=(320,360) d=1.12 a=3 | sp=som:active d=1.1 age=1 dtg=14.94 region=0_14
+ep=371 s=51 9316ms [sel=3 cap=8767 rest=511] sg=3->3 mode=NONE win=8 obs=52 | cap=wip act=(320,360) d=1.12 a=1 | preview=view-/6 yaw=+0 render=35ms | sp=som:active d=1.1 age=2 dtg=15.97 region=0_14
+ep=371 s=52 3459ms [sel=3 cap=3365 rest=91] sg=3->3 mode=NONE win=8 obs=53 | cap=wip act=(320,360) d=0.87 a=3 | sp=som:active d=0.9 age=3 dtg=15.97 region=0_14
+ep=371 s=53 3895ms [sel=3 cap=3799 rest=93] sg=3->3 mode=NONE win=8 obs=54 | cap=wip act=(320,360) d=0.87 a=1 | sp=som:active d=0.9 age=4 dtg=15.38 region=0_14
+ep=371 s=54 9468ms [sel=3 cap=8972 rest=457] sg=3->3 mode=NONE win=8 obs=55 | cap=wip act=(320,360) d=0.62 a=1 | preview=view-/6 yaw=+0 render=36ms | sp=som:active d=0.6 age=5 dtg=15.60 region=0_14
+ep=371 s=55 7352ms [sel=986 cap=6275 rest=91] sg=3->3 mode=NONE win=8 obs=56 | cap=wip act=(320,360) d=1.35 a=3 | sp=som:active d=1.3 age=0 som=2/5 dtg=15.60 region=0_14
+ep=371 s=56 5465ms [sel=4 cap=5368 rest=93] sg=3->3 mode=NONE win=8 obs=57 | cap=wip act=(320,360) d=1.35 a=3 | sp=som:active d=1.3 age=1 dtg=15.60 region=0_14
+ep=371 s=57 8418ms [sel=3 cap=7933 rest=446] sg=3->3 mode=NONE win=8 obs=58 | cap=wip act=(320,360) d=1.35 a=3 | preview=view-/6 yaw=+0 render=36ms | sp=som:active d=1.3 age=2 dtg=15.60 region=0_14
+ep=371 s=58 4407ms [sel=3 cap=4308 rest=96] sg=3->3 mode=NONE win=8 obs=59 | cap=wip act=(320,360) d=1.35 a=1 | sp=som:active d=1.3 age=3 dtg=15.68 region=0_14
+ep=371 s=59 4066ms [sel=3 cap=3968 rest=96] sg=3->3 mode=NONE win=8 obs=60 | cap=wip act=(320,360) d=1.10 a=1 | sp=som:active d=1.1 age=4 dtg=15.77 region=0_14
+ep=371 s=60 9452ms [sel=3 cap=8973 rest=443] sg=3->3 mode=NONE win=8 obs=61 | cap=wip act=(320,360) d=0.85 a=1 | preview=view-/6 yaw=+0 render=34ms | sp=som:active d=0.8 age=5 dtg=15.88 region=None
+ep=371 s=61 4006ms [sel=3 cap=3908 rest=95] sg=3->3 mode=NONE win=8 obs=62 | cap=wip act=(320,360) d=0.60 a=1 | sp=som:active d=0.6 age=6 dtg=15.99 region=0_11
+ep=371 s=62 7146ms [sel=765 cap=6285 rest=95] sg=3->3 mode=NONE win=8 obs=63 | cap=wip act=(320,360) d=0.86 a=3 | sp=som:active d=0.9 age=0 som=1/6 dtg=15.99 region=0_11
+ep=371 s=63 6291ms [sel=3 cap=5831 rest=424] sg=3->3 mode=NONE win=8 obs=64 | cap=wip act=(320,360) d=0.86 a=1 | preview=view-/6 yaw=+0 render=34ms | sp=som:active d=0.9 age=1 dtg=16.06 region=0_11
+ep=371 s=64 1603ms [sel=3 cap=1500 rest=100] sg=3->3 mode=NONE win=8 obs=65 | cap=wip act=(320,360) d=0.61 a=3 | sp=som:active d=0.6 age=2 dtg=16.06 region=0_11
+ep=371 s=65 1649ms [sel=3 cap=1544 rest=103] sg=3->3 mode=NONE win=8 obs=66 | cap=wip act=(320,360) d=0.61 a=1 | sp=som:active d=0.6 age=3 dtg=16.07 region=0_11
+ep=371 s=66 7986ms [sel=862 cap=6670 rest=420] sg=3->3 mode=NONE win=8 obs=67 | cap=wip act=(320,360) d=2.92 a=2 | preview=view-/6 yaw=+0 render=34ms | sp=som:active d=2.9 age=0 som=2/6 dtg=16.07 region=0_11
+ep=371 s=67 5068ms [sel=3 cap=4961 rest=105] sg=3->3 mode=NONE win=8 obs=68 | cap=wip act=(320,360) d=2.92 a=2 | sp=som:active d=2.9 age=1 dtg=16.07 region=0_11
+ep=371 s=68 3900ms [sel=3 cap=3801 rest=97] sg=3->3 mode=NONE win=8 obs=69 | cap=wip act=(320,360) d=2.92 a=1 | sp=som:active d=2.9 age=2 dtg=16.29 region=0_11
+ep=371 s=69 6577ms [sel=12 cap=6116 rest=415] sg=3->3 mode=NONE win=8 obs=70 | cap=wip act=(320,360) d=2.79 a=1 | preview=view-/6 yaw=+0 render=33ms | sp=som:active d=2.8 age=3 dtg=16.52 region=0_11
+ep=371 s=70 4056ms [sel=17 cap=3947 rest=92] sg=3->3 mode=NONE win=8 obs=71 | cap=wip act=(320,360) d=2.76 a=3 | sp=som:active d=2.8 age=4 dtg=16.52 region=0_11
+ep=371 s=71 3197ms [sel=13 cap=3086 rest=98] sg=3->3 mode=NONE win=8 obs=72 | cap=wip act=(320,360) d=2.76 a=1 | sp=som:active d=2.8 age=5 dtg=16.83 region=0_11
+ep=371 s=72 8575ms [sel=6 cap=8113 rest=423] sg=3->3 mode=NONE win=8 obs=73 | cap=wip act=(320,360) d=2.72 a=1 | preview=view-/6 yaw=+0 render=33ms | sp=som:active d=2.7 age=6 dtg=17.17 region=0_11
+ep=371 s=73 3206ms [sel=3 cap=3100 rest=103] sg=3->3 mode=NONE win=8 obs=74 | cap=wip act=(320,360) d=2.51 a=1 | sp=som:active d=2.5 age=7 dtg=17.41 region=0_11
+ep=371 s=74 3259ms [sel=3 cap=3154 rest=103] sg=3->3 mode=NONE win=8 obs=75 | cap=wip act=(320,360) d=2.30 a=1 | sp=som:active d=2.3 age=8 dtg=17.66 region=0_11
+ep=371 s=75 3409ms [sel=3 cap=3303 rest=104] sg=3->3 mode=NONE win=8 obs=76 | cap=wip act=(320,360) d=2.10 a=3 | sp=som:active d=2.1 age=9 dtg=17.66 region=0_11
+ep=371 s=76 6917ms [sel=3 cap=6806 rest=108] sg=3->3 mode=NONE win=8 obs=77 | cap=wip act=(320,360) d=2.10 a=1 | sp=som:active d=2.1 age=10 dtg=17.91 region=0_11
+ep=371 s=77 9581ms [sel=3 cap=9107 rest=436] sg=3->3 mode=NONE win=8 obs=78 | cap=wip act=(320,360) d=1.88 a=3 | preview=view-/6 yaw=+0 render=36ms | sp=som:active d=1.9 age=11 dtg=17.91 region=0_11
+ep=371 s=78 8494ms [sel=3 cap=8379 rest=112] sg=3->3 mode=NONE win=8 obs=79 | cap=wip act=(320,360) d=1.88 a=1 | sp=som:active d=1.9 age=12 dtg=18.14 region=0_11
+ep=371 s=79 7414ms [sel=3 cap=7299 rest=112] sg=3->3 mode=NONE win=8 obs=80 | cap=wip act=(320,360) d=1.64 a=1 | sp=som:active d=1.6 age=13 dtg=18.39 region=0_11
+ep=371 s=80 2401ms [sel=3 cap=2288 rest=110] sg=3->3 mode=NONE win=8 obs=81 | cap=wip act=(320,360) d=1.40 a=1 | sp=som:active d=1.4 age=14 dtg=18.63 region=0_11
+ep=371 s=81 1897ms [sel=3 cap=1787 rest=107] sg=3->3 mode=NONE win=8 obs=82 | cap=wip act=(320,360) d=1.16 a=1 | sp=som:active d=1.2 age=15 dtg=18.87 region=0_11
+ep=371 s=82 3211ms [sel=3 cap=3103 rest=105] sg=3->3 mode=NONE win=8 obs=83 | cap=wip act=(320,360) d=0.93 a=1 | sp=som:active d=0.9 age=16 dtg=19.12 region=0_11
+ep=371 s=83 2554ms [sel=3 cap=2451 rest=100] sg=3->3 mode=NONE win=8 obs=84 | cap=wip act=(320,360) d=0.72 a=1 | sp=som:active d=0.7 age=17 dtg=19.37 region=0_11
+ep=371 s=84 3462ms [sel=3 cap=3364 rest=96] sg=3->3 mode=NONE win=8 obs=85 | cap=wip act=(320,360) d=0.54 a=1 | sp=som:active d=0.5 age=18 dtg=19.62 region=0_11
+ep=371 s=85 9127ms [sel=667 cap=8017 rest=407] sg=3->None mode=NONE win=8 obs=86 | cap=DONE act=(320,360) d=1.00 a=1 | preview=view-/6 yaw=+0 render=36ms | sp=som:reached d=0.4 age=19 dtg=19.86 region=0_11
+ep=371 s=86 97ms [sel=4 cap=0 rest=92] sg=None->None mode=NONE win=8 obs=87 | cap=- act=(320,360) d=1.00 a=1 | sp=som:reached d=0.4 age=20 dtg=20.11 region=0_11
+ep=371 s=87 104ms [sel=5 cap=0 rest=99] sg=None->None mode=NONE win=8 obs=88 | cap=- act=(320,360) d=1.00 a=1 | sp=som:reached d=0.4 age=21 dtg=20.36 region=0_11
+ep=371 s=88 100ms [sel=0 cap=0 rest=100] sg=None->None mode=NONE win=8 obs=89 | cap=- act=STOP | sp=som:reached d=0.4 age=22 dtg=20.36 region=0_11
+rank=0 [2/6] id=371 steps=89 success=0.000 spl=0.000 dtg=20.36 osr=0 path_length=15.51 ndtw=0.014 sdtw=0.000
+PluginManager::Manager: duplicate static plugin StbImageImporter, ignoring
+PluginManager::Manager: duplicate static plugin GltfImporter, ignoring
+PluginManager::Manager: duplicate static plugin BasisImporter, ignoring
+PluginManager::Manager: duplicate static plugin AssimpImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnySceneImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnyImageImporter, ignoring
+episode=715 instruction="Okay so just walk on through the kitchen first, and when you get to the bathroom you want to turn right, then pretty much straight away take a left again and go through the doorway, which puts you in the bedroom, and that's it, just stop there." start_position=[12.461600303649902, 0.17162801325321198, -2.3902199268341064] goal_position=[0.2081959992647171, 0.17162801325321198, -3.8352599143981934] reference_geodesic=12.478535652160645
+episode=715 prepared_subgoals=3
+  [1] Walk through the kitchen
+      proof: The camera has passed the kitchen: it is behind or below the camera and the space beyond it fills the view; the camera has not yet turned right.
+  [2] Turn right at the bathroom, then turn left at the doorway, then enter the bedroom
+      proof: The camera has crossed the bedroom threshold and the bedroom interior is central in the view.
+  [3] Stop beside the bedroom doorway
+      proof: The camera is stationary beside the bedroom doorway, with the bedroom interior visible ahead
+ep=715 s=0 3670ms [sel=5 cap=3128 rest=500] sg=1->1 mode=NONE win=1 obs=1 | cap=wip act=PREVIEW a=2 | preview=view2/6 yaw=+0 render=37ms dtg=12.48 region=0_19
+ep=715 s=1 2442ms [sel=535 cap=1817 rest=90] sg=1->1 mode=NONE win=2 obs=2 | cap=wip act=(320,360) d=1.65 a=2 | sp=som:active d=1.7 age=0 som=2/8 dtg=12.48 region=0_19
+ep=715 s=2 1815ms [sel=4 cap=1720 rest=91] sg=1->1 mode=NONE win=3 obs=3 | cap=wip act=(320,360) d=1.65 a=2 | sp=som:active d=1.7 age=1 dtg=12.48 region=0_19
+ep=715 s=3 2866ms [sel=3 cap=2767 rest=95] sg=1->1 mode=NONE win=4 obs=4 | cap=wip act=(320,360) d=1.65 a=2 | sp=som:active d=1.7 age=2 dtg=12.48 region=0_19
+ep=715 s=4 3331ms [sel=3 cap=3231 rest=98] sg=1->1 mode=NONE win=5 obs=5 | cap=wip act=(320,360) d=1.65 a=1 | sp=som:active d=1.7 age=3 dtg=12.23 region=0_19
+ep=715 s=5 3305ms [sel=3 cap=3198 rest=104] sg=1->1 mode=NONE win=6 obs=6 | cap=wip act=(320,360) d=1.40 a=1 | sp=som:active d=1.4 age=4 dtg=11.98 region=0_19
+ep=715 s=6 2342ms [sel=4 cap=2227 rest=112] sg=1->1 mode=NONE win=7 obs=7 | cap=wip act=(320,360) d=1.15 a=1 | sp=som:active d=1.2 age=5 dtg=11.73 region=0_19
+ep=715 s=7 2693ms [sel=3 cap=2582 rest=108] sg=1->1 mode=NONE win=8 obs=8 | cap=wip act=(320,360) d=0.90 a=1 | sp=som:active d=0.9 age=6 dtg=11.48 region=0_19
+ep=715 s=8 1840ms [sel=3 cap=1733 rest=104] sg=1->1 mode=NONE win=8 obs=9 | cap=wip act=(320,360) d=0.65 a=1 | sp=som:active d=0.7 age=7 dtg=11.23 region=0_19
+ep=715 s=9 2935ms [sel=976 cap=1859 rest=100] sg=1->1 mode=NONE win=8 obs=10 | cap=wip act=(320,360) d=3.00 a=1 | sp=som:active d=3.0 age=0 som=3/8 dtg=10.98 region=0_19
+ep=715 s=10 3295ms [sel=3 cap=3191 rest=101] sg=1->1 mode=NONE win=8 obs=11 | cap=wip act=(320,360) d=2.75 a=1 | sp=som:active d=2.8 age=1 dtg=10.73 region=0_10
+ep=715 s=11 2396ms [sel=3 cap=2290 rest=103] sg=1->1 mode=NONE win=8 obs=12 | cap=wip act=(320,360) d=2.50 a=1 | sp=som:active d=2.5 age=2 dtg=10.48 region=0_10
+ep=715 s=12 2426ms [sel=3 cap=2321 rest=102] sg=1->1 mode=NONE win=8 obs=13 | cap=wip act=(320,360) d=2.25 a=1 | sp=som:active d=2.3 age=3 dtg=10.23 region=0_10
+ep=715 s=13 3846ms [sel=3 cap=3742 rest=102] sg=1->1 mode=NONE win=8 obs=14 | cap=wip act=(320,360) d=2.00 a=1 | sp=som:active d=2.0 age=4 dtg=9.98 region=0_10
+ep=715 s=14 1593ms [sel=3 cap=1491 rest=99] sg=1->1 mode=NONE win=8 obs=15 | cap=wip act=(320,360) d=1.75 a=1 | sp=som:active d=1.8 age=5 dtg=9.73 region=0_10
+ep=715 s=15 2632ms [sel=3 cap=2530 rest=99] sg=1->1 mode=NONE win=8 obs=16 | cap=wip act=(320,360) d=1.50 a=1 | sp=som:active d=1.5 age=6 dtg=9.48 region=0_10
+ep=715 s=16 2331ms [sel=3 cap=2226 rest=102] sg=1->1 mode=NONE win=8 obs=17 | cap=wip act=(320,360) d=1.25 a=1 | sp=som:active d=1.3 age=7 dtg=9.23 region=0_10
+ep=715 s=17 2191ms [sel=3 cap=2085 rest=103] sg=1->1 mode=NONE win=8 obs=18 | cap=wip act=(320,360) d=1.00 a=1 | sp=som:active d=1.0 age=8 dtg=8.98 region=0_10
+ep=715 s=18 2762ms [sel=3 cap=2660 rest=100] sg=1->1 mode=NONE win=8 obs=19 | cap=wip act=(320,360) d=0.75 a=1 | sp=som:active d=0.8 age=9 dtg=8.73 region=0_10
+ep=715 s=19 2632ms [sel=3 cap=2522 rest=107] sg=1->1 mode=NONE win=8 obs=20 | cap=wip act=(320,360) d=0.50 a=1 | sp=som:active d=0.5 age=10 dtg=8.48 region=0_10
+ep=715 s=20 4006ms [sel=1514 cap=2385 rest=108] sg=1->1 mode=NONE win=8 obs=21 | cap=wip act=(320,360) d=2.95 a=1 | sp=som:active d=3.0 age=0 som=2/8 dtg=8.24 region=0_10
+ep=715 s=21 2520ms [sel=3 cap=2409 rest=108] sg=1->1 mode=NONE win=8 obs=22 | cap=wip act=(320,360) d=2.70 a=1 | sp=som:active d=2.7 age=1 dtg=7.99 region=0_10
+ep=715 s=22 3497ms [sel=3 cap=3388 rest=106] sg=1->1 mode=NONE win=8 obs=23 | cap=wip act=(320,360) d=2.45 a=1 | sp=som:active d=2.5 age=2 dtg=7.74 region=0_10
+ep=715 s=23 2619ms [sel=3 cap=2508 rest=109] sg=1->1 mode=NONE win=8 obs=24 | cap=wip act=(320,360) d=2.20 a=1 | sp=som:active d=2.2 age=3 dtg=7.49 region=0_10
+ep=715 s=24 2127ms [sel=3 cap=2018 rest=107] sg=1->1 mode=NONE win=8 obs=25 | cap=wip act=(320,360) d=1.95 a=1 | sp=som:active d=2.0 age=4 dtg=7.24 region=0_10
+ep=715 s=25 3646ms [sel=0 cap=3542 rest=105] sg=1->2 mode=NONE win=8 obs=26 | cap=DONE act=TURN request=+45deg execute=+15deg x1 a=3 | sp=som:active d=1.7 age=5 door_evts=1 dtg=7.24 region=0_10
+ep=715 s=26 2231ms [sel=0 cap=2125 rest=106] sg=2->2 mode=NONE win=8 obs=27 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=- door_evts=1 dtg=7.24 region=0_10
+ep=715 s=27 2639ms [sel=0 cap=2099 rest=504] sg=2->2 mode=NONE win=8 obs=28 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | preview=view-/6 yaw=+0 render=37ms | sp=- door_evts=1 dtg=7.24 region=0_10
+ep=715 s=28 3185ms [sel=0 cap=3072 rest=113] sg=2->2 mode=NONE win=8 obs=29 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=- door_evts=1 dtg=7.24 region=0_10
+ep=715 s=29 4858ms [sel=0 cap=4745 rest=113] sg=2->2 mode=GET_NOWHERE win=8 obs=30 | cap=wip/GET_NOWHERE act=TURN request=+45deg execute=+15deg x1 a=3 | sp=- door_evts=1 dtg=7.24 region=0_10
+ep=715 s=30 2516ms [sel=599 cap=1796 rest=120] sg=2->2 mode=NONE win=8 obs=31 | cap=wip act=(320,360) d=0.60 a=2 | sp=som:active d=0.6 age=0 som=1/5 dtg=7.24 region=0_10
+ep=715 s=31 3551ms [sel=7 cap=3432 rest=112] sg=2->2 mode=NONE win=8 obs=32 | cap=wip act=(320,360) d=0.60 a=2 | sp=som:active d=0.6 age=1 dtg=7.24 region=0_10
+ep=715 s=32 5020ms [sel=6 cap=4901 rest=113] sg=2->2 mode=NONE win=8 obs=33 | cap=wip act=(320,360) d=0.60 a=2 | sp=som:active d=0.6 age=2 dtg=7.24 region=0_10
+ep=715 s=33 3973ms [sel=54 cap=3405 rest=477] sg=2->2 mode=NONE win=8 obs=34 | cap=wip act=(160,180) d=4.90 a=3 | preview=view0/6 yaw=-165 render=37ms | sp=preview:active d=4.9 age=0 dtg=7.24 region=0_10
+ep=715 s=34 3238ms [sel=38 cap=3083 rest=118] sg=2->2 mode=NONE win=8 obs=35 | cap=wip act=(320,360) d=4.90 a=3 | sp=preview:active d=4.9 age=1 dtg=7.24 region=0_10
+ep=715 s=35 3117ms [sel=37 cap=2968 rest=112] sg=2->2 mode=TURN_OSCILLATION win=8 obs=36 | cap=wip/TURN_OSCILLATION act=(320,360) d=4.90 a=3 | sp=preview:active d=4.9 age=2 dtg=7.24 region=0_10
+ep=715 s=36 3360ms [sel=38 cap=3206 rest=116] sg=2->2 mode=NONE win=8 obs=37 | cap=wip act=(320,360) d=4.90 a=3 | sp=preview:active d=4.9 age=3 dtg=7.24 region=0_10
+ep=715 s=37 3141ms [sel=39 cap=2991 rest=111] sg=2->2 mode=NONE win=8 obs=38 | cap=wip act=(320,360) d=4.90 a=3 | sp=preview:active d=4.9 age=4 dtg=7.24 region=0_10
+ep=715 s=38 3680ms [sel=48 cap=3123 rest=472] sg=2->2 mode=NONE win=8 obs=39 | cap=wip act=(160,180) d=3.40 a=3 | preview=view4/6 yaw=+75 render=37ms | sp=preview:active d=3.4 age=0 dtg=7.24 region=0_10
+ep=715 s=39 5677ms [sel=27 cap=5539 rest=112] sg=2->2 mode=NONE win=8 obs=40 | cap=wip act=(320,360) d=3.40 a=3 | sp=preview:active d=3.4 age=1 dtg=7.24 region=0_10
+ep=715 s=40 2916ms [sel=27 cap=2781 rest=108] sg=2->2 mode=NONE win=8 obs=41 | cap=wip act=(320,360) d=3.40 a=3 | sp=preview:active d=3.4 age=2 dtg=7.24 region=0_10
+ep=715 s=41 4366ms [sel=4 cap=4251 rest=111] sg=2->2 mode=NONE win=8 obs=42 | cap=wip act=(320,360) d=3.40 a=3 | sp=preview:active d=3.4 age=3 dtg=7.24 region=0_10
+ep=715 s=42 2992ms [sel=3 cap=2878 rest=111] sg=2->2 mode=NONE win=8 obs=43 | cap=wip act=(320,360) d=3.40 a=3 | sp=preview:active d=3.4 age=4 dtg=7.24 region=0_10
+ep=715 s=43 4462ms [sel=3 cap=4351 rest=108] sg=2->2 mode=NONE win=8 obs=44 | cap=wip act=(320,360) d=3.40 a=1 | sp=preview:active d=3.4 age=5 dtg=7.49 region=0_10
+ep=715 s=44 2752ms [sel=3 cap=2632 rest=117] sg=2->2 mode=NONE win=8 obs=45 | cap=wip act=(320,360) d=3.15 a=1 | sp=preview:active d=3.2 age=6 dtg=7.74 region=0_10
+ep=715 s=45 3311ms [sel=3 cap=3200 rest=108] sg=2->2 mode=NONE win=8 obs=46 | cap=wip act=(320,360) d=2.90 a=1 | sp=preview:active d=2.9 age=7 dtg=7.99 region=0_10
+ep=715 s=46 2720ms [sel=19 cap=2209 rest=454] sg=2->2 mode=NONE win=8 obs=47 | cap=wip act=(160,180) d=3.45 a=1 | preview=view3/6 yaw=+0 render=37ms | sp=preview:active d=3.5 age=0 dtg=8.24 region=0_10
+ep=715 s=47 3526ms [sel=3 cap=3415 rest=109] sg=2->2 mode=NONE win=8 obs=48 | cap=wip act=(320,360) d=3.20 a=1 | sp=preview:active d=3.2 age=1 dtg=8.48 region=0_10
+ep=715 s=48 3176ms [sel=3 cap=3065 rest=108] sg=2->2 mode=NONE win=8 obs=49 | cap=wip act=(320,360) d=2.95 a=1 | sp=preview:active d=3.0 age=2 dtg=8.73 region=0_10
+ep=715 s=49 4455ms [sel=3 cap=3938 rest=478] sg=2->2 mode=NONE win=8 obs=50 | cap=wip act=(320,360) d=2.70 a=1 | preview=view-/6 yaw=+0 render=36ms | sp=preview:active d=2.7 age=3 dtg=8.98 region=0_10
+ep=715 s=50 4473ms [sel=3 cap=4364 rest=107] sg=2->2 mode=NONE win=8 obs=51 | cap=wip act=(320,360) d=2.45 a=1 | sp=preview:active d=2.5 age=4 dtg=9.23 region=0_10
+ep=715 s=51 2359ms [sel=3 cap=2252 rest=104] sg=2->2 mode=NONE win=8 obs=52 | cap=wip act=(320,360) d=2.21 a=1 | sp=preview:active d=2.2 age=5 dtg=9.48 region=0_10
+ep=715 s=52 3754ms [sel=3 cap=3643 rest=108] sg=2->2 mode=NONE win=8 obs=53 | cap=wip act=(320,360) d=1.96 a=1 | sp=preview:active d=2.0 age=6 dtg=9.73 region=0_10
+ep=715 s=53 2766ms [sel=3 cap=2659 rest=104] sg=2->2 mode=NONE win=8 obs=54 | cap=wip act=(320,360) d=1.71 a=1 | sp=preview:active d=1.7 age=7 dtg=9.98 region=0_10
+ep=715 s=54 4250ms [sel=3 cap=3731 rest=480] sg=2->2 mode=NONE win=8 obs=55 | cap=wip act=(320,360) d=1.46 a=1 | preview=view-/6 yaw=+0 render=36ms | sp=preview:active d=1.5 age=8 dtg=10.23 region=0_10
+ep=715 s=55 5409ms [sel=3 cap=5300 rest=107] sg=2->2 mode=NONE win=8 obs=56 | cap=wip act=(320,360) d=1.21 a=1 | sp=preview:active d=1.2 age=9 dtg=10.48 region=0_10
+ep=715 s=56 2683ms [sel=3 cap=2577 rest=104] sg=2->2 mode=NONE win=8 obs=57 | cap=wip act=(320,360) d=0.96 a=1 | sp=preview:active d=1.0 age=10 dtg=10.73 region=0_10
+ep=715 s=57 3693ms [sel=3 cap=3591 rest=100] sg=2->2 mode=NONE win=8 obs=58 | cap=wip act=(320,360) d=0.72 a=1 | sp=preview:active d=0.7 age=11 dtg=10.98 region=0_19
+ep=715 s=58 3201ms [sel=21 cap=2661 rest=484] sg=2->2 mode=NONE win=8 obs=59 | cap=wip act=(160,180) d=3.47 a=3 | preview=view4/6 yaw=+45 render=36ms | sp=preview:active d=3.5 age=0 dtg=10.98 region=0_19
+ep=715 s=59 3979ms [sel=3 cap=3877 rest=99] sg=2->2 mode=NONE win=8 obs=60 | cap=wip act=(320,360) d=3.47 a=1 | sp=preview:active d=3.5 age=1 dtg=11.22 region=0_19
+ep=715 s=60 2946ms [sel=3 cap=2844 rest=99] sg=2->2 mode=NONE win=8 obs=61 | cap=wip act=(320,360) d=3.22 a=1 | sp=preview:active d=3.2 age=2 dtg=11.47 region=0_19
+ep=715 s=61 3270ms [sel=4 cap=3167 rest=100] sg=2->2 mode=NONE win=8 obs=62 | cap=wip act=(320,360) d=2.98 a=1 | sp=preview:active d=3.0 age=3 dtg=11.71 region=0_19
+ep=715 s=62 2756ms [sel=3 cap=2203 rest=512] sg=2->2 mode=NONE win=8 obs=63 | cap=wip act=(320,360) d=2.73 a=1 | preview=view-/6 yaw=+0 render=39ms | sp=preview:active d=2.7 age=4 dtg=11.96 region=0_19
+ep=715 s=63 3322ms [sel=3 cap=3215 rest=104] sg=2->2 mode=NONE win=8 obs=64 | cap=wip act=(320,360) d=2.49 a=3 | sp=preview:active d=2.5 age=5 dtg=11.96 region=0_19
+ep=715 s=64 3473ms [sel=864 cap=2507 rest=103] sg=2->3 mode=NONE win=8 obs=65 | cap=DONE act=(320,360) d=7.53 a=3 | sp=frontier:active d=7.5 age=0 som=B/8 dtg=11.96 region=0_19
+ep=715 s=65 4504ms [sel=60 cap=4348 rest=95] sg=3->3 mode=NONE win=8 obs=66 | cap=wip act=(320,360) d=7.53 a=3 | sp=frontier:active d=7.5 age=1 dtg=11.96 region=0_19
+ep=715 s=66 6644ms [sel=60 cap=6014 rest=535] sg=3->3 mode=NONE win=8 obs=67 | cap=wip act=(320,360) d=7.53 a=3 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=7.5 age=2 dtg=11.96 region=0_19
+ep=715 s=67 2189ms [sel=60 cap=2028 rest=101] sg=3->3 mode=GET_NOWHERE win=8 obs=68 | cap=wip/GET_NOWHERE act=(320,360) d=7.53 a=3 | sp=frontier:active d=7.5 age=3 dtg=11.96 region=0_19
+ep=715 s=68 4483ms [sel=60 cap=4323 rest=101] sg=3->3 mode=NONE win=8 obs=69 | cap=wip act=(320,360) d=7.53 a=3 | sp=frontier:active d=7.5 age=4 dtg=11.96 region=0_19
+ep=715 s=69 8581ms [sel=59 cap=7959 rest=526] sg=3->3 mode=NONE win=8 obs=70 | cap=wip act=(320,360) d=7.53 a=3 | preview=view-/6 yaw=+0 render=37ms | sp=frontier:active d=7.5 age=5 dtg=11.96 region=0_19
+ep=715 s=70 3999ms [sel=63 cap=3835 rest=102] sg=3->3 mode=NONE win=8 obs=71 | cap=wip act=(320,360) d=7.53 a=3 | sp=frontier:active d=7.5 age=6 dtg=11.96 region=0_19
+ep=715 s=71 4688ms [sel=58 cap=4527 rest=103] sg=3->3 mode=NONE win=8 obs=72 | cap=wip act=(320,360) d=7.53 a=3 | sp=frontier:active d=7.5 age=7 dtg=11.96 region=0_19
+ep=715 s=72 8120ms [sel=30 cap=7524 rest=530] sg=3->3 mode=NONE win=8 obs=73 | cap=wip act=(320,360) d=7.53 a=3 | preview=view-/6 yaw=+0 render=37ms | sp=frontier:active d=7.5 age=8 dtg=11.96 region=0_19
+ep=715 s=73 3018ms [sel=26 cap=2888 rest=105] sg=3->3 mode=NONE win=8 obs=74 | cap=wip act=(320,360) d=7.53 a=3 | sp=frontier:active d=7.5 age=9 dtg=11.96 region=0_19
+ep=715 s=74 4798ms [sel=25 cap=4669 rest=104] sg=3->3 mode=NONE win=8 obs=75 | cap=wip act=(320,360) d=7.53 a=1 | sp=frontier:active d=7.5 age=10 dtg=11.71 region=0_19
+ep=715 s=75 8353ms [sel=34 cap=7763 rest=519] sg=3->3 mode=NONE win=8 obs=76 | cap=wip act=(320,360) d=7.31 a=1 | preview=view-/6 yaw=+0 render=37ms | sp=frontier:active d=7.3 age=11 dtg=11.46 region=0_19
+ep=715 s=76 3279ms [sel=22 cap=3144 rest=114] sg=3->3 mode=NONE win=8 obs=77 | cap=wip act=(320,360) d=7.08 a=1 | sp=frontier:active d=7.1 age=12 dtg=11.21 region=0_19
+ep=715 s=77 3035ms [sel=20 cap=2912 rest=103] sg=3->3 mode=NONE win=8 obs=78 | cap=wip act=(320,360) d=6.86 a=1 | sp=frontier:active d=6.9 age=13 dtg=10.96 region=0_19
+ep=715 s=78 9279ms [sel=18 cap=8683 rest=540] sg=3->3 mode=NONE win=8 obs=79 | cap=wip act=(320,360) d=6.64 a=1 | preview=view-/6 yaw=+0 render=37ms | sp=frontier:active d=6.6 age=14 dtg=10.71 region=0_10
+ep=715 s=79 8571ms [sel=17 cap=8453 rest=102] sg=3->3 mode=NONE win=8 obs=80 | cap=wip act=(320,360) d=6.42 a=1 | sp=frontier:active d=6.4 age=15 dtg=10.47 region=0_10
+ep=715 s=80 4556ms [sel=15 cap=4434 rest=107] sg=3->3 mode=NONE win=8 obs=81 | cap=wip act=(320,360) d=6.21 a=1 | sp=frontier:active d=6.2 age=16 dtg=10.22 region=0_10
+ep=715 s=81 16663ms [sel=13 cap=16117 rest=496] sg=3->3 mode=NONE win=8 obs=82 | cap=wip act=(320,360) d=6.00 a=1 | preview=view-/6 yaw=+0 render=36ms | sp=frontier:active d=6.0 age=17 dtg=9.97 region=0_10
+ep=715 s=82 4161ms [sel=12 cap=4047 rest=102] sg=3->3 mode=NONE win=8 obs=83 | cap=wip act=(320,360) d=5.79 a=1 | sp=frontier:active d=5.8 age=18 dtg=9.72 region=0_10
+ep=715 s=83 4707ms [sel=10 cap=4599 rest=98] sg=3->3 mode=NONE win=8 obs=84 | cap=wip act=(320,360) d=5.58 a=1 | sp=frontier:active d=5.6 age=19 dtg=9.47 region=0_10
+ep=715 s=84 12108ms [sel=8 cap=11585 rest=476] sg=3->3 mode=NONE win=8 obs=85 | cap=wip act=(320,360) d=5.38 a=1 | preview=view-/6 yaw=+0 render=39ms | sp=frontier:active d=5.4 age=20 dtg=9.22 region=0_10
+ep=715 s=85 6652ms [sel=7 cap=6541 rest=104] sg=3->3 mode=NONE win=8 obs=86 | cap=wip act=(320,360) d=5.18 a=1 | sp=frontier:active d=5.2 age=21 dtg=8.98 region=0_10
+ep=715 s=86 8926ms [sel=4 cap=8806 rest=116] sg=3->3 mode=NONE win=8 obs=87 | cap=wip act=(320,360) d=4.99 a=3 | sp=frontier:active d=5.0 age=22 dtg=8.98 region=0_10
+ep=715 s=87 5463ms [sel=4 cap=4941 rest=481] sg=3->3 mode=NONE win=8 obs=88 | cap=wip act=(320,360) d=4.99 a=3 | preview=view-/6 yaw=+0 render=37ms | sp=frontier:active d=5.0 age=23 dtg=8.98 region=0_10
+ep=715 s=88 1755ms [sel=4 cap=1643 rest=108] sg=3->3 mode=NONE win=8 obs=89 | cap=wip act=(320,360) d=4.99 a=1 | sp=frontier:active d=5.0 age=24 dtg=8.75 region=0_10
+ep=715 s=89 2091ms [sel=3 cap=1976 rest=112] sg=3->3 mode=NONE win=8 obs=90 | cap=wip act=(320,360) d=4.74 a=1 | sp=frontier:active d=4.7 age=25 dtg=8.52 region=0_10
+ep=715 s=90 1886ms [sel=3 cap=1775 rest=108] sg=3->3 mode=NONE win=8 obs=91 | cap=wip act=(320,360) d=4.49 a=2 | sp=frontier:active d=4.5 age=26 dtg=8.52 region=0_10
+ep=715 s=91 2293ms [sel=3 cap=2180 rest=110] sg=3->3 mode=NONE win=8 obs=92 | cap=wip act=(320,360) d=4.49 a=1 | sp=frontier:active d=4.5 age=27 dtg=8.27 region=0_10
+ep=715 s=92 7168ms [sel=3 cap=6653 rest=475] sg=3->3 mode=NONE win=8 obs=93 | cap=wip act=(320,360) d=4.27 a=2 | preview=view-/6 yaw=+0 render=37ms | sp=frontier:active d=4.3 age=28 dtg=8.27 region=0_10
+ep=715 s=93 3699ms [sel=5 cap=3581 rest=113] sg=3->3 mode=NONE win=8 obs=94 | cap=wip act=(320,360) d=4.27 a=1 | sp=frontier:active d=4.3 age=29 dtg=8.02 region=0_10
+ep=715 s=94 4150ms [sel=4 cap=4035 rest=111] sg=3->3 mode=NONE win=8 obs=95 | cap=wip act=(320,360) d=4.09 a=1 | sp=frontier:active d=4.1 age=30 dtg=7.77 region=0_10
+ep=715 s=95 4174ms [sel=4 cap=3669 rest=464] sg=3->3 mode=NONE win=8 obs=96 | cap=wip act=(320,360) d=3.92 a=1 | preview=view-/6 yaw=+0 render=37ms | sp=frontier:active d=3.9 age=31 dtg=7.52 region=0_10
+ep=715 s=96 1940ms [sel=4 cap=1827 rest=109] sg=3->3 mode=NONE win=8 obs=97 | cap=wip act=(320,360) d=3.75 a=1 | sp=frontier:active d=3.8 age=32 dtg=7.28 region=0_10
+ep=715 s=97 3762ms [sel=4 cap=3649 rest=109] sg=3->3 mode=NONE win=8 obs=98 | cap=wip act=(320,360) d=3.60 a=1 | sp=frontier:active d=3.6 age=33 dtg=7.03 region=0_10
+ep=715 s=98 1811ms [sel=4 cap=1700 rest=107] sg=3->3 mode=NONE win=8 obs=99 | cap=wip act=(320,360) d=3.46 a=1 | sp=frontier:active d=3.5 age=34 dtg=6.78 region=0_10
+ep=715 s=99 1745ms [sel=4 cap=1632 rest=109] sg=3->3 mode=NONE win=8 obs=100 | cap=wip act=(320,360) d=3.33 a=1 | sp=frontier:active d=3.3 age=35 dtg=6.53 region=0_18
+ep=715 s=100 2693ms [sel=4 cap=2585 rest=105] sg=3->3 mode=NONE win=8 obs=101 | cap=wip act=(320,360) d=3.21 a=1 | sp=frontier:active d=3.2 age=36 dtg=6.28 region=0_18
+ep=715 s=101 2050ms [sel=592 cap=1353 rest=105] sg=3->3 mode=NONE win=8 obs=102 | cap=wip act=(320,360) d=3.26 a=1 | sp=som:active d=3.3 age=0 som=4/8 dtg=6.04 region=0_18
+ep=715 s=102 3498ms [sel=3 cap=3395 rest=100] sg=3->3 mode=NONE win=8 obs=103 | cap=wip act=(320,360) d=3.01 a=1 | sp=som:active d=3.0 age=1 dtg=5.79 region=0_18
+ep=715 s=103 6112ms [sel=8 cap=5597 rest=467] sg=3->3 mode=NONE win=8 obs=104 | cap=wip act=(320,360) d=2.76 a=1 | preview=view-/6 yaw=+0 render=41ms | sp=som:active d=2.8 age=2 dtg=5.55 region=0_18
+ep=715 s=104 2245ms [sel=8 cap=2134 rest=102] sg=3->3 mode=NONE win=8 obs=105 | cap=wip act=(320,360) d=2.51 a=1 | sp=som:active d=2.5 age=3 dtg=5.31 region=0_18
+ep=715 s=105 1470ms [sel=10 cap=1356 rest=103] sg=3->3 mode=NONE win=8 obs=106 | cap=wip act=(320,360) d=2.26 a=1 | sp=som:active d=2.3 age=4 dtg=5.08 region=0_18
+ep=715 s=106 10626ms [sel=946 cap=9175 rest=468] sg=3->None mode=NONE win=8 obs=107 | cap=DONE act=(320,360) d=5.55 a=1 | preview=view-/6 yaw=+0 render=37ms | sp=som:active d=2.0 age=5 door_evts=4 dtg=4.86 region=0_18
+ep=715 s=107 100ms [sel=12 cap=0 rest=88] sg=None->None mode=NONE win=8 obs=108 | cap=- act=(320,360) d=5.33 a=3 | sp=endpoint:active d=5.3 age=1 door_evts=4 dtg=4.86 region=0_18
+ep=715 s=108 102ms [sel=6 cap=0 rest=96] sg=None->None mode=NONE win=8 obs=109 | cap=- act=(320,360) d=5.33 a=1 | sp=endpoint:active d=5.3 age=2 door_evts=4 dtg=4.62 region=0_18
+ep=715 s=109 98ms [sel=4 cap=0 rest=95] sg=None->None mode=NONE win=8 obs=110 | cap=- act=(320,360) d=5.09 a=3 | sp=endpoint:active d=5.1 age=3 door_evts=4 dtg=4.62 region=0_18
+ep=715 s=110 97ms [sel=3 cap=0 rest=94] sg=None->None mode=NONE win=8 obs=111 | cap=- act=(320,360) d=5.09 a=1 | sp=endpoint:active d=5.1 age=4 door_evts=4 dtg=4.38 region=0_18
+ep=715 s=111 94ms [sel=2 cap=0 rest=92] sg=None->None mode=NONE win=8 obs=112 | cap=- act=(320,360) d=4.84 a=1 | sp=endpoint:active d=4.8 age=5 door_evts=4 dtg=4.13 region=0_18
+ep=715 s=112 93ms [sel=2 cap=0 rest=91] sg=None->None mode=NONE win=8 obs=113 | cap=- act=(320,360) d=4.59 a=3 | sp=endpoint:active d=4.6 age=6 door_evts=4 dtg=4.13 region=0_18
+ep=715 s=113 101ms [sel=2 cap=0 rest=98] sg=None->None mode=NONE win=8 obs=114 | cap=- act=(320,360) d=4.59 a=1 | sp=endpoint:active d=4.6 age=7 door_evts=4 dtg=3.88 region=0_18
+ep=715 s=114 99ms [sel=2 cap=0 rest=96] sg=None->None mode=NONE win=8 obs=115 | cap=- act=(320,360) d=4.35 a=3 | sp=endpoint:active d=4.3 age=8 door_evts=4 dtg=3.88 region=0_18
+ep=715 s=115 106ms [sel=2 cap=0 rest=103] sg=None->None mode=NONE win=8 obs=116 | cap=- act=(320,360) d=4.35 a=1 | sp=endpoint:active d=4.3 age=9 door_evts=4 dtg=3.66 region=0_18
+ep=715 s=116 110ms [sel=2 cap=0 rest=107] sg=None->None mode=NONE win=8 obs=117 | cap=- act=(320,360) d=4.13 a=1 | sp=endpoint:active d=4.1 age=10 door_evts=4 dtg=3.48 region=0_18
+ep=715 s=117 112ms [sel=3 cap=0 rest=109] sg=None->None mode=NONE win=8 obs=118 | cap=- act=(320,360) d=3.92 a=1 | sp=endpoint:active d=3.9 age=11 door_evts=4 dtg=3.33 region=0_18
+ep=715 s=118 111ms [sel=2 cap=0 rest=109] sg=None->None mode=NONE win=8 obs=119 | cap=- act=(320,360) d=3.70 a=2 | sp=endpoint:active d=3.7 age=12 door_evts=4 dtg=3.33 region=0_18
+ep=715 s=119 111ms [sel=2 cap=0 rest=109] sg=None->None mode=NONE win=8 obs=120 | cap=- act=(320,360) d=3.70 a=1 | sp=endpoint:active d=3.7 age=13 door_evts=4 dtg=3.14 region=0_18
+ep=715 s=120 112ms [sel=2 cap=0 rest=110] sg=None->None mode=NONE win=8 obs=121 | cap=- act=(320,360) d=3.47 a=1 | sp=endpoint:active d=3.5 age=14 door_evts=4 dtg=2.97 region=0_18
+ep=715 s=121 135ms [sel=24 cap=0 rest=111] sg=None->None mode=NONE win=8 obs=122 | cap=- act=(320,360) d=3.23 a=2 | sp=endpoint:active d=3.2 age=15 door_evts=4 dtg=2.97 region=0_18
+ep=715 s=122 112ms [sel=0 cap=0 rest=112] sg=None->None mode=NONE win=8 obs=123 | cap=- act=STOP | sp=endpoint:active d=3.2 age=16 door_evts=4 dtg=2.97 region=0_18
+rank=0 [3/6] id=715 steps=123 success=1.000 spl=0.640 dtg=2.97 osr=1 path_length=19.50 ndtw=0.645 sdtw=0.645
+PluginManager::Manager: duplicate static plugin StbImageImporter, ignoring
+PluginManager::Manager: duplicate static plugin GltfImporter, ignoring
+PluginManager::Manager: duplicate static plugin BasisImporter, ignoring
+PluginManager::Manager: duplicate static plugin AssimpImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnySceneImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnyImageImporter, ignoring
+episode=991 instruction="So turn right and walk on past the stairs, and then past the couch as well. Go into the dining room from there. Keep heading down the hall, and you'll stop once you're in the kitchen." start_position=[1.0999399423599243, 0.024399995803833008, -3.008549928665161] goal_position=[-2.515010118484497, 0.024399995803833008, -6.925270080566406] reference_geodesic=8.789604187011719
+episode=991 prepared_subgoals=5
+  [1] Turn right until the stairs is centered ahead, then walk past the stairs
+      proof: The stairs are behind and below the camera, and the hallway beyond fills the view.
+  [2] Walk past the couch
+      proof: The couch is behind and below the camera, and the dining room entrance is ahead.
+  [3] Enter the dining room
+      proof: The camera has crossed the dining room threshold and the dining room interior is central in the view.
+  [4] Keep heading down the hall
+      proof: The hallway continues straight ahead and the kitchen is visible at the end.
+  [5] Stop in the kitchen
+      proof: The camera is beside the kitchen entrance, and the kitchen interior fills the view
+ep=991 s=0 3010ms [sel=0 cap=2461 rest=508] sg=1->1 mode=NONE win=1 obs=1 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | preview=view-/6 yaw=+0 render=41ms dtg=8.79 region=1_26
+ep=991 s=1 1816ms [sel=0 cap=1714 rest=102] sg=1->1 mode=NONE win=2 obs=2 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 dtg=8.79 region=1_26
+ep=991 s=2 3245ms [sel=0 cap=3136 rest=109] sg=1->1 mode=NONE win=3 obs=3 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 dtg=8.79 region=1_26
+ep=991 s=3 2528ms [sel=0 cap=2421 rest=107] sg=1->1 mode=NONE win=4 obs=4 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 dtg=8.79 region=1_26
+ep=991 s=4 3960ms [sel=0 cap=3855 rest=105] sg=1->1 mode=NONE win=5 obs=5 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 dtg=8.79 region=1_26
+ep=991 s=5 3493ms [sel=635 cap=2751 rest=107] sg=1->1 mode=NONE win=6 obs=6 | cap=wip act=(320,360) d=3.01 a=3 | sp=som:active d=3.0 age=0 som=3/8 dtg=8.79 region=1_26
+ep=991 s=6 1708ms [sel=3 cap=1592 rest=112] sg=1->1 mode=NONE win=7 obs=7 | cap=wip act=(320,360) d=3.01 a=1 | sp=som:active d=3.0 age=1 dtg=9.04 region=1_26
+ep=991 s=7 2065ms [sel=3 cap=1943 rest=120] sg=1->1 mode=NONE win=8 obs=8 | cap=wip act=(320,360) d=2.76 a=1 | sp=som:active d=2.8 age=2 dtg=8.85 region=1_26
+ep=991 s=8 1292ms [sel=3 cap=1168 rest=120] sg=1->1 mode=NONE win=8 obs=9 | cap=wip act=(320,360) d=2.51 a=3 | sp=som:active d=2.5 age=3 dtg=8.85 region=1_26
+ep=991 s=9 2146ms [sel=3 cap=2024 rest=119] sg=1->1 mode=NONE win=8 obs=10 | cap=wip act=(320,360) d=2.51 a=1 | sp=som:active d=2.5 age=4 dtg=8.60 region=1_26
+ep=991 s=10 1709ms [sel=3 cap=1587 rest=119] sg=1->1 mode=NONE win=8 obs=11 | cap=wip act=(320,360) d=2.27 a=1 | sp=som:active d=2.3 age=5 dtg=8.35 region=1_26
+ep=991 s=11 2202ms [sel=3 cap=2079 rest=120] sg=1->1 mode=NONE win=8 obs=12 | cap=wip act=(320,360) d=2.02 a=1 | sp=som:active d=2.0 age=6 dtg=8.10 region=1_26
+ep=991 s=12 1658ms [sel=3 cap=1537 rest=118] sg=1->1 mode=NONE win=8 obs=13 | cap=wip act=(320,360) d=1.77 a=2 | sp=som:active d=1.8 age=7 dtg=8.10 region=1_26
+ep=991 s=13 2903ms [sel=3 cap=2779 rest=122] sg=1->1 mode=NONE win=8 obs=14 | cap=wip act=(320,360) d=1.77 a=1 | sp=som:active d=1.8 age=8 dtg=7.87 region=1_26
+ep=991 s=14 1867ms [sel=4 cap=1748 rest=116] sg=1->1 mode=NONE win=8 obs=15 | cap=wip act=(320,360) d=1.53 a=1 | sp=som:active d=1.5 age=9 dtg=7.69 region=1_9
+ep=991 s=15 5100ms [sel=9 cap=4563 rest=490] sg=1->1 mode=NONE win=8 obs=16 | cap=wip act=(160,180) d=1.28 a=1 | preview=view5/6 yaw=+90 render=38ms | sp=som:active d=1.3 age=10 dtg=7.59 region=1_9
+ep=991 s=16 2585ms [sel=3 cap=2468 rest=114] sg=1->1 mode=NONE win=8 obs=17 | cap=wip act=(320,360) d=1.03 a=1 | sp=som:active d=1.0 age=11 dtg=7.51 region=1_9
+ep=991 s=17 2667ms [sel=3 cap=2554 rest=110] sg=1->1 mode=NONE win=8 obs=18 | cap=wip act=(320,360) d=0.78 a=1 | sp=som:active d=0.8 age=12 dtg=7.47 region=1_9
+ep=991 s=18 2997ms [sel=67 cap=2396 rest=497] sg=1->1 mode=NONE win=8 obs=19 | cap=wip act=(160,180) d=3.47 a=2 | preview=view4/6 yaw=+45 render=37ms | sp=preview:active d=3.5 age=0 dtg=7.47 region=1_9
+ep=991 s=19 2122ms [sel=31 cap=1987 rest=103] sg=1->1 mode=NONE win=8 obs=20 | cap=wip act=(320,360) d=3.47 a=2 | sp=preview:active d=3.5 age=1 dtg=7.47 region=1_9
+ep=991 s=20 2262ms [sel=32 cap=2130 rest=100] sg=1->1 mode=NONE win=8 obs=21 | cap=wip act=(320,360) d=3.47 a=2 | sp=preview:active d=3.5 age=2 dtg=7.47 region=1_9
+ep=991 s=21 3993ms [sel=48 cap=3849 rest=96] sg=1->1 mode=NONE win=8 obs=22 | cap=wip act=(320,360) d=3.47 a=2 | sp=preview:active d=3.5 age=3 dtg=7.47 region=1_9
+ep=991 s=22 3805ms [sel=31 cap=3669 rest=105] sg=1->1 mode=WALL_STUCK win=8 obs=23 | cap=wip/WALL_STUCK act=(320,360) d=3.47 a=2 | sp=preview:active d=3.5 age=4 dtg=7.47 region=1_9
+ep=991 s=23 5060ms [sel=51 cap=4901 rest=108] sg=1->1 mode=NONE win=8 obs=24 | cap=wip act=(320,360) d=3.47 a=2 | sp=preview:active d=3.5 age=5 dtg=7.47 region=1_9
+ep=991 s=24 2669ms [sel=41 cap=2517 rest=112] sg=1->1 mode=GET_NOWHERE win=8 obs=25 | cap=wip/GET_NOWHERE act=(320,360) d=3.47 a=2 | sp=preview:active d=3.5 age=6 dtg=7.47 region=1_9
+ep=991 s=25 2755ms [sel=27 cap=2628 rest=100] sg=1->1 mode=NONE win=8 obs=26 | cap=wip act=(320,360) d=3.47 a=2 | sp=preview:active d=3.5 age=7 dtg=7.47 region=1_9
+ep=991 s=26 3312ms [sel=21 cap=3191 rest=100] sg=1->1 mode=NONE win=8 obs=27 | cap=wip act=(320,360) d=3.47 a=2 | sp=preview:active d=3.5 age=8 dtg=7.47 region=1_9
+ep=991 s=27 1770ms [sel=9 cap=1653 rest=108] sg=1->1 mode=NONE win=8 obs=28 | cap=wip act=(320,360) d=3.47 a=2 | sp=preview:active d=3.5 age=9 dtg=7.47 region=1_9
+ep=991 s=28 3362ms [sel=4 cap=3248 rest=110] sg=1->1 mode=NONE win=8 obs=29 | cap=wip act=(320,360) d=3.47 a=2 | sp=preview:active d=3.5 age=10 dtg=7.47 region=1_9
+ep=991 s=29 2545ms [sel=4 cap=2429 rest=112] sg=1->1 mode=NONE win=8 obs=30 | cap=wip act=(320,360) d=3.47 a=1 | sp=preview:active d=3.5 age=11 dtg=7.57 region=1_9
+ep=991 s=30 1445ms [sel=5 cap=1331 rest=109] sg=1->1 mode=NONE win=8 obs=31 | cap=wip act=(320,360) d=3.72 a=1 | sp=preview:active d=3.7 age=12 dtg=7.70 region=1_9
+ep=991 s=31 2442ms [sel=6 cap=2335 rest=101] sg=1->1 mode=NONE win=8 obs=32 | cap=wip act=(320,360) d=3.97 a=2 | sp=preview:active d=4.0 age=13 dtg=7.70 region=1_9
+ep=991 s=32 1959ms [sel=584 cap=1267 rest=108] sg=1->2 mode=NONE win=8 obs=33 | cap=DONE act=(320,360) d=2.81 a=1 | sp=frontier:active d=2.8 age=0 som=R/8 dtg=7.80 region=1_9
+ep=991 s=33 1439ms [sel=10 cap=1321 rest=108] sg=2->2 mode=NONE win=8 obs=34 | cap=wip act=(320,360) d=2.68 a=3 | sp=frontier:active d=2.7 age=1 dtg=7.80 region=1_9
+ep=991 s=34 2076ms [sel=5 cap=1970 rest=101] sg=2->2 mode=NONE win=8 obs=35 | cap=wip act=(320,360) d=2.68 a=1 | sp=frontier:active d=2.7 age=2 dtg=7.98 region=1_9
+ep=991 s=35 1886ms [sel=7 cap=1781 rest=98] sg=2->2 mode=NONE win=8 obs=36 | cap=wip act=(320,360) d=2.51 a=1 | sp=frontier:active d=2.5 age=3 dtg=8.19 region=1_26
+ep=991 s=36 1652ms [sel=9 cap=1545 rest=99] sg=2->2 mode=NONE win=8 obs=37 | cap=wip act=(320,360) d=2.36 a=1 | sp=frontier:active d=2.4 age=4 dtg=8.43 region=1_26
+ep=991 s=37 2667ms [sel=9 cap=2560 rest=98] sg=2->2 mode=NONE win=8 obs=38 | cap=wip act=(320,360) d=2.23 a=1 | sp=frontier:active d=2.2 age=5 dtg=8.67 region=1_26
+ep=991 s=38 3034ms [sel=9 cap=2929 rest=97] sg=2->2 mode=NONE win=8 obs=39 | cap=wip act=(320,360) d=2.12 a=2 | sp=frontier:active d=2.1 age=6 dtg=8.67 region=1_26
+ep=991 s=39 4324ms [sel=12 cap=4205 rest=106] sg=2->2 mode=NONE win=8 obs=40 | cap=wip act=(320,360) d=2.12 a=1 | sp=frontier:active d=2.1 age=7 dtg=8.89 region=1_26
+ep=991 s=40 4064ms [sel=14 cap=3945 rest=106] sg=2->2 mode=NONE win=8 obs=41 | cap=wip act=(320,360) d=2.10 a=1 | sp=frontier:active d=2.1 age=8 dtg=9.09 region=1_26
+ep=991 s=41 2139ms [sel=14 cap=2021 rest=104] sg=2->2 mode=NONE win=8 obs=42 | cap=wip act=(320,360) d=2.11 a=3 | sp=frontier:active d=2.1 age=9 dtg=9.09 region=1_26
+ep=991 s=42 2530ms [sel=13 cap=2414 rest=103] sg=2->2 mode=NONE win=8 obs=43 | cap=wip act=(320,360) d=2.11 a=1 | sp=frontier:active d=2.1 age=10 dtg=8.87 region=1_26
+ep=991 s=43 3394ms [sel=13 cap=3276 rest=104] sg=2->2 mode=NONE win=8 obs=44 | cap=wip act=(320,360) d=2.08 a=3 | sp=frontier:active d=2.1 age=11 dtg=8.87 region=1_26
+ep=991 s=44 2592ms [sel=11 cap=2474 rest=107] sg=2->2 mode=NONE win=8 obs=45 | cap=wip act=(320,360) d=2.08 a=3 | sp=frontier:active d=2.1 age=12 dtg=8.87 region=1_26
+ep=991 s=45 4507ms [sel=10 cap=4390 rest=107] sg=2->2 mode=NONE win=8 obs=46 | cap=wip act=(320,360) d=2.08 a=3 | sp=frontier:active d=2.1 age=13 dtg=8.87 region=1_26
+ep=991 s=46 1636ms [sel=4 cap=1524 rest=108] sg=2->2 mode=NONE win=8 obs=47 | cap=wip act=(320,360) d=2.08 a=1 | sp=frontier:active d=2.1 age=14 dtg=8.83 region=1_11
+ep=991 s=47 4269ms [sel=8 cap=4152 rest=109] sg=2->2 mode=NONE win=8 obs=48 | cap=wip act=(320,360) d=1.90 a=3 | sp=frontier:active d=1.9 age=15 dtg=8.83 region=1_11
+ep=991 s=48 2732ms [sel=3 cap=2620 rest=110] sg=2->2 mode=NONE win=8 obs=49 | cap=wip act=(320,360) d=1.90 a=1 | sp=frontier:active d=1.9 age=16 dtg=8.89 region=1_11
+ep=991 s=49 1445ms [sel=3 cap=1334 rest=109] sg=2->2 mode=NONE win=8 obs=50 | cap=wip act=(320,360) d=1.69 a=3 | sp=frontier:active d=1.7 age=17 dtg=8.89 region=1_11
+ep=991 s=50 2733ms [sel=3 cap=2618 rest=112] sg=2->2 mode=NONE win=8 obs=51 | cap=wip act=(320,360) d=1.69 a=1 | sp=frontier:active d=1.7 age=18 dtg=9.01 region=1_11
+ep=991 s=51 2933ms [sel=3 cap=2823 rest=107] sg=2->2 mode=NONE win=8 obs=52 | cap=wip act=(320,360) d=1.46 a=3 | sp=frontier:active d=1.5 age=19 dtg=9.01 region=1_11
+ep=991 s=52 3197ms [sel=3 cap=3076 rest=119] sg=2->2 mode=NONE win=8 obs=53 | cap=wip act=(320,360) d=1.46 a=1 | sp=frontier:active d=1.5 age=20 dtg=9.20 region=1_11
+ep=991 s=53 3303ms [sel=3 cap=2743 rest=518] sg=2->2 mode=NONE win=8 obs=54 | cap=wip act=(320,360) d=1.22 a=1 | preview=view-/6 yaw=+0 render=38ms | sp=frontier:active d=1.2 age=21 dtg=9.40 region=1_11
+ep=991 s=54 3165ms [sel=3 cap=3034 rest=128] sg=2->2 mode=NONE win=8 obs=55 | cap=wip act=(320,360) d=0.97 a=1 | sp=frontier:active d=1.0 age=22 dtg=9.59 region=1_11
+ep=991 s=55 3937ms [sel=708 cap=3106 rest=123] sg=2->3 mode=NONE win=8 obs=56 | cap=DONE act=(320,360) d=4.10 a=2 | sp=som:active d=4.1 age=0 som=2/8 dtg=9.59 region=1_11
+ep=991 s=56 2348ms [sel=27 cap=2197 rest=125] sg=3->3 mode=NONE win=8 obs=57 | cap=wip act=(320,360) d=4.10 a=2 | sp=som:active d=4.1 age=1 dtg=9.59 region=1_11
+ep=991 s=57 2107ms [sel=26 cap=1959 rest=122] sg=3->3 mode=NONE win=8 obs=58 | cap=wip act=(320,360) d=4.10 a=2 | sp=som:active d=4.1 age=2 dtg=9.59 region=1_11
+ep=991 s=58 2508ms [sel=25 cap=2377 rest=106] sg=3->3 mode=NONE win=8 obs=59 | cap=wip act=(320,360) d=4.10 a=2 | sp=som:active d=4.1 age=3 dtg=9.59 region=1_11
+ep=991 s=59 2319ms [sel=15 cap=2202 rest=102] sg=3->3 mode=NONE win=8 obs=60 | cap=wip act=(320,360) d=4.10 a=2 | sp=som:active d=4.1 age=4 dtg=9.59 region=1_11
+ep=991 s=60 1979ms [sel=7 cap=1863 rest=110] sg=3->3 mode=NONE win=8 obs=61 | cap=wip act=(320,360) d=4.10 a=2 | sp=som:active d=4.1 age=5 dtg=9.59 region=1_11
+ep=991 s=61 2416ms [sel=4 cap=2308 rest=104] sg=3->3 mode=NONE win=8 obs=62 | cap=wip act=(320,360) d=4.10 a=2 | sp=som:active d=4.1 age=6 dtg=9.59 region=1_11
+ep=991 s=62 1442ms [sel=4 cap=1328 rest=110] sg=3->3 mode=NONE win=8 obs=63 | cap=wip act=(320,360) d=4.10 a=1 | sp=som:active d=4.1 age=7 dtg=9.40 region=1_11
+ep=991 s=63 2039ms [sel=4 cap=1946 rest=89] sg=3->3 mode=NONE win=8 obs=64 | cap=wip act=(320,360) d=4.23 a=1 | sp=som:active d=4.2 age=8 dtg=9.21 region=1_11
+ep=991 s=64 2870ms [sel=5 cap=2779 rest=86] sg=3->3 mode=NONE win=8 obs=65 | cap=wip act=(320,360) d=4.37 a=2 | sp=som:active d=4.4 age=9 dtg=9.21 region=1_11
+ep=991 s=65 3752ms [sel=40 cap=3255 rest=420] sg=3->3 mode=NONE win=8 obs=66 | cap=wip act=(160,180) d=4.26 a=2 | preview=view5/6 yaw=+105 render=38ms | sp=preview:active d=4.3 age=0 dtg=9.21 region=1_11
+ep=991 s=66 2117ms [sel=12 cap=2007 rest=97] sg=3->3 mode=NONE win=8 obs=67 | cap=wip act=(320,360) d=4.26 a=1 | sp=preview:active d=4.3 age=1 dtg=8.97 region=1_11
+ep=991 s=67 2350ms [sel=13 cap=2239 rest=98] sg=3->3 mode=NONE win=8 obs=68 | cap=wip act=(320,360) d=4.50 a=3 | sp=preview:active d=4.5 age=2 dtg=8.97 region=1_11
+ep=991 s=68 3088ms [sel=12 cap=2980 rest=97] sg=3->3 mode=NONE win=8 obs=69 | cap=wip act=(320,360) d=4.50 a=1 | sp=preview:active d=4.5 age=3 dtg=8.75 region=1_15
+ep=991 s=69 2017ms [sel=12 cap=1899 rest=105] sg=3->3 mode=NONE win=8 obs=70 | cap=wip act=(320,360) d=4.72 a=1 | sp=preview:active d=4.7 age=4 dtg=8.53 region=1_15
+ep=991 s=70 2657ms [sel=14 cap=2543 rest=100] sg=3->3 mode=NONE win=8 obs=71 | cap=wip act=(320,360) d=4.94 a=3 | sp=preview:active d=4.9 age=5 dtg=8.53 region=1_15
+ep=991 s=71 3086ms [sel=12 cap=2975 rest=99] sg=3->3 mode=NONE win=8 obs=72 | cap=wip act=(320,360) d=4.94 a=3 | sp=preview:active d=4.9 age=6 dtg=8.53 region=1_15
+ep=991 s=72 2669ms [sel=11 cap=2558 rest=101] sg=3->3 mode=NONE win=8 obs=73 | cap=wip act=(320,360) d=4.94 a=1 | sp=preview:active d=4.9 age=7 dtg=8.42 region=1_15
+ep=991 s=73 2192ms [sel=12 cap=2080 rest=100] sg=3->3 mode=NONE win=8 obs=74 | cap=wip act=(320,360) d=5.09 a=3 | sp=preview:active d=5.1 age=8 dtg=8.42 region=1_15
+ep=991 s=74 2590ms [sel=19 cap=2476 rest=96] sg=3->3 mode=NONE win=8 obs=75 | cap=wip act=(320,360) d=5.09 a=3 | sp=preview:active d=5.1 age=9 dtg=8.42 region=1_15
+ep=991 s=75 2614ms [sel=18 cap=2499 rest=97] sg=3->3 mode=NONE win=8 obs=76 | cap=wip act=(320,360) d=5.09 a=1 | sp=preview:active d=5.1 age=10 dtg=8.45 region=1_15
+ep=991 s=76 3210ms [sel=4 cap=3112 rest=94] sg=3->3 mode=NONE win=8 obs=77 | cap=wip act=(320,360) d=5.11 a=1 | sp=preview:active d=5.1 age=11 dtg=8.50 region=1_15
+ep=991 s=77 2360ms [sel=5 cap=2261 rest=94] sg=3->3 mode=NONE win=8 obs=78 | cap=wip act=(320,360) d=5.16 a=3 | sp=preview:active d=5.2 age=12 dtg=8.50 region=1_15
+ep=991 s=78 3295ms [sel=4 cap=3187 rest=105] sg=3->3 mode=NONE win=8 obs=79 | cap=wip act=(320,360) d=5.16 a=1 | sp=preview:active d=5.2 age=13 dtg=8.67 region=1_15
+ep=991 s=79 4614ms [sel=4 cap=4500 rest=110] sg=3->3 mode=NONE win=8 obs=80 | cap=wip act=(320,360) d=5.14 a=1 | sp=preview:active d=5.1 age=14 dtg=8.87 region=1_15
+ep=991 s=80 2419ms [sel=4 cap=2312 rest=103] sg=3->3 mode=NONE win=8 obs=81 | cap=wip act=(320,360) d=5.14 a=1 | sp=preview:active d=5.1 age=15 dtg=9.08 region=1_15
+ep=991 s=81 2174ms [sel=4 cap=2073 rest=98] sg=3->3 mode=NONE win=8 obs=82 | cap=wip act=(320,360) d=5.16 a=1 | sp=preview:active d=5.2 age=16 dtg=9.31 region=1_15
+ep=991 s=82 2758ms [sel=4 cap=2658 rest=97] sg=3->3 mode=NONE win=8 obs=83 | cap=wip act=(320,360) d=5.18 a=1 | sp=preview:active d=5.2 age=17 dtg=9.54 region=1_15
+ep=991 s=83 3620ms [sel=4 cap=3521 rest=95] sg=3->3 mode=NONE win=8 obs=84 | cap=wip act=(320,360) d=5.22 a=1 | sp=preview:active d=5.2 age=18 dtg=9.78 region=1_15
+ep=991 s=84 3291ms [sel=4 cap=3191 rest=97] sg=3->3 mode=NONE win=8 obs=85 | cap=wip act=(320,360) d=5.27 a=1 | sp=preview:active d=5.3 age=19 dtg=10.02 region=1_15
+ep=991 s=85 4591ms [sel=763 cap=3725 rest=102] sg=3->4 mode=NONE win=8 obs=86 | cap=DONE act=(320,360) d=2.28 a=1 | sp=som:active d=2.3 age=0 som=3/8 dtg=10.26 region=1_15
+ep=991 s=86 2022ms [sel=3 cap=1919 rest=100] sg=4->4 mode=NONE win=8 obs=87 | cap=wip act=(320,360) d=2.04 a=3 | sp=som:active d=2.0 age=1 dtg=10.26 region=1_15
+ep=991 s=87 3786ms [sel=3 cap=3678 rest=105] sg=4->4 mode=NONE win=8 obs=88 | cap=wip act=(320,360) d=2.04 a=1 | sp=som:active d=2.0 age=2 dtg=10.51 region=1_15
+ep=991 s=88 3468ms [sel=3 cap=3358 rest=107] sg=4->4 mode=NONE win=8 obs=89 | cap=wip act=(320,360) d=1.79 a=1 | sp=som:active d=1.8 age=3 dtg=10.76 region=1_15
+ep=991 s=89 3461ms [sel=3 cap=3352 rest=107] sg=4->4 mode=NONE win=8 obs=90 | cap=wip act=(320,360) d=1.54 a=1 | sp=som:active d=1.5 age=4 dtg=11.01 region=1_15
+ep=991 s=90 3114ms [sel=3 cap=3011 rest=100] sg=4->4 mode=NONE win=8 obs=91 | cap=wip act=(320,360) d=1.29 a=1 | sp=som:active d=1.3 age=5 dtg=11.26 region=1_15
+ep=991 s=91 2943ms [sel=3 cap=2839 rest=101] sg=4->4 mode=NONE win=8 obs=92 | cap=wip act=(320,360) d=1.04 a=1 | sp=som:active d=1.0 age=6 dtg=11.51 region=1_15
+ep=991 s=92 2456ms [sel=4 cap=2358 rest=94] sg=4->4 mode=NONE win=8 obs=93 | cap=wip act=(320,360) d=0.79 a=1 | sp=som:active d=0.8 age=7 dtg=11.76 region=1_15
+ep=991 s=93 2068ms [sel=3 cap=1980 rest=84] sg=4->4 mode=NONE win=8 obs=94 | cap=wip act=(320,360) d=0.54 a=1 | sp=som:active d=0.5 age=8 dtg=12.01 region=1_15
+ep=991 s=94 2320ms [sel=597 cap=1627 rest=95] sg=4->4 mode=NONE win=8 obs=95 | cap=wip act=(320,360) d=1.18 a=2 | sp=som:active d=1.2 age=0 som=2/7 dtg=12.01 region=1_15
+ep=991 s=95 2980ms [sel=14 cap=2871 rest=95] sg=4->4 mode=NONE win=8 obs=96 | cap=wip act=(320,360) d=1.18 a=2 | sp=som:active d=1.2 age=1 dtg=12.01 region=1_15
+ep=991 s=96 5357ms [sel=822 cap=4444 rest=92] sg=4->5 mode=NONE win=8 obs=97 | cap=DONE act=(320,360) d=1.08 a=2 | sp=som:active d=1.1 age=0 som=3/6 dtg=12.01 region=1_15
+ep=991 s=97 2773ms [sel=26 cap=2649 rest=98] sg=5->5 mode=NONE win=8 obs=98 | cap=wip act=(320,360) d=1.08 a=2 | sp=som:active d=1.1 age=1 dtg=12.01 region=1_15
+ep=991 s=98 1775ms [sel=18 cap=1658 rest=99] sg=5->5 mode=NONE win=8 obs=99 | cap=wip act=(320,360) d=1.08 a=2 | sp=som:active d=1.1 age=2 dtg=12.01 region=1_15
+ep=991 s=99 7084ms [sel=39 cap=6550 rest=459] sg=5->5 mode=NONE win=8 obs=100 | cap=wip act=(320,360) d=1.08 a=2 | preview=view-/6 yaw=+0 render=37ms | sp=som:active d=1.1 age=3 dtg=12.01 region=1_15
+ep=991 s=100 2465ms [sel=27 cap=2345 rest=93] sg=5->5 mode=NONE win=8 obs=101 | cap=wip act=(320,360) d=1.08 a=2 | sp=som:active d=1.1 age=4 dtg=12.01 region=1_15
+ep=991 s=101 3179ms [sel=27 cap=3058 rest=95] sg=5->5 mode=NONE win=8 obs=102 | cap=wip act=(320,360) d=1.08 a=2 | sp=som:active d=1.1 age=5 dtg=12.01 region=1_15
+ep=991 s=102 9240ms [sel=27 cap=8718 rest=457] sg=5->5 mode=NONE win=8 obs=103 | cap=wip act=(320,360) d=1.08 a=2 | preview=view-/6 yaw=+0 render=39ms | sp=som:active d=1.1 age=6 dtg=12.01 region=1_15
+ep=991 s=103 8471ms [sel=30 cap=8333 rest=108] sg=5->5 mode=NONE win=8 obs=104 | cap=wip act=(320,360) d=1.08 a=2 | sp=som:active d=1.1 age=7 dtg=12.01 region=1_15
+ep=991 s=104 7020ms [sel=42 cap=6864 rest=113] sg=5->5 mode=NONE win=8 obs=105 | cap=wip act=(320,360) d=1.08 a=2 | sp=som:active d=1.1 age=8 dtg=12.01 region=1_15
+ep=991 s=105 16163ms [sel=27 cap=0 rest=16100] sg=None->5 mode=NONE win=8 obs=106 | cap=- act=(320,360) d=1.08 a=2 | preview=view-/6 yaw=+0 render=35ms | sp=som:active d=1.1 age=9 ANALYSIS_ERROR_STAGE=decision ANALYSIS_ERROR='CaptionerOutputError: decision violates the navigation reply contract: missing or ambiguous final control segment' dtg=12.01 region=1_15
+ep=991 s=106 2310ms [sel=26 cap=2184 rest=100] sg=5->5 mode=NONE win=8 obs=107 | cap=wip act=(320,360) d=1.08 a=2 | sp=som:active d=1.1 age=10 dtg=12.01 region=1_15
+ep=991 s=107 8926ms [sel=23 cap=8806 rest=97] sg=5->5 mode=NONE win=8 obs=108 | cap=wip act=(320,360) d=1.08 a=2 | sp=som:active d=1.1 age=11 dtg=12.01 region=1_15
+ep=991 s=108 10950ms [sel=21 cap=10416 rest=478] sg=5->5 mode=NONE win=8 obs=109 | cap=wip act=(320,360) d=1.08 a=2 | preview=view-/6 yaw=+0 render=35ms | sp=som:active d=1.1 age=12 dtg=12.01 region=1_15
+ep=991 s=109 5621ms [sel=20 cap=5491 rest=109] sg=5->5 mode=NONE win=8 obs=110 | cap=wip act=(320,360) d=1.08 a=1 | sp=som:active d=1.1 age=13 dtg=11.84 region=1_15
+ep=991 s=110 11263ms [sel=19 cap=11111 rest=132] sg=5->5 mode=NONE win=8 obs=111 | cap=wip act=(320,360) d=1.31 a=2 | sp=som:active d=1.3 age=14 dtg=11.84 region=1_15
+ep=991 s=111 6792ms [sel=29 cap=6252 rest=475] sg=5->5 mode=NONE win=8 obs=112 | cap=wip act=(320,360) d=1.31 a=1 | preview=view-/6 yaw=+0 render=38ms | sp=som:active d=1.3 age=15 dtg=11.73 region=1_15
+ep=991 s=112 2072ms [sel=16 cap=1951 rest=104] sg=5->5 mode=NONE win=8 obs=113 | cap=wip act=(320,360) d=1.52 a=2 | sp=som:active d=1.5 age=16 dtg=11.73 region=1_15
+ep=991 s=113 3767ms [sel=13 cap=3645 rest=109] sg=5->5 mode=NONE win=8 obs=114 | cap=wip act=(320,360) d=1.52 a=1 | sp=som:active d=1.5 age=17 dtg=11.72 region=1_15
+ep=991 s=114 8385ms [sel=28 cap=7823 rest=493] sg=5->5 mode=NONE win=8 obs=115 | cap=wip act=(320,360) d=1.71 a=2 | preview=view-/6 yaw=+0 render=41ms | sp=som:active d=1.7 age=18 dtg=11.72 region=1_15
+ep=991 s=115 7562ms [sel=11 cap=7443 rest=108] sg=5->5 mode=NONE win=8 obs=116 | cap=wip act=(320,360) d=1.71 a=1 | sp=som:active d=1.7 age=19 dtg=11.82 region=1_12
+ep=991 s=116 10636ms [sel=48 cap=10478 rest=110] sg=5->5 mode=NONE win=8 obs=117 | cap=wip act=(320,360) d=2.83 a=1 | sp=frontier:active d=2.8 age=0 dtg=11.95 region=1_12
+ep=991 s=117 9169ms [sel=3 cap=9061 rest=105] sg=5->5 mode=NONE win=8 obs=118 | cap=wip act=(320,360) d=2.58 a=1 | sp=frontier:active d=2.6 age=1 dtg=12.11 region=1_12
+ep=991 s=118 9721ms [sel=4 cap=9609 rest=108] sg=5->5 mode=NONE win=8 obs=119 | cap=wip act=(320,360) d=2.33 a=1 | sp=frontier:active d=2.3 age=2 dtg=12.29 region=1_12
+ep=991 s=119 8613ms [sel=3 cap=8504 rest=106] sg=5->5 mode=NONE win=8 obs=120 | cap=wip act=(320,360) d=2.08 a=1 | sp=frontier:active d=2.1 age=3 dtg=12.49 region=1_12
+ep=991 s=120 9864ms [sel=3 cap=9347 rest=478] sg=5->5 mode=NONE win=8 obs=121 | cap=wip act=(320,360) d=1.83 a=2 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=1.8 age=4 dtg=12.49 region=1_12
+ep=991 s=121 7610ms [sel=3 cap=7499 rest=108] sg=5->5 mode=NONE win=8 obs=122 | cap=wip act=(320,360) d=1.83 a=1 | sp=frontier:active d=1.8 age=5 dtg=12.72 region=1_12
+ep=991 s=122 6948ms [sel=3 cap=6840 rest=105] sg=5->5 mode=NONE win=8 obs=123 | cap=wip act=(320,360) d=1.59 a=1 | sp=frontier:active d=1.6 age=6 dtg=12.96 region=1_12
+ep=991 s=123 11453ms [sel=3 cap=10945 rest=470] sg=5->5 mode=NONE win=8 obs=124 | cap=wip act=(320,360) d=1.35 a=1 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=1.4 age=7 dtg=13.20 region=1_12
+ep=991 s=124 5235ms [sel=3 cap=5130 rest=102] sg=5->5 mode=NONE win=8 obs=125 | cap=wip act=(320,360) d=1.12 a=3 | sp=frontier:active d=1.1 age=8 dtg=13.20 region=1_12
+ep=991 s=125 4088ms [sel=3 cap=3988 rest=97] sg=5->5 mode=NONE win=8 obs=126 | cap=wip act=(320,360) d=1.12 a=1 | sp=frontier:active d=1.1 age=9 dtg=13.41 region=1_12
+ep=991 s=126 15346ms [sel=3 cap=14876 rest=432] sg=5->5 mode=NONE win=8 obs=127 | cap=wip act=(320,360) d=0.88 a=3 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=0.9 age=10 dtg=13.41 region=1_12
+ep=991 s=127 9848ms [sel=3 cap=9748 rest=97] sg=5->5 mode=NONE win=8 obs=128 | cap=wip act=(320,360) d=0.88 a=1 | sp=frontier:active d=0.9 age=11 dtg=13.60 region=1_12
+ep=991 s=128 3061ms [sel=713 cap=2246 rest=102] sg=5->5 mode=NONE win=8 obs=129 | cap=wip act=(320,360) d=0.98 a=2 | sp=som:active d=1.0 age=0 som=1/5 dtg=13.60 region=1_12
+ep=991 s=129 8566ms [sel=3 cap=8103 rest=425] sg=5->5 mode=NONE win=8 obs=130 | cap=wip act=(320,360) d=0.98 a=2 | preview=view-/6 yaw=+0 render=35ms | sp=som:active d=1.0 age=1 dtg=13.60 region=1_12
+ep=991 s=130 4287ms [sel=3 cap=4185 rest=99] sg=5->5 mode=NONE win=8 obs=131 | cap=wip act=(320,360) d=0.98 a=1 | sp=som:active d=1.0 age=2 dtg=13.85 region=1_12
+ep=991 s=131 4548ms [sel=3 cap=4446 rest=100] sg=5->5 mode=NONE win=8 obs=132 | cap=wip act=(320,360) d=0.73 a=3 | sp=som:active d=0.7 age=3 dtg=13.85 region=1_12
+ep=991 s=132 8928ms [sel=3 cap=8475 rest=415] sg=5->5 mode=NONE win=8 obs=133 | cap=wip act=(320,360) d=0.73 a=1 | preview=view-/6 yaw=+0 render=35ms | sp=som:active d=0.7 age=4 dtg=14.08 region=1_12
+ep=991 s=133 5671ms [sel=1607 cap=3974 rest=90] sg=5->5 mode=NONE win=8 obs=134 | cap=wip act=(320,360) d=0.57 a=1 | sp=som:active d=0.6 age=0 som=1/4 dtg=14.31 region=1_12
+ep=991 s=134 9498ms [sel=662 cap=8735 rest=100] sg=5->5 mode=NONE win=8 obs=135 | cap=wip act=(320,360) d=2.61 a=2 | sp=frontier:active d=2.6 age=0 som=1/4 dtg=14.31 region=1_12
+ep=991 s=135 6315ms [sel=28 cap=5865 rest=386] sg=5->5 mode=NONE win=8 obs=136 | cap=wip act=(320,360) d=2.61 a=2 | preview=view-/6 yaw=+0 render=36ms | sp=frontier:active d=2.6 age=1 dtg=14.31 region=1_12
+ep=991 s=136 1961ms [sel=28 cap=1823 rest=110] sg=5->5 mode=NONE win=8 obs=137 | cap=wip act=(320,360) d=2.61 a=2 | sp=frontier:active d=2.6 age=2 dtg=14.31 region=1_12
+ep=991 s=137 10525ms [sel=28 cap=10387 rest=110] sg=5->5 mode=NONE win=8 obs=138 | cap=wip act=(320,360) d=2.61 a=2 | sp=frontier:active d=2.6 age=3 dtg=14.31 region=1_12
+ep=991 s=138 8125ms [sel=28 cap=7663 rest=398] sg=5->5 mode=NONE win=8 obs=139 | cap=wip act=(320,360) d=2.61 a=2 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=2.6 age=4 dtg=14.31 region=1_12
+ep=991 s=139 5364ms [sel=20 cap=5237 rest=107] sg=5->5 mode=NONE win=8 obs=140 | cap=wip act=(320,360) d=2.61 a=2 | sp=frontier:active d=2.6 age=5 dtg=14.31 region=1_12
+ep=991 s=140 9305ms [sel=15 cap=9182 rest=108] sg=5->5 mode=WALL_STUCK win=8 obs=141 | cap=wip/WALL_STUCK act=(320,360) d=2.61 a=2 | sp=frontier:active d=2.6 age=6 dtg=14.31 region=1_12
+ep=991 s=141 11406ms [sel=6 cap=11284 rest=116] sg=5->5 mode=NONE win=8 obs=142 | cap=wip act=(320,360) d=2.61 a=2 | sp=frontier:active d=2.6 age=7 dtg=14.31 region=1_12
+ep=991 s=142 11318ms [sel=3 cap=11202 rest=113] sg=5->5 mode=NONE win=8 obs=143 | cap=wip act=(320,360) d=2.61 a=2 | sp=frontier:active d=2.6 age=8 dtg=14.31 region=1_12
+ep=991 s=143 5352ms [sel=4 cap=5233 rest=115] sg=5->5 mode=NONE win=8 obs=144 | cap=wip act=(320,360) d=2.61 a=2 | sp=frontier:active d=2.6 age=9 dtg=14.31 region=1_12
+ep=991 s=144 11483ms [sel=9 cap=11357 rest=117] sg=5->5 mode=NONE win=8 obs=145 | cap=wip act=(320,360) d=2.61 a=1 | sp=frontier:active d=2.6 age=10 dtg=14.16 region=1_12
+ep=991 s=145 8213ms [sel=10 cap=7714 rest=455] sg=5->5 mode=NONE win=8 obs=146 | cap=wip act=(320,360) d=2.49 a=1 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=2.5 age=11 dtg=14.02 region=1_12
+ep=991 s=146 4532ms [sel=11 cap=4406 rest=115] sg=5->5 mode=NONE win=8 obs=147 | cap=wip act=(320,360) d=2.39 a=3 | sp=frontier:active d=2.4 age=12 dtg=14.02 region=1_12
+ep=991 s=147 9561ms [sel=7 cap=9435 rest=119] sg=5->5 mode=NONE win=8 obs=148 | cap=wip act=(320,360) d=2.39 a=3 | sp=frontier:active d=2.4 age=13 dtg=14.02 region=1_12
+ep=991 s=148 4604ms [sel=3 cap=4093 rest=473] sg=5->5 mode=NONE win=8 obs=149 | cap=wip act=(320,360) d=2.39 a=1 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=2.4 age=14 dtg=14.02 region=1_12
+ep=991 s=149 3060ms [sel=4 cap=2946 rest=110] sg=5->5 mode=NONE win=8 obs=150 | cap=wip act=(320,360) d=2.20 a=1 | sp=frontier:active d=2.2 age=15 dtg=14.03 region=1_12
+ep=991 s=150 3335ms [sel=6 cap=3222 rest=107] sg=5->5 mode=NONE win=8 obs=151 | cap=wip act=(320,360) d=2.03 a=2 | sp=frontier:active d=2.0 age=16 dtg=14.03 region=1_12
+ep=991 s=151 4673ms [sel=9 cap=4148 rest=480] sg=5->5 mode=NONE win=8 obs=152 | cap=wip act=(320,360) d=2.03 a=1 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=2.0 age=17 dtg=14.00 region=1_12
+ep=991 s=152 3259ms [sel=11 cap=3138 rest=110] sg=5->5 mode=NONE win=8 obs=153 | cap=wip act=(320,360) d=1.93 a=1 | sp=frontier:active d=1.9 age=18 dtg=13.99 region=1_12
+ep=991 s=153 3029ms [sel=11 cap=2907 rest=110] sg=5->5 mode=NONE win=8 obs=154 | cap=wip act=(320,360) d=1.86 a=1 | sp=frontier:active d=1.9 age=19 dtg=13.99 region=1_12
+ep=991 s=154 9534ms [sel=13 cap=9004 rest=483] sg=5->5 mode=NONE win=8 obs=155 | cap=wip act=(320,360) d=1.82 a=3 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=1.8 age=20 dtg=13.99 region=1_12
+ep=991 s=155 2861ms [sel=10 cap=2744 rest=107] sg=5->5 mode=NONE win=8 obs=156 | cap=wip act=(320,360) d=1.82 a=3 | sp=frontier:active d=1.8 age=21 dtg=13.99 region=1_12
+ep=991 s=156 3376ms [sel=8 cap=3275 rest=93] sg=5->5 mode=NONE win=8 obs=157 | cap=wip act=(320,360) d=1.82 a=1 | sp=frontier:active d=1.8 age=22 dtg=14.13 region=1_12
+ep=991 s=157 8641ms [sel=9 cap=8146 rest=451] sg=5->5 mode=NONE win=8 obs=158 | cap=wip act=(320,360) d=1.68 a=3 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=1.7 age=23 dtg=14.13 region=1_12
+ep=991 s=158 4774ms [sel=6 cap=4670 rest=99] sg=5->5 mode=NONE win=8 obs=159 | cap=wip act=(320,360) d=1.68 a=1 | sp=frontier:active d=1.7 age=24 dtg=14.33 region=1_12
+ep=991 s=159 8553ms [sel=8 cap=8448 rest=97] sg=5->5 mode=NONE win=8 obs=160 | cap=wip act=(320,360) d=1.52 a=3 | sp=frontier:active d=1.5 age=25 dtg=14.33 region=1_12
+ep=991 s=160 10264ms [sel=1215 cap=8537 rest=478] sg=5->5 mode=NONE win=8 obs=161 | cap=wip act=(320,360) d=1.57 a=1 | preview=view-/6 yaw=+0 render=35ms | sp=som:active d=1.6 age=0 som=2/5 dtg=14.56 region=1_12
+ep=991 s=161 6328ms [sel=3 cap=6225 rest=101] sg=5->5 mode=NONE win=8 obs=162 | cap=wip act=(320,360) d=1.35 a=3 | sp=som:active d=1.4 age=1 dtg=14.56 region=1_12
+ep=991 s=162 5238ms [sel=3 cap=5130 rest=105] sg=5->5 mode=NONE win=8 obs=163 | cap=wip act=(320,360) d=1.35 a=1 | sp=som:active d=1.4 age=2 dtg=14.81 region=1_12
+ep=991 s=163 10069ms [sel=3 cap=9559 rest=466] sg=5->5 mode=NONE win=8 obs=164 | cap=wip act=(320,360) d=1.12 a=3 | preview=view-/6 yaw=+0 render=41ms | sp=som:active d=1.1 age=3 dtg=14.81 region=1_12
+ep=991 s=164 9432ms [sel=3 cap=9322 rest=106] sg=5->5 mode=NONE win=8 obs=165 | cap=wip act=(320,360) d=1.12 a=1 | sp=som:active d=1.1 age=4 dtg=15.05 region=1_12
+ep=991 s=165 3921ms [sel=3 cap=3818 rest=100] sg=5->5 mode=NONE win=8 obs=166 | cap=wip act=(320,360) d=0.87 a=1 | sp=som:active d=0.9 age=5 dtg=15.30 region=1_12
+ep=991 s=166 8526ms [sel=3 cap=8059 rest=429] sg=5->5 mode=NONE win=8 obs=167 | cap=wip act=(320,360) d=0.62 a=3 | preview=view-/6 yaw=+0 render=34ms | sp=som:active d=0.6 age=6 dtg=15.30 region=1_12
+ep=991 s=167 5104ms [sel=3 cap=5007 rest=94] sg=5->5 mode=NONE win=8 obs=168 | cap=wip act=(320,360) d=0.62 a=1 | sp=som:active d=0.6 age=7 dtg=15.53 region=1_12
+ep=991 s=168 3755ms [sel=604 cap=3059 rest=91] sg=5->5 mode=NONE win=8 obs=169 | cap=wip act=(320,360) d=2.46 a=3 | sp=frontier:active d=2.5 age=0 som=2/4 dtg=15.53 region=1_12
+ep=991 s=169 16029ms [sel=32 cap=0 rest=15962] sg=None->5 mode=NONE win=8 obs=170 | cap=- act=(320,360) d=2.46 a=3 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=2.5 age=1 ANALYSIS_ERROR_STAGE=decision ANALYSIS_ERROR='CaptionerOutputError: decision violates the navigation reply contract: missing or ambiguous final control segment' dtg=15.53 region=1_12
+ep=991 s=170 9116ms [sel=50 cap=8963 rest=103] sg=5->5 mode=NONE win=8 obs=171 | cap=wip act=(320,360) d=2.46 a=3 | sp=frontier:active d=2.5 age=2 dtg=15.53 region=1_12
+ep=991 s=171 8808ms [sel=32 cap=8654 rest=122] sg=5->5 mode=NONE win=8 obs=172 | cap=wip act=(320,360) d=2.46 a=3 | sp=frontier:active d=2.5 age=3 dtg=15.53 region=1_12
+ep=991 s=172 9494ms [sel=32 cap=8991 rest=436] sg=5->5 mode=NONE win=8 obs=173 | cap=wip act=(320,360) d=2.46 a=3 | preview=view-/6 yaw=+0 render=34ms | sp=frontier:active d=2.5 age=4 dtg=15.53 region=1_12
+ep=991 s=173 9307ms [sel=27 cap=9168 rest=112] sg=5->5 mode=NONE win=8 obs=174 | cap=wip act=(320,360) d=2.46 a=3 | sp=frontier:active d=2.5 age=5 dtg=15.53 region=1_12
+ep=991 s=174 4517ms [sel=20 cap=4384 rest=112] sg=5->5 mode=NONE win=8 obs=175 | cap=wip act=(320,360) d=2.46 a=3 | sp=frontier:active d=2.5 age=6 dtg=15.53 region=1_12
+ep=991 s=175 6977ms [sel=19 cap=6487 rest=434] sg=5->5 mode=NONE win=8 obs=176 | cap=wip act=(320,360) d=2.46 a=3 | preview=view-/6 yaw=+0 render=37ms | sp=frontier:active d=2.5 age=7 dtg=15.53 region=1_12
+ep=991 s=176 1987ms [sel=12 cap=1864 rest=111] sg=5->5 mode=NONE win=8 obs=177 | cap=wip act=(320,360) d=2.46 a=3 | sp=frontier:active d=2.5 age=8 dtg=15.53 region=1_12
+ep=991 s=177 2894ms [sel=7 cap=2774 rest=113] sg=5->5 mode=NONE win=8 obs=178 | cap=wip act=(320,360) d=2.46 a=3 | sp=frontier:active d=2.5 age=9 dtg=15.53 region=1_12
+ep=991 s=178 7510ms [sel=10 cap=7011 rest=454] sg=5->5 mode=NONE win=8 obs=179 | cap=wip act=(320,360) d=2.46 a=3 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=2.5 age=10 dtg=15.53 region=1_12
+ep=991 s=179 4994ms [sel=17 cap=4864 rest=113] sg=5->5 mode=NONE win=8 obs=180 | cap=wip act=(320,360) d=2.46 a=1 | sp=frontier:active d=2.5 age=11 dtg=15.28 region=1_12
+ep=991 s=180 2949ms [sel=18 cap=2822 rest=110] sg=5->5 mode=NONE win=8 obs=181 | cap=wip act=(320,360) d=2.37 a=1 | sp=frontier:active d=2.4 age=12 dtg=15.04 region=1_12
+ep=991 s=181 8200ms [sel=15 cap=7676 rest=471] sg=5->5 mode=NONE win=8 obs=182 | cap=wip act=(320,360) d=2.30 a=1 | preview=view-/6 yaw=+0 render=39ms | sp=frontier:active d=2.3 age=13 dtg=14.79 region=1_12
+ep=991 s=182 4133ms [sel=16 cap=4010 rest=107] sg=5->5 mode=NONE win=8 obs=183 | cap=wip act=(320,360) d=2.26 a=1 | sp=frontier:active d=2.3 age=14 dtg=14.54 region=1_12
+ep=991 s=183 5496ms [sel=18 cap=5371 rest=107] sg=5->5 mode=NONE win=8 obs=184 | cap=wip act=(320,360) d=2.24 a=2 | sp=frontier:active d=2.2 age=15 dtg=14.54 region=1_12
+ep=991 s=184 8491ms [sel=16 cap=7936 rest=503] sg=5->5 mode=NONE win=8 obs=185 | cap=wip act=(320,360) d=2.24 a=2 | preview=view-/6 yaw=+0 render=36ms | sp=frontier:active d=2.2 age=16 dtg=14.54 region=1_12
+ep=991 s=185 3971ms [sel=10 cap=3852 rest=109] sg=5->5 mode=NONE win=8 obs=186 | cap=wip act=(320,360) d=2.24 a=1 | sp=frontier:active d=2.2 age=17 dtg=14.31 region=1_12
+ep=991 s=186 5860ms [sel=14 cap=5738 rest=108] sg=5->5 mode=NONE win=8 obs=187 | cap=wip act=(320,360) d=2.13 a=2 | sp=frontier:active d=2.1 age=18 dtg=14.31 region=1_12
+ep=991 s=187 8216ms [sel=6 cap=7701 rest=473] sg=5->5 mode=NONE win=8 obs=188 | cap=wip act=(320,360) d=2.13 a=1 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=2.1 age=19 dtg=14.11 region=1_12
+ep=991 s=188 3749ms [sel=7 cap=3645 rest=97] sg=5->5 mode=NONE win=8 obs=189 | cap=wip act=(320,360) d=1.98 a=2 | sp=frontier:active d=2.0 age=20 dtg=14.11 region=1_12
+ep=991 s=189 6887ms [sel=3 cap=6784 rest=99] sg=5->5 mode=NONE win=8 obs=190 | cap=wip act=(320,360) d=1.98 a=1 | sp=frontier:active d=2.0 age=21 dtg=13.97 region=1_12
+ep=991 s=190 18710ms [sel=5 cap=18206 rest=463] sg=5->5 mode=NONE win=8 obs=191 | cap=wip act=(320,360) d=1.79 a=2 | preview=view-/6 yaw=+0 render=37ms | sp=frontier:active d=1.8 age=22 dtg=13.97 region=1_12
+ep=991 s=191 11318ms [sel=3 cap=11212 rest=103] sg=5->5 mode=NONE win=8 obs=192 | cap=wip act=(320,360) d=1.79 a=2 | sp=frontier:active d=1.8 age=23 dtg=13.97 region=1_12
+ep=991 s=192 3873ms [sel=3 cap=3760 rest=109] sg=5->5 mode=NONE win=8 obs=193 | cap=wip act=(320,360) d=1.79 a=1 | sp=frontier:active d=1.8 age=24 dtg=13.97 region=1_12
+ep=991 s=193 6113ms [sel=3 cap=6008 rest=102] sg=5->5 mode=NONE win=8 obs=194 | cap=wip act=(320,360) d=1.56 a=1 | sp=frontier:active d=1.6 age=25 dtg=13.98 region=1_12
+ep=991 s=194 7914ms [sel=611 cap=6821 rest=446] sg=5->5 mode=NONE win=8 obs=195 | cap=wip act=(320,360) d=3.01 a=3 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=3.0 age=0 som=B/8 dtg=13.98 region=1_12
+ep=991 s=195 6799ms [sel=29 cap=6671 rest=99] sg=5->5 mode=NONE win=8 obs=196 | cap=wip act=(320,360) d=3.01 a=3 | sp=frontier:active d=3.0 age=1 dtg=13.98 region=1_12
+ep=991 s=196 11155ms [sel=29 cap=11036 rest=91] sg=5->5 mode=NONE win=8 obs=197 | cap=wip act=(320,360) d=3.01 a=3 | sp=frontier:active d=3.0 age=2 dtg=13.98 region=1_12
+ep=991 s=197 6484ms [sel=30 cap=5975 rest=444] sg=5->5 mode=NONE win=8 obs=198 | cap=wip act=(320,360) d=3.01 a=3 | preview=view-/6 yaw=+0 render=35ms | sp=frontier:active d=3.0 age=3 dtg=13.98 region=1_12
+ep=991 s=198 10821ms [sel=29 cap=10690 rest=102] sg=5->5 mode=NONE win=8 obs=199 | cap=wip act=(320,360) d=3.01 a=3 | sp=frontier:active d=3.0 age=4 dtg=13.98 region=1_12
+ep=991 s=199 6257ms [sel=14 cap=6132 rest=111] sg=5->5 mode=NONE win=8 obs=200 | cap=wip act=(320,360) d=3.01 a=3 | sp=frontier:active d=3.0 age=5 dtg=13.98 region=1_12
+ep=991 s=200 5833ms [sel=4 cap=5712 rest=117] sg=5->5 mode=NONE win=8 obs=201 | cap=wip act=(320,360) d=3.01 a=3 | sp=frontier:active d=3.0 age=6 dtg=13.98 region=1_12
+ep=991 s=201 4267ms [sel=3 cap=4161 rest=103] sg=5->5 mode=NONE win=8 obs=202 | cap=wip act=(320,360) d=3.01 a=1 | sp=frontier:active d=3.0 age=7 dtg=13.74 region=1_12
+ep=991 s=202 7776ms [sel=598 cap=6658 rest=485] sg=5->5 mode=NONE win=8 obs=203 | cap=wip act=(320,360) d=2.93 a=1 | preview=view-/6 yaw=+0 render=35ms | sp=som:active d=2.9 age=0 som=5/7 dtg=13.49 region=1_12
+ep=991 s=203 3282ms [sel=3 cap=3175 rest=104] sg=5->5 mode=NONE win=8 obs=204 | cap=wip act=(320,360) d=2.70 a=1 | sp=som:active d=2.7 age=1 dtg=13.25 region=1_12
+ep=991 s=204 5846ms [sel=4 cap=5733 rest=109] sg=5->5 mode=NONE win=8 obs=205 | cap=wip act=(320,360) d=2.48 a=1 | sp=som:active d=2.5 age=2 dtg=13.00 region=1_12
+ep=991 s=205 11547ms [sel=3 cap=11012 rest=497] sg=5->5 mode=NONE win=8 obs=206 | cap=wip act=(320,360) d=2.26 a=1 | preview=view-/6 yaw=+0 render=35ms | sp=som:active d=2.3 age=3 dtg=12.76 region=1_12
+ep=991 s=206 5923ms [sel=3 cap=5814 rest=106] sg=5->5 mode=NONE win=8 obs=207 | cap=wip act=(320,360) d=2.04 a=3 | sp=som:active d=2.0 age=4 dtg=12.76 region=1_12
+ep=991 s=207 5445ms [sel=3 cap=5332 rest=110] sg=5->5 mode=NONE win=8 obs=208 | cap=wip act=(320,360) d=2.04 a=1 | sp=som:active d=2.0 age=5 dtg=12.55 region=1_12
+ep=991 s=208 5092ms [sel=3 cap=4533 rest=521] sg=5->5 mode=NONE win=8 obs=209 | cap=wip act=(320,360) d=1.80 a=1 | preview=view-/6 yaw=+0 render=36ms | sp=som:active d=1.8 age=6 dtg=12.34 region=1_12
+ep=991 s=209 1641ms [sel=3 cap=1538 rest=100] sg=5->5 mode=NONE win=8 obs=210 | cap=wip act=(320,360) d=1.57 a=1 | sp=som:active d=1.6 age=7 dtg=12.15 region=1_12
+ep=991 s=210 2289ms [sel=3 cap=2187 rest=99] sg=5->5 mode=NONE win=8 obs=211 | cap=wip act=(320,360) d=1.35 a=1 | sp=som:active d=1.3 age=8 dtg=11.97 region=1_12
+ep=991 s=211 9663ms [sel=3 cap=9151 rest=473] sg=5->5 mode=NONE win=8 obs=212 | cap=wip act=(320,360) d=1.13 a=1 | preview=view-/6 yaw=+0 render=36ms | sp=som:active d=1.1 age=9 dtg=11.82 region=1_15
+ep=991 s=212 3694ms [sel=3 cap=3594 rest=97] sg=5->5 mode=NONE win=8 obs=213 | cap=wip act=(320,360) d=0.93 a=1 | sp=som:active d=0.9 age=10 dtg=11.70 region=1_15
+ep=991 s=213 2583ms [sel=5 cap=2482 rest=96] sg=5->5 mode=NONE win=8 obs=214 | cap=wip act=(320,360) d=0.76 a=3 | sp=som:active d=0.8 age=11 dtg=11.70 region=1_15
+ep=991 s=214 8841ms [sel=3 cap=8299 rest=503] sg=5->5 mode=NONE win=8 obs=215 | cap=wip act=(320,360) d=0.76 a=3 | preview=view-/6 yaw=+0 render=36ms | sp=som:active d=0.8 age=12 dtg=11.70 region=1_15
+ep=991 s=215 4195ms [sel=3 cap=4092 rest=99] sg=5->5 mode=NONE win=8 obs=216 | cap=wip act=(320,360) d=0.76 a=1 | sp=som:active d=0.8 age=13 dtg=11.74 region=1_15
+ep=991 s=216 3201ms [sel=3 cap=3099 rest=99] sg=5->5 mode=NONE win=8 obs=217 | cap=wip act=(320,360) d=0.54 a=3 | sp=som:active d=0.5 age=14 dtg=11.74 region=1_15
+ep=991 s=217 10657ms [sel=3 cap=10110 rest=507] sg=5->5 mode=NONE win=8 obs=218 | cap=wip act=(320,360) d=0.54 a=3 | preview=view-/6 yaw=+0 render=37ms | sp=som:active d=0.5 age=15 dtg=11.74 region=1_15
+ep=991 s=218 4077ms [sel=3 cap=3971 rest=103] sg=5->5 mode=NONE win=8 obs=219 | cap=wip act=(320,360) d=0.54 a=1 | sp=som:active d=0.5 age=16 dtg=11.92 region=1_15
+ep=991 s=219 6280ms [sel=588 cap=5593 rest=100] sg=5->5 mode=NONE win=8 obs=220 | cap=wip act=(320,360) d=0.58 a=3 | sp=som:active d=0.6 age=0 som=5/8 dtg=11.92 region=1_15
+ep=991 s=220 14679ms [sel=3 cap=14169 rest=469] sg=5->5 mode=NONE win=8 obs=221 | cap=wip act=(320,360) d=0.58 a=3 | preview=view-/6 yaw=+0 render=38ms | sp=som:active d=0.6 age=1 dtg=11.92 region=1_15
+ep=991 s=221 9375ms [sel=3 cap=9276 rest=96] sg=5->5 mode=NONE win=8 obs=222 | cap=wip act=(320,360) d=0.58 a=1 | sp=som:active d=0.6 age=2 dtg=12.16 region=1_15
+ep=991 s=222 8120ms [sel=859 cap=7158 rest=103] sg=5->5 mode=NONE win=8 obs=223 | cap=wip act=(320,359) d=1.75 a=1 | sp=straight_ahead:reached d=0.3 age=0 som=3/6 dtg=12.40 region=1_15
+ep=991 s=223 10377ms [sel=60 cap=10212 rest=105] sg=5->5 mode=NONE win=8 obs=224 | cap=wip act=(320,367) d=1.48 a=1 | sp=straight_ahead:reached d=0.3 age=0 dtg=12.65 region=1_15
+ep=991 s=224 9960ms [sel=1045 cap=8810 rest=105] sg=5->5 mode=NONE win=8 obs=225 | cap=wip act=(320,360) d=0.53 a=1 | sp=som:active d=0.5 age=0 som=2/5 dtg=12.89 region=1_13
+ep=991 s=225 5733ms [sel=650 cap=4978 rest=105] sg=5->5 mode=NONE win=8 obs=226 | cap=wip act=(320,360) d=1.68 a=3 | sp=som:active d=1.7 age=0 som=2/5 dtg=12.89 region=1_13
+ep=991 s=226 8765ms [sel=41 cap=8622 rest=102] sg=5->5 mode=NONE win=8 obs=227 | cap=wip act=(320,360) d=1.68 a=3 | sp=som:active d=1.7 age=1 dtg=12.89 region=1_13
+ep=991 s=227 8514ms [sel=39 cap=8369 rest=106] sg=5->5 mode=NONE win=8 obs=228 | cap=wip act=(320,360) d=1.68 a=3 | sp=som:active d=1.7 age=2 dtg=12.89 region=1_13
+ep=991 s=228 3406ms [sel=40 cap=3265 rest=101] sg=5->5 mode=NONE win=8 obs=229 | cap=wip act=(320,360) d=1.68 a=3 | sp=som:active d=1.7 age=3 dtg=12.89 region=1_13
+ep=991 s=229 8465ms [sel=32 cap=7988 rest=410] sg=5->5 mode=NONE win=8 obs=230 | cap=wip act=(320,360) d=1.68 a=3 | preview=view-/6 yaw=+0 render=35ms | sp=som:active d=1.7 age=4 dtg=12.89 region=1_13
+ep=991 s=230 6312ms [sel=29 cap=6190 rest=93] sg=5->5 mode=NONE win=8 obs=231 | cap=wip act=(320,360) d=1.68 a=3 | sp=som:active d=1.7 age=5 dtg=12.89 region=1_13
+ep=991 s=231 5721ms [sel=25 cap=5609 rest=86] sg=5->5 mode=NONE win=8 obs=232 | cap=wip act=(320,360) d=1.68 a=3 | sp=som:active d=1.7 age=6 dtg=12.89 region=1_13
+ep=991 s=232 6867ms [sel=23 cap=6395 rest=414] sg=5->5 mode=NONE win=8 obs=233 | cap=wip act=(320,360) d=1.68 a=3 | preview=view-/6 yaw=+0 render=36ms | sp=som:active d=1.7 age=7 dtg=12.89 region=1_13
+ep=991 s=233 3184ms [sel=21 cap=3073 rest=91] sg=5->5 mode=NONE win=8 obs=234 | cap=wip act=(320,360) d=1.68 a=3 | sp=som:active d=1.7 age=8 dtg=12.89 region=1_13
+ep=991 s=234 5630ms [sel=15 cap=5526 rest=89] sg=5->5 mode=NONE win=8 obs=235 | cap=wip act=(320,360) d=1.68 a=3 | sp=som:active d=1.7 age=9 dtg=12.89 region=1_13
+ep=991 s=235 14663ms [sel=18 cap=14193 rest=416] sg=5->5 mode=NONE win=8 obs=236 | cap=wip act=(320,360) d=1.68 a=3 | preview=view-/6 yaw=+0 render=36ms | sp=som:active d=1.7 age=10 dtg=12.89 region=1_13
+ep=991 s=236 4495ms [sel=23 cap=4371 rest=102] sg=5->5 mode=NONE win=8 obs=237 | cap=wip act=(320,360) d=1.68 a=1 | sp=som:active d=1.7 age=11 dtg=12.67 region=0_2
+ep=991 s=237 10563ms [sel=23 cap=10444 rest=96] sg=5->5 mode=NONE win=8 obs=238 | cap=wip act=(320,360) d=1.75 a=1 | sp=som:active d=1.8 age=12 dtg=12.45 region=1_15
+ep=991 s=238 17604ms [sel=21 cap=17141 rest=406] sg=5->5 mode=NONE win=8 obs=239 | cap=wip act=(320,360) d=1.86 a=3 | preview=view-/6 yaw=+0 render=36ms | sp=som:active d=1.9 age=13 dtg=12.45 region=1_15
+ep=991 s=239 18821ms [sel=24 cap=0 rest=18797] sg=None->5 mode=NONE win=8 obs=240 | cap=- act=(320,360) d=1.86 a=1 | sp=som:active d=1.9 age=14 ANALYSIS_ERROR_STAGE=decision ANALYSIS_ERROR='CaptionerOutputError: decision violates the navigation reply contract: missing or ambiguous final control segment' dtg=12.21 region=1_15
+ep=991 s=240 3221ms [sel=23 cap=3098 rest=99] sg=5->5 mode=NONE win=8 obs=241 | cap=wip act=(320,360) d=2.03 a=1 | sp=som:active d=2.0 age=15 dtg=11.97 region=1_15
+ep=991 s=241 7464ms [sel=248 cap=6729 rest=451] sg=5->None mode=NONE win=8 obs=242 | cap=DONE act=(320,360) d=1.00 a=1 | preview=view-/6 yaw=+0 render=36ms | sp=som:active d=2.2 age=16 ovr=1 door_evts=2 dtg=11.73 region=1_15
+ep=991 s=242 104ms [sel=5 cap=0 rest=99] sg=None->None mode=NONE win=8 obs=243 | cap=- act=(320,360) d=1.00 a=1 | sp=som:active d=2.4 age=17 ovr=1 door_evts=2 dtg=11.49 region=1_15
+ep=991 s=243 107ms [sel=6 cap=0 rest=101] sg=None->None mode=NONE win=8 obs=244 | cap=- act=(320,360) d=1.00 a=1 | sp=som:active d=2.6 age=18 ovr=1 door_evts=2 dtg=11.25 region=1_15
+ep=991 s=244 98ms [sel=0 cap=0 rest=98] sg=None->None mode=NONE win=8 obs=245 | cap=- act=STOP | sp=som:active d=2.9 age=19 ovr=1 door_evts=2 dtg=11.25 region=1_15
+rank=0 [4/6] id=991 steps=245 success=0.000 spl=0.000 dtg=11.25 osr=0 path_length=28.00 ndtw=0.005 sdtw=0.000
+PluginManager::Manager: duplicate static plugin StbImageImporter, ignoring
+PluginManager::Manager: duplicate static plugin GltfImporter, ignoring
+PluginManager::Manager: duplicate static plugin BasisImporter, ignoring
+PluginManager::Manager: duplicate static plugin AssimpImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnySceneImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnyImageImporter, ignoring
+episode=1228 instruction="Alright, so head on out of the room and into the house. Then just go straight on down the hall, and keep going until you reach the violin that's mounted up on the wall on your right." start_position=[5.272799968719482, 0.15480518341064453, 7.863180160522461] goal_position=[-2.3521199226379395, 0.15480518341064453, 6.618619918823242] reference_geodesic=7.906900882720947
+episode=1228 prepared_subgoals=3
+  [1] Exit the room
+      proof: The camera has crossed the room's threshold and the hallway is central in the view.
+  [2] Walk straight down the hall
+      proof: The violin mounted on the wall is directly ahead and within a step.
+  [3] Stop beside the violin
+      proof: The violin is centred in the view and the camera has stopped beside it
+ep=1228 s=0 3824ms [sel=31 cap=3269 rest=488] sg=1->1 mode=NONE win=1 obs=1 | cap=wip act=(160,180) d=4.60 a=2 | preview=view5/6 yaw=+180 render=35ms | sp=preview:active d=4.6 age=0 dtg=7.91 region=1_26
+ep=1228 s=1 2870ms [sel=5 cap=2751 rest=113] sg=1->1 mode=NONE win=2 obs=2 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=preview:active d=4.6 age=1 dtg=7.91 region=1_26
+ep=1228 s=2 2014ms [sel=5 cap=1896 rest=113] sg=1->1 mode=NONE win=3 obs=3 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=preview:active d=4.6 age=2 dtg=7.91 region=1_26
+ep=1228 s=3 2396ms [sel=5 cap=2279 rest=112] sg=1->1 mode=NONE win=4 obs=4 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=preview:active d=4.6 age=3 dtg=7.91 region=1_26
+ep=1228 s=4 2288ms [sel=4 cap=2170 rest=114] sg=1->1 mode=NONE win=5 obs=5 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=preview:active d=4.6 age=4 dtg=7.91 region=1_26
+ep=1228 s=5 2315ms [sel=3 cap=2197 rest=114] sg=1->1 mode=NONE win=6 obs=6 | cap=wip act=(320,360) d=4.60 a=2 | sp=preview:active d=4.6 age=5 dtg=7.91 region=1_26
+ep=1228 s=6 2975ms [sel=951 cap=1909 rest=115] sg=1->2 mode=NONE win=7 obs=7 | cap=DONE act=(320,360) d=2.94 a=2 | sp=som:active d=2.9 age=0 som=3/8 dtg=7.91 region=1_26
+ep=1228 s=7 2901ms [sel=3 cap=2784 rest=114] sg=2->2 mode=NONE win=8 obs=8 | cap=wip act=(320,360) d=2.94 a=1 | sp=som:active d=2.9 age=1 dtg=7.82 region=1_26
+ep=1228 s=8 1922ms [sel=3 cap=1804 rest=115] sg=2->2 mode=NONE win=8 obs=9 | cap=wip act=(320,360) d=2.70 a=2 | sp=som:active d=2.7 age=2 dtg=7.82 region=1_26
+ep=1228 s=9 1938ms [sel=3 cap=1823 rest=112] sg=2->2 mode=NONE win=8 obs=10 | cap=wip act=(320,360) d=2.70 a=1 | sp=som:active d=2.7 age=3 dtg=7.74 region=1_26
+ep=1228 s=10 3962ms [sel=3 cap=3838 rest=121] sg=2->2 mode=GET_NOWHERE win=8 obs=11 | cap=wip/GET_NOWHERE act=(320,360) d=2.46 a=1 | sp=som:active d=2.5 age=4 dtg=7.71 region=1_26
+ep=1228 s=11 2607ms [sel=3 cap=2486 rest=118] sg=2->2 mode=NONE win=8 obs=12 | cap=wip act=(320,360) d=2.24 a=1 | sp=som:active d=2.2 age=5 dtg=7.69 region=1_26
+ep=1228 s=12 2528ms [sel=3 cap=2412 rest=113] sg=2->2 mode=NONE win=8 obs=13 | cap=wip act=(320,360) d=2.02 a=1 | sp=som:active d=2.0 age=6 dtg=7.69 region=1_26
+ep=1228 s=13 3228ms [sel=3 cap=3113 rest=113] sg=2->2 mode=NONE win=8 obs=14 | cap=wip act=(320,360) d=1.80 a=3 | sp=som:active d=1.8 age=7 dtg=7.69 region=1_26
+ep=1228 s=14 1654ms [sel=3 cap=1542 rest=110] sg=2->2 mode=NONE win=8 obs=15 | cap=wip act=(320,360) d=1.80 a=1 | sp=som:active d=1.8 age=8 dtg=7.76 region=1_26
+ep=1228 s=15 2965ms [sel=3 cap=2852 rest=110] sg=2->2 mode=NONE win=8 obs=16 | cap=wip act=(320,360) d=1.57 a=3 | sp=som:active d=1.6 age=9 dtg=7.76 region=1_26
+ep=1228 s=16 3000ms [sel=3 cap=2881 rest=115] sg=2->2 mode=NONE win=8 obs=17 | cap=wip act=(320,360) d=1.57 a=1 | sp=som:active d=1.6 age=10 dtg=7.89 region=1_26
+ep=1228 s=17 2425ms [sel=3 cap=2308 rest=115] sg=2->2 mode=NONE win=8 obs=18 | cap=wip act=(320,360) d=1.32 a=1 | sp=som:active d=1.3 age=11 dtg=8.03 region=1_26
+ep=1228 s=18 2164ms [sel=3 cap=2051 rest=111] sg=2->2 mode=NONE win=8 obs=19 | cap=wip act=(320,360) d=1.07 a=3 | sp=som:active d=1.1 age=12 dtg=8.03 region=1_26
+ep=1228 s=19 1440ms [sel=3 cap=1328 rest=110] sg=2->2 mode=NONE win=8 obs=20 | cap=wip act=(320,360) d=1.07 a=1 | sp=som:active d=1.1 age=13 dtg=8.22 region=1_26
+ep=1228 s=20 2378ms [sel=3 cap=2259 rest=116] sg=2->2 mode=NONE win=8 obs=21 | cap=wip act=(320,360) d=0.82 a=1 | sp=som:active d=0.8 age=14 dtg=8.42 region=1_26
+ep=1228 s=21 2946ms [sel=50 cap=2396 rest=465] sg=2->2 mode=NONE win=8 obs=22 | cap=wip act=(160,180) d=4.40 a=2 | preview=view0/6 yaw=-180 render=35ms | sp=preview:active d=4.4 age=0 dtg=8.42 region=1_26
+ep=1228 s=22 1595ms [sel=33 cap=1454 rest=109] sg=2->2 mode=NONE win=8 obs=23 | cap=wip act=(320,360) d=4.40 a=2 | sp=preview:active d=4.4 age=1 dtg=8.42 region=1_26
+ep=1228 s=23 2847ms [sel=33 cap=2706 rest=108] sg=2->2 mode=NONE win=8 obs=24 | cap=wip act=(320,360) d=4.40 a=2 | sp=preview:active d=4.4 age=2 dtg=8.42 region=1_26
+ep=1228 s=24 1903ms [sel=33 cap=1768 rest=102] sg=2->2 mode=NONE win=8 obs=25 | cap=wip act=(320,360) d=4.40 a=2 | sp=preview:active d=4.4 age=3 dtg=8.42 region=1_26
+ep=1228 s=25 1253ms [sel=33 cap=1119 rest=101] sg=2->2 mode=NONE win=8 obs=26 | cap=wip act=(320,360) d=4.40 a=2 | sp=preview:active d=4.4 age=4 dtg=8.42 region=1_26
+ep=1228 s=26 1332ms [sel=33 cap=1192 rest=107] sg=2->2 mode=NONE win=8 obs=27 | cap=wip act=(320,360) d=4.40 a=2 | sp=preview:active d=4.4 age=5 dtg=8.42 region=1_26
+ep=1228 s=27 1439ms [sel=33 cap=1300 rest=107] sg=2->2 mode=NONE win=8 obs=28 | cap=wip act=(320,360) d=4.40 a=2 | sp=preview:active d=4.4 age=6 dtg=8.42 region=1_26
+ep=1228 s=28 1423ms [sel=21 cap=1293 rest=109] sg=2->2 mode=NONE win=8 obs=29 | cap=wip act=(320,360) d=4.40 a=2 | sp=preview:active d=4.4 age=7 dtg=8.42 region=1_26
+ep=1228 s=29 1849ms [sel=3 cap=1739 rest=107] sg=2->2 mode=NONE win=8 obs=30 | cap=wip act=(320,360) d=4.40 a=2 | sp=preview:active d=4.4 age=8 dtg=8.42 region=1_26
+ep=1228 s=30 1464ms [sel=3 cap=1345 rest=116] sg=2->2 mode=NONE win=8 obs=31 | cap=wip act=(320,360) d=4.40 a=2 | sp=preview:active d=4.4 age=9 dtg=8.42 region=1_26
+ep=1228 s=31 2026ms [sel=3 cap=1914 rest=110] sg=2->2 mode=NONE win=8 obs=32 | cap=wip act=(320,360) d=4.40 a=1 | sp=preview:active d=4.4 age=10 dtg=8.17 region=1_26
+ep=1228 s=32 2091ms [sel=3 cap=1980 rest=108] sg=2->2 mode=NONE win=8 obs=33 | cap=wip act=(320,360) d=4.16 a=1 | sp=preview:active d=4.2 age=11 dtg=7.93 region=1_26
+ep=1228 s=33 1350ms [sel=4 cap=1239 rest=107] sg=2->2 mode=NONE win=8 obs=34 | cap=wip act=(320,360) d=3.91 a=1 | sp=preview:active d=3.9 age=12 dtg=7.68 region=1_26
+ep=1228 s=34 2385ms [sel=4 cap=2275 rest=107] sg=2->2 mode=NONE win=8 obs=35 | cap=wip act=(320,360) d=3.67 a=1 | sp=preview:active d=3.7 age=13 dtg=7.43 region=1_26
+ep=1228 s=35 2035ms [sel=3 cap=1917 rest=115] sg=2->2 mode=NONE win=8 obs=36 | cap=wip act=(320,360) d=3.42 a=2 | sp=preview:active d=3.4 age=14 dtg=7.43 region=1_26
+ep=1228 s=36 2833ms [sel=3 cap=2715 rest=115] sg=2->2 mode=NONE win=8 obs=37 | cap=wip act=(320,360) d=3.42 a=1 | sp=preview:active d=3.4 age=15 dtg=7.20 region=1_26
+ep=1228 s=37 2571ms [sel=3 cap=2453 rest=116] sg=2->2 mode=NONE win=8 obs=38 | cap=wip act=(320,360) d=3.20 a=1 | sp=preview:active d=3.2 age=16 dtg=6.98 region=1_26
+ep=1228 s=38 2789ms [sel=3 cap=2674 rest=112] sg=2->2 mode=NONE win=8 obs=39 | cap=wip act=(320,360) d=2.99 a=3 | sp=preview:active d=3.0 age=17 dtg=6.98 region=1_26
+ep=1228 s=39 4495ms [sel=3 cap=4382 rest=110] sg=2->2 mode=NONE win=8 obs=40 | cap=wip act=(320,360) d=2.99 a=1 | sp=preview:active d=3.0 age=18 dtg=6.73 region=1_26
+ep=1228 s=40 2401ms [sel=3 cap=2285 rest=113] sg=2->2 mode=NONE win=8 obs=41 | cap=wip act=(320,360) d=2.75 a=3 | sp=preview:active d=2.7 age=19 dtg=6.73 region=1_26
+ep=1228 s=41 1884ms [sel=3 cap=1771 rest=110] sg=2->2 mode=NONE win=8 obs=42 | cap=wip act=(320,360) d=2.75 a=1 | sp=preview:active d=2.7 age=20 dtg=6.48 region=1_26
+ep=1228 s=42 2590ms [sel=896 cap=1588 rest=106] sg=2->2 mode=NONE win=8 obs=43 | cap=wip act=(320,360) d=2.99 a=1 | sp=som:active d=3.0 age=0 som=3/8 dtg=6.23 region=1_26
+ep=1228 s=43 1824ms [sel=3 cap=1717 rest=104] sg=2->2 mode=NONE win=8 obs=44 | cap=wip act=(320,360) d=2.74 a=1 | sp=som:active d=2.7 age=1 dtg=5.98 region=1_29
+ep=1228 s=44 2702ms [sel=3 cap=2598 rest=101] sg=2->2 mode=NONE win=8 obs=45 | cap=wip act=(320,360) d=2.49 a=1 | sp=som:active d=2.5 age=2 dtg=5.74 region=1_29
+ep=1228 s=45 1998ms [sel=3 cap=1893 rest=102] sg=2->2 mode=NONE win=8 obs=46 | cap=wip act=(320,360) d=2.24 a=1 | sp=som:active d=2.2 age=3 dtg=5.49 region=1_29
+ep=1228 s=46 2842ms [sel=3 cap=2736 rest=103] sg=2->2 mode=NONE win=8 obs=47 | cap=wip act=(320,360) d=1.99 a=1 | sp=som:active d=2.0 age=4 dtg=5.24 region=1_29
+ep=1228 s=47 2096ms [sel=3 cap=1990 rest=103] sg=2->2 mode=NONE win=8 obs=48 | cap=wip act=(320,360) d=1.74 a=1 | sp=som:active d=1.7 age=5 dtg=4.99 region=1_29
+ep=1228 s=48 1726ms [sel=3 cap=1619 rest=104] sg=2->2 mode=NONE win=8 obs=49 | cap=wip act=(320,360) d=1.49 a=1 | sp=som:active d=1.5 age=6 dtg=4.74 region=1_29
+ep=1228 s=49 2361ms [sel=3 cap=2253 rest=106] sg=2->2 mode=NONE win=8 obs=50 | cap=wip act=(320,360) d=1.24 a=1 | sp=som:active d=1.2 age=7 dtg=4.49 region=1_29
+ep=1228 s=50 1687ms [sel=3 cap=1577 rest=107] sg=2->2 mode=NONE win=8 obs=51 | cap=wip act=(320,360) d=0.99 a=1 | sp=som:active d=1.0 age=8 dtg=4.24 region=1_29
+ep=1228 s=51 1381ms [sel=3 cap=1269 rest=110] sg=2->2 mode=NONE win=8 obs=52 | cap=wip act=(320,360) d=0.74 a=1 | sp=som:active d=0.7 age=9 dtg=3.99 region=1_29
+ep=1228 s=52 2251ms [sel=847 cap=1297 rest=107] sg=2->2 mode=NONE win=8 obs=53 | cap=wip act=(320,360) d=3.01 a=1 | sp=som:active d=3.0 age=0 som=4/8 dtg=3.74 region=1_29
+ep=1228 s=53 2496ms [sel=3 cap=2390 rest=103] sg=2->2 mode=NONE win=8 obs=54 | cap=wip act=(320,360) d=2.76 a=2 | sp=som:active d=2.8 age=1 dtg=3.74 region=1_29
+ep=1228 s=54 2080ms [sel=3 cap=1971 rest=106] sg=2->2 mode=NONE win=8 obs=55 | cap=wip act=(320,360) d=2.76 a=1 | sp=som:active d=2.8 age=2 dtg=3.50 region=1_29
+ep=1228 s=55 2119ms [sel=3 cap=2009 rest=107] sg=2->2 mode=NONE win=8 obs=56 | cap=wip act=(320,360) d=2.52 a=1 | sp=som:active d=2.5 age=3 dtg=3.25 region=1_29
+ep=1228 s=56 2472ms [sel=3 cap=2362 rest=107] sg=2->2 mode=NONE win=8 obs=57 | cap=wip act=(320,360) d=2.27 a=1 | sp=som:active d=2.3 age=4 dtg=3.00 region=1_29
+ep=1228 s=57 2876ms [sel=3 cap=2767 rest=106] sg=2->2 mode=NONE win=8 obs=58 | cap=wip act=(320,360) d=2.02 a=1 | sp=som:active d=2.0 age=5 dtg=2.76 region=1_29
+ep=1228 s=58 1946ms [sel=3 cap=1838 rest=105] sg=2->2 mode=NONE win=8 obs=59 | cap=wip act=(320,360) d=1.78 a=1 | sp=som:active d=1.8 age=6 dtg=2.51 region=1_29
+ep=1228 s=59 2192ms [sel=3 cap=2086 rest=103] sg=2->2 mode=NONE win=8 obs=60 | cap=wip act=(320,360) d=1.54 a=1 | sp=som:active d=1.5 age=7 dtg=2.27 region=1_29
+ep=1228 s=60 2584ms [sel=3 cap=2486 rest=96] sg=2->2 mode=NONE win=8 obs=61 | cap=wip act=(320,360) d=1.29 a=3 | sp=som:active d=1.3 age=8 dtg=2.27 region=1_29
+ep=1228 s=61 2308ms [sel=3 cap=2214 rest=92] sg=2->2 mode=NONE win=8 obs=62 | cap=wip act=(320,360) d=1.29 a=1 | sp=som:active d=1.3 age=9 dtg=2.02 region=1_29
+ep=1228 s=62 1508ms [sel=3 cap=1418 rest=87] sg=2->2 mode=GET_NOWHERE win=8 obs=63 | cap=wip/GET_NOWHERE act=(320,360) d=1.04 a=1 | sp=som:active d=1.0 age=10 dtg=1.77 region=1_29
+ep=1228 s=63 2489ms [sel=3 cap=2400 rest=86] sg=2->2 mode=NONE win=8 obs=64 | cap=wip act=(320,360) d=0.79 a=1 | sp=som:active d=0.8 age=11 dtg=1.52 region=1_29
+ep=1228 s=64 3208ms [sel=1590 cap=1532 rest=86] sg=2->3 mode=NONE win=8 obs=65 | cap=DONE act=(320,360) d=1.80 a=1 | sp=som:active d=1.8 age=0 som=3/7 dtg=1.27 region=None
+ep=1228 s=65 1473ms [sel=3 cap=1376 rest=94] sg=3->3 mode=NONE win=8 obs=66 | cap=wip act=(320,360) d=1.56 a=3 | sp=som:active d=1.6 age=1 dtg=1.27 region=None
+ep=1228 s=66 9289ms [sel=449 cap=8349 rest=457] sg=3->None mode=NONE win=8 obs=67 | cap=DONE act=(320,360) d=1.56 a=1 | preview=view-/6 yaw=+0 render=35ms | sp=som:active d=1.6 age=2 dtg=1.04 region=1_27
+ep=1228 s=67 91ms [sel=0 cap=0 rest=91] sg=None->None mode=NONE win=8 obs=68 | cap=- act=STOP | sp=endpoint:active d=1.3 age=1 dtg=1.04 region=1_27
+rank=0 [5/6] id=1228 steps=68 success=1.000 spl=0.791 dtg=1.04 osr=1 path_length=10.00 ndtw=0.790 sdtw=0.790
+PluginManager::Manager: duplicate static plugin StbImageImporter, ignoring
+PluginManager::Manager: duplicate static plugin GltfImporter, ignoring
+PluginManager::Manager: duplicate static plugin BasisImporter, ignoring
+PluginManager::Manager: duplicate static plugin AssimpImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnySceneImporter, ignoring
+PluginManager::Manager: duplicate static plugin AnyImageImporter, ignoring
+episode=1569 instruction='So go through the doorway and into the next room. Then turn left and move forward, going past the railing. From there turn right and head to the front of the stairs. Turn left and go into the bedroom. And the bedroom is where you stop.' start_position=[-3.6271300315856934, 3.2642593383789062, 8.7645902633667] goal_position=[-0.3361319899559021, 3.2642593383789062, 2.5736498832702637] reference_geodesic=7.120190620422363
+episode=1569 prepared_subgoals=4
+  [1] Go through the doorway
+      proof: The camera has passed the doorway: it is behind or below the camera and the space beyond it fills the view; the camera has not yet turned left.
+  [2] Turn left until the railing is centered ahead, then move forward past the railing
+      proof: The railing is beside or directly ahead of the camera, within a step; the camera has not yet turned right.
+  [3] Turn right until the bedroom is centered ahead, then turn left until the bedroom is centered ahead, then enter the bedroom
+      proof: The camera has crossed the threshold and the bedroom interior is central in the view.
+  [4] Stop beside the bedroom door
+      proof: The camera is stationary beside the bedroom door, with the interior visible
+ep=1569 s=0 3206ms [sel=28 cap=2700 rest=443] sg=1->1 mode=NONE win=1 obs=1 | cap=wip act=(160,180) d=3.85 a=3 | preview=view3/6 yaw=+45 render=35ms | sp=preview:active d=3.9 age=0 dtg=7.12 region=1_4
+ep=1569 s=1 1893ms [sel=6 cap=1793 rest=94] sg=1->1 mode=NONE win=2 obs=2 | cap=wip act=(320,360) d=3.85 a=3 | sp=preview:active d=3.9 age=1 dtg=7.12 region=1_4
+ep=1569 s=2 1601ms [sel=6 cap=1511 rest=85] sg=1->1 mode=NONE win=3 obs=3 | cap=wip act=(320,360) d=3.85 a=3 | sp=preview:active d=3.9 age=2 dtg=7.12 region=1_4
+ep=1569 s=3 1259ms [sel=6 cap=1160 rest=93] sg=1->1 mode=NONE win=4 obs=4 | cap=wip act=(320,360) d=3.85 a=3 | sp=preview:active d=3.9 age=3 dtg=7.12 region=1_4
+ep=1569 s=4 2343ms [sel=5 cap=2243 rest=95] sg=1->1 mode=NONE win=5 obs=5 | cap=wip act=(320,360) d=3.85 a=3 | sp=preview:active d=3.9 age=4 dtg=7.12 region=1_4
+ep=1569 s=5 2669ms [sel=3 cap=2571 rest=94] sg=1->1 mode=NONE win=6 obs=6 | cap=wip act=(320,360) d=3.85 a=3 | sp=preview:active d=3.9 age=5 dtg=7.12 region=1_4
+ep=1569 s=6 3812ms [sel=6 cap=3716 rest=91] sg=1->1 mode=NONE win=7 obs=7 | cap=wip act=(320,360) d=3.85 a=3 | sp=preview:active d=3.9 age=6 dtg=7.12 region=1_4
+ep=1569 s=7 3318ms [sel=3 cap=3214 rest=101] sg=1->1 mode=NONE win=8 obs=8 | cap=wip act=(320,360) d=3.85 a=1 | sp=preview:active d=3.9 age=7 dtg=7.25 region=1_4
+ep=1569 s=8 2545ms [sel=4 cap=2448 rest=93] sg=1->1 mode=NONE win=8 obs=9 | cap=wip act=(320,360) d=3.81 a=3 | sp=preview:active d=3.8 age=8 dtg=7.25 region=1_4
+ep=1569 s=9 3984ms [sel=4 cap=3887 rest=93] sg=1->1 mode=NONE win=8 obs=10 | cap=wip act=(320,360) d=3.81 a=1 | sp=preview:active d=3.8 age=9 dtg=7.45 region=1_4
+ep=1569 s=10 3798ms [sel=5 cap=3701 rest=92] sg=1->1 mode=NONE win=8 obs=11 | cap=wip act=(320,360) d=3.84 a=1 | sp=preview:active d=3.8 age=10 dtg=7.67 region=1_4
+ep=1569 s=11 2632ms [sel=6 cap=2538 rest=88] sg=1->1 mode=NONE win=8 obs=12 | cap=wip act=(320,360) d=3.89 a=2 | sp=preview:active d=3.9 age=11 dtg=7.67 region=1_4
+ep=1569 s=12 3654ms [sel=4 cap=3564 rest=87] sg=1->1 mode=NONE win=8 obs=13 | cap=wip act=(320,360) d=3.89 a=2 | sp=preview:active d=3.9 age=12 dtg=7.67 region=1_4
+ep=1569 s=13 8834ms [sel=4 cap=8743 rest=87] sg=1->1 mode=NONE win=8 obs=14 | cap=wip act=(320,360) d=3.89 a=1 | sp=preview:active d=3.9 age=13 dtg=7.84 region=1_4
+ep=1569 s=14 4837ms [sel=4 cap=4749 rest=84] sg=1->1 mode=NONE win=8 obs=15 | cap=wip act=(320,360) d=3.82 a=2 | sp=preview:active d=3.8 age=14 dtg=7.84 region=1_4
+ep=1569 s=15 2182ms [sel=19 cap=2068 rest=94] sg=1->1 mode=NONE win=8 obs=16 | cap=wip act=(320,360) d=3.82 a=2 | sp=preview:active d=3.8 age=15 dtg=7.84 region=1_4
+ep=1569 s=16 3752ms [sel=19 cap=3645 rest=88] sg=1->1 mode=NONE win=8 obs=17 | cap=wip act=(320,360) d=3.82 a=2 | sp=preview:active d=3.8 age=16 dtg=7.84 region=1_4
+ep=1569 s=17 3592ms [sel=19 cap=3473 rest=100] sg=1->1 mode=NONE win=8 obs=18 | cap=wip act=(320,360) d=3.82 a=2 | sp=preview:active d=3.8 age=17 dtg=7.84 region=1_4
+ep=1569 s=18 2717ms [sel=19 cap=2606 rest=92] sg=1->1 mode=NONE win=8 obs=19 | cap=wip act=(320,360) d=3.82 a=2 | sp=preview:active d=3.8 age=18 dtg=7.84 region=1_4
+ep=1569 s=19 4470ms [sel=19 cap=4362 rest=89] sg=1->1 mode=NONE win=8 obs=20 | cap=wip act=(320,360) d=3.82 a=2 | sp=preview:active d=3.8 age=19 dtg=7.84 region=1_4
+ep=1569 s=20 6213ms [sel=2344 cap=3780 rest=89] sg=1->1 mode=NONE win=8 obs=21 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=preview:stagnant d=3.8 age=20 som=5/8 dtg=7.84 region=1_4
+ep=1569 s=21 1871ms [sel=0 cap=1782 rest=90] sg=1->1 mode=NONE win=8 obs=22 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 dtg=7.84 region=1_4
+ep=1569 s=22 3098ms [sel=0 cap=3005 rest=93] sg=1->1 mode=NONE win=8 obs=23 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 dtg=7.84 region=1_4
+ep=1569 s=23 2787ms [sel=0 cap=2681 rest=106] sg=1->1 mode=NONE win=8 obs=24 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 dtg=7.84 region=1_4
+ep=1569 s=24 3085ms [sel=834 cap=2162 rest=89] sg=1->1 mode=NONE win=8 obs=25 | cap=wip act=(320,360) d=3.23 a=1 | sp=som:active d=3.2 age=0 som=2/8 dtg=7.95 region=1_4
+ep=1569 s=25 2354ms [sel=16 cap=2243 rest=94] sg=1->1 mode=NONE win=8 obs=26 | cap=wip act=(320,360) d=2.98 a=1 | sp=som:active d=3.0 age=1 dtg=8.10 region=1_4
+ep=1569 s=26 2008ms [sel=23 cap=1890 rest=95] sg=1->1 mode=NONE win=8 obs=27 | cap=wip act=(320,360) d=2.73 a=1 | sp=som:active d=2.7 age=2 dtg=8.32 region=1_26
+ep=1569 s=27 2200ms [sel=18 cap=2095 rest=88] sg=1->1 mode=NONE win=8 obs=28 | cap=wip act=(320,360) d=2.48 a=3 | sp=som:active d=2.5 age=3 dtg=8.32 region=1_26
+ep=1569 s=28 3385ms [sel=26 cap=3273 rest=86] sg=1->1 mode=NONE win=8 obs=29 | cap=wip act=(320,360) d=2.48 a=3 | sp=som:active d=2.5 age=4 dtg=8.32 region=1_26
+ep=1569 s=29 3253ms [sel=27 cap=3141 rest=86] sg=1->1 mode=NONE win=8 obs=30 | cap=wip act=(320,360) d=2.48 a=3 | sp=som:active d=2.5 age=5 dtg=8.32 region=1_26
+ep=1569 s=30 2003ms [sel=26 cap=1891 rest=86] sg=1->1 mode=NONE win=8 obs=31 | cap=wip act=(320,360) d=2.48 a=3 | sp=som:active d=2.5 age=6 dtg=8.32 region=1_26
+ep=1569 s=31 3863ms [sel=26 cap=3755 rest=82] sg=1->1 mode=NONE win=8 obs=32 | cap=wip act=(320,360) d=2.48 a=3 | sp=som:active d=2.5 age=7 dtg=8.32 region=1_26
+ep=1569 s=32 2383ms [sel=26 cap=2279 rest=78] sg=1->1 mode=NONE win=8 obs=33 | cap=wip act=(320,360) d=2.48 a=3 | sp=som:active d=2.5 age=8 dtg=8.32 region=1_26
+ep=1569 s=33 2342ms [sel=26 cap=2231 rest=85] sg=1->1 mode=NONE win=8 obs=34 | cap=wip act=(320,360) d=2.48 a=3 | sp=som:active d=2.5 age=9 dtg=8.32 region=1_26
+ep=1569 s=34 2001ms [sel=42 cap=1866 rest=94] sg=1->1 mode=NONE win=8 obs=35 | cap=wip act=(320,360) d=2.48 a=3 | sp=som:active d=2.5 age=10 dtg=8.32 region=1_26
+ep=1569 s=35 1860ms [sel=27 cap=1724 rest=109] sg=1->1 mode=NONE win=8 obs=36 | cap=wip act=(320,360) d=2.48 a=3 | sp=som:active d=2.5 age=11 dtg=8.32 region=1_26
+ep=1569 s=36 3758ms [sel=26 cap=3633 rest=99] sg=1->1 mode=NONE win=8 obs=37 | cap=wip act=(320,360) d=2.48 a=3 | sp=som:active d=2.5 age=12 dtg=8.32 region=1_26
+ep=1569 s=37 1391ms [sel=23 cap=1269 rest=100] sg=1->1 mode=NONE win=8 obs=38 | cap=wip act=(320,360) d=2.48 a=3 | sp=som:active d=2.5 age=13 dtg=8.32 region=1_26
+ep=1569 s=38 1918ms [sel=21 cap=1797 rest=100] sg=1->1 mode=NONE win=8 obs=39 | cap=wip act=(320,360) d=2.48 a=3 | sp=som:active d=2.5 age=14 dtg=8.32 region=1_26
+ep=1569 s=39 4217ms [sel=15 cap=4102 rest=100] sg=1->1 mode=NONE win=8 obs=40 | cap=wip act=(320,360) d=2.48 a=1 | sp=som:active d=2.5 age=15 dtg=8.10 region=1_4
+ep=1569 s=40 4649ms [sel=20 cap=4532 rest=97] sg=1->1 mode=NONE win=8 obs=41 | cap=wip act=(320,360) d=2.73 a=1 | sp=som:active d=2.7 age=16 dtg=7.95 region=1_4
+ep=1569 s=41 5446ms [sel=21 cap=5329 rest=96] sg=1->1 mode=NONE win=8 obs=42 | cap=wip act=(320,360) d=2.98 a=3 | sp=som:active d=3.0 age=17 dtg=7.95 region=1_4
+ep=1569 s=42 2195ms [sel=33 cap=2067 rest=94] sg=1->1 mode=NONE win=8 obs=43 | cap=wip act=(320,360) d=2.98 a=3 | sp=som:active d=3.0 age=18 dtg=7.95 region=1_4
+ep=1569 s=43 3515ms [sel=31 cap=3386 rest=98] sg=1->1 mode=NONE win=8 obs=44 | cap=wip act=(320,360) d=2.98 a=1 | sp=som:active d=3.0 age=19 dtg=7.74 region=1_4
+ep=1569 s=44 4401ms [sel=32 cap=4275 rest=93] sg=1->1 mode=NONE win=8 obs=45 | cap=wip act=(320,360) d=3.19 a=3 | sp=som:active d=3.2 age=20 dtg=7.74 region=1_4
+ep=1569 s=45 5024ms [sel=29 cap=4905 rest=90] sg=1->1 mode=NONE win=8 obs=46 | cap=wip act=(320,360) d=3.19 a=1 | sp=som:active d=3.2 age=21 dtg=7.51 region=1_4
+ep=1569 s=46 1521ms [sel=31 cap=1400 rest=89] sg=1->1 mode=NONE win=8 obs=47 | cap=wip act=(320,360) d=3.37 a=3 | sp=som:active d=3.4 age=22 dtg=7.51 region=1_4
+ep=1569 s=47 5417ms [sel=619 cap=4712 rest=87] sg=1->1 mode=NONE win=8 obs=48 | cap=wip act=(320,360) d=0.88 a=1 | sp=som:active d=0.9 age=0 som=2/8 dtg=7.28 region=1_4
+ep=1569 s=48 1511ms [sel=3 cap=1424 rest=84] sg=1->1 mode=NONE win=8 obs=49 | cap=wip act=(320,360) d=0.63 a=1 | sp=som:active d=0.6 age=1 dtg=7.06 region=1_4
+ep=1569 s=49 1869ms [sel=524 cap=1262 rest=82] sg=1->1 mode=NONE win=8 obs=50 | cap=wip act=(320,360) d=2.77 a=3 | sp=som:active d=2.8 age=0 som=1/8 dtg=7.06 region=1_4
+ep=1569 s=50 1687ms [sel=9 cap=1588 rest=90] sg=1->1 mode=NONE win=8 obs=51 | cap=wip act=(320,360) d=2.77 a=1 | sp=som:active d=2.8 age=1 dtg=6.83 region=1_4
+ep=1569 s=51 2647ms [sel=7 cap=2552 rest=89] sg=1->1 mode=NONE win=8 obs=52 | cap=wip act=(320,360) d=2.52 a=3 | sp=som:active d=2.5 age=2 dtg=6.83 region=1_4
+ep=1569 s=52 3270ms [sel=6 cap=3174 rest=90] sg=1->1 mode=NONE win=8 obs=53 | cap=wip act=(320,360) d=2.52 a=3 | sp=som:active d=2.5 age=3 dtg=6.83 region=1_4
+ep=1569 s=53 2904ms [sel=6 cap=2798 rest=100] sg=1->1 mode=NONE win=8 obs=54 | cap=wip act=(320,360) d=2.52 a=1 | sp=som:active d=2.5 age=4 dtg=6.59 region=1_4
+ep=1569 s=54 2103ms [sel=6 cap=1989 rest=107] sg=1->1 mode=NONE win=8 obs=55 | cap=wip act=(320,360) d=2.31 a=1 | sp=som:active d=2.3 age=5 dtg=6.34 region=1_4
+ep=1569 s=55 2908ms [sel=3 cap=2800 rest=104] sg=1->1 mode=NONE win=8 obs=56 | cap=wip act=(320,360) d=2.10 a=3 | sp=som:active d=2.1 age=6 dtg=6.34 region=1_4
+ep=1569 s=56 2345ms [sel=8 cap=2232 rest=105] sg=1->1 mode=NONE win=8 obs=57 | cap=wip act=(320,360) d=2.10 a=1 | sp=som:active d=2.1 age=7 dtg=6.12 region=0_23
+ep=1569 s=57 2097ms [sel=11 cap=1984 rest=101] sg=1->1 mode=NONE win=8 obs=58 | cap=wip act=(320,360) d=1.96 a=1 | sp=som:active d=2.0 age=8 dtg=5.94 region=0_23
+ep=1569 s=58 2036ms [sel=14 cap=1924 rest=98] sg=1->1 mode=NONE win=8 obs=59 | cap=wip act=(320,360) d=1.83 a=2 | sp=som:active d=1.8 age=9 dtg=5.94 region=0_23
+ep=1569 s=59 3417ms [sel=10 cap=3311 rest=96] sg=1->1 mode=NONE win=8 obs=60 | cap=wip act=(320,360) d=1.83 a=2 | sp=som:active d=1.8 age=10 dtg=5.94 region=0_23
+ep=1569 s=60 4082ms [sel=6 cap=3981 rest=96] sg=1->1 mode=NONE win=8 obs=61 | cap=wip act=(320,360) d=1.83 a=2 | sp=som:active d=1.8 age=11 dtg=5.94 region=0_23
+ep=1569 s=61 2022ms [sel=5 cap=1925 rest=92] sg=1->1 mode=NONE win=8 obs=62 | cap=wip act=(320,360) d=1.83 a=1 | sp=som:active d=1.8 age=12 dtg=5.69 region=0_23
+ep=1569 s=62 1546ms [sel=4 cap=1450 rest=92] sg=1->1 mode=NONE win=8 obs=63 | cap=wip act=(320,360) d=1.60 a=1 | sp=som:active d=1.6 age=13 dtg=5.44 region=0_23
+ep=1569 s=63 2350ms [sel=3 cap=2253 rest=95] sg=1->1 mode=NONE win=8 obs=64 | cap=wip act=(320,360) d=1.37 a=2 | sp=som:active d=1.4 age=14 dtg=5.44 region=0_23
+ep=1569 s=64 2361ms [sel=3 cap=2271 rest=87] sg=1->1 mode=NONE win=8 obs=65 | cap=wip act=(320,360) d=1.37 a=1 | sp=som:active d=1.4 age=15 dtg=5.20 region=0_23
+ep=1569 s=65 2042ms [sel=3 cap=1947 rest=92] sg=1->1 mode=NONE win=8 obs=66 | cap=wip act=(320,360) d=1.12 a=1 | sp=som:active d=1.1 age=16 dtg=4.96 region=0_23
+ep=1569 s=66 2740ms [sel=3 cap=2646 rest=91] sg=1->1 mode=NONE win=8 obs=67 | cap=wip act=(320,360) d=0.88 a=1 | sp=som:active d=0.9 age=17 dtg=4.73 region=0_24
+ep=1569 s=67 4302ms [sel=0 cap=4208 rest=94] sg=1->2 mode=NONE win=8 obs=68 | cap=DONE act=TURN request=-45deg execute=-15deg x1 a=2 | sp=som:active d=0.6 age=18 door_evts=1 dtg=4.73 region=0_24
+ep=1569 s=68 4343ms [sel=0 cap=4247 rest=95] sg=2->2 mode=NONE win=8 obs=69 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=- door_evts=2 EVT=door@(-2.4,7.3)w1.20m@s65 dtg=4.73 region=0_24
+ep=1569 s=69 1213ms [sel=0 cap=1125 rest=88] sg=2->2 mode=NONE win=8 obs=70 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=- door_evts=2 dtg=4.73 region=0_24
+ep=1569 s=70 2398ms [sel=0 cap=2317 rest=80] sg=2->2 mode=NONE win=8 obs=71 | cap=wip act=TURN request=-45deg execute=-15deg x1 a=2 | sp=- door_evts=2 dtg=4.73 region=0_24
+ep=1569 s=71 5231ms [sel=1995 cap=3160 rest=76] sg=2->2 mode=WALL_STUCK win=8 obs=72 | cap=wip/WALL_STUCK act=(320,360) d=0.60 a=3 | sp=som:active d=0.6 age=0 som=1/6 dtg=4.73 region=0_24
+ep=1569 s=72 3270ms [sel=3 cap=3187 rest=80] sg=2->2 mode=NONE win=8 obs=73 | cap=wip act=(320,360) d=0.60 a=3 | sp=som:active d=0.6 age=1 dtg=4.73 region=0_24
+ep=1569 s=73 3850ms [sel=3 cap=3762 rest=85] sg=2->2 mode=NONE win=8 obs=74 | cap=wip act=(320,360) d=0.60 a=3 | sp=som:active d=0.6 age=2 dtg=4.73 region=0_24
+ep=1569 s=74 4167ms [sel=3 cap=3708 rest=423] sg=2->2 mode=NONE win=8 obs=75 | cap=wip act=(320,360) d=0.60 a=1 | preview=view-/6 yaw=+0 render=33ms | sp=som:active d=0.6 age=3 dtg=4.54 region=0_24
+ep=1569 s=75 4969ms [sel=1013 cap=3857 rest=98] sg=2->2 mode=NONE win=8 obs=76 | cap=wip act=(320,360) d=2.96 a=3 | sp=som:active d=3.0 age=0 som=4/8 dtg=4.54 region=0_24
+ep=1569 s=76 2414ms [sel=3 cap=2317 rest=94] sg=2->2 mode=NONE win=8 obs=77 | cap=wip act=(320,360) d=2.96 a=1 | sp=som:active d=3.0 age=1 dtg=4.32 region=0_24
+ep=1569 s=77 1857ms [sel=3 cap=1758 rest=96] sg=2->2 mode=NONE win=8 obs=78 | cap=wip act=(320,360) d=2.71 a=1 | sp=som:active d=2.7 age=2 dtg=4.11 region=0_24
+ep=1569 s=78 4046ms [sel=3 cap=3947 rest=97] sg=2->2 mode=NONE win=8 obs=79 | cap=wip act=(320,360) d=2.46 a=1 | sp=som:active d=2.5 age=3 dtg=3.90 region=0_24
+ep=1569 s=79 5592ms [sel=3 cap=5504 rest=86] sg=2->2 mode=NONE win=8 obs=80 | cap=wip act=(320,360) d=2.21 a=1 | sp=som:active d=2.2 age=4 dtg=3.69 region=0_24
+ep=1569 s=80 5390ms [sel=3 cap=5181 rest=206] sg=2->2 mode=NONE win=8 obs=81 | cap=wip act=(320,360) d=1.96 a=1 | sp=som:active d=2.0 age=5 dtg=3.50 region=0_24
+ep=1569 s=81 2238ms [sel=3 cap=2152 rest=84] sg=2->2 mode=NONE win=8 obs=82 | cap=wip act=(320,360) d=1.71 a=1 | sp=som:active d=1.7 age=6 dtg=3.31 region=0_24
+ep=1569 s=82 1950ms [sel=3 cap=1860 rest=87] sg=2->2 mode=NONE win=8 obs=83 | cap=wip act=(320,360) d=1.46 a=1 | sp=som:active d=1.5 age=7 dtg=3.14 region=0_24
+ep=1569 s=83 2709ms [sel=3 cap=2622 rest=85] sg=2->2 mode=NONE win=8 obs=84 | cap=wip act=(320,360) d=1.21 a=3 | sp=som:active d=1.2 age=8 dtg=3.14 region=0_24
+ep=1569 s=84 3113ms [sel=3 cap=3024 rest=86] sg=2->2 mode=NONE win=8 obs=85 | cap=wip act=(320,360) d=1.21 a=1 | sp=som:active d=1.2 age=9 dtg=2.94 region=0_24
+ep=1569 s=85 1526ms [sel=3 cap=1436 rest=88] sg=2->2 mode=NONE win=8 obs=86 | cap=wip act=(320,360) d=0.97 a=1 | sp=som:active d=1.0 age=10 dtg=2.75 region=0_24
+ep=1569 s=86 1379ms [sel=3 cap=1292 rest=84] sg=2->2 mode=NONE win=8 obs=87 | cap=wip act=(320,360) d=0.72 a=1 | sp=som:active d=0.7 age=11 dtg=2.57 region=0_24
+ep=1569 s=87 4394ms [sel=632 cap=3687 rest=75] sg=2->2 mode=NONE win=8 obs=88 | cap=wip act=(320,360) d=0.85 a=3 | sp=som:active d=0.9 age=0 som=3/8 dtg=2.57 region=0_24
+ep=1569 s=88 1650ms [sel=3 cap=1570 rest=77] sg=2->2 mode=NONE win=8 obs=89 | cap=wip act=(320,360) d=0.85 a=3 | sp=som:active d=0.9 age=1 dtg=2.57 region=0_24
+ep=1569 s=89 3027ms [sel=3 cap=2944 rest=80] sg=2->2 mode=NONE win=8 obs=90 | cap=wip act=(320,360) d=0.85 a=1 | sp=som:active d=0.9 age=2 dtg=2.34 region=0_24
+ep=1569 s=90 2553ms [sel=3 cap=2472 rest=79] sg=2->2 mode=NONE win=8 obs=91 | cap=wip act=(320,360) d=0.60 a=1 | sp=som:active d=0.6 age=3 dtg=2.12 region=0_24
+ep=1569 s=91 3898ms [sel=533 cap=3285 rest=80] sg=2->2 mode=NONE win=8 obs=92 | cap=wip act=(320,360) d=2.99 a=2 | sp=som:active d=3.0 age=0 som=2/7 dtg=2.12 region=0_24
+ep=1569 s=92 1553ms [sel=9 cap=1471 rest=72] sg=2->2 mode=NONE win=8 obs=93 | cap=wip act=(320,360) d=2.99 a=2 | sp=som:active d=3.0 age=1 dtg=2.12 region=0_24
+ep=1569 s=93 2957ms [sel=9 cap=2880 rest=68] sg=2->2 mode=NONE win=8 obs=94 | cap=wip act=(320,360) d=2.99 a=2 | sp=som:active d=3.0 age=2 dtg=2.12 region=0_24
+ep=1569 s=94 1582ms [sel=9 cap=1511 rest=62] sg=2->2 mode=NONE win=8 obs=95 | cap=wip act=(320,360) d=2.99 a=2 | sp=som:active d=3.0 age=3 dtg=2.12 region=0_24
+ep=1569 s=95 2047ms [sel=8 cap=1971 rest=68] sg=2->2 mode=NONE win=8 obs=96 | cap=wip act=(320,360) d=2.99 a=2 | sp=som:active d=3.0 age=4 dtg=2.12 region=0_24
+ep=1569 s=96 1870ms [sel=4 cap=1792 rest=75] sg=2->2 mode=NONE win=8 obs=97 | cap=wip act=(320,360) d=2.99 a=2 | sp=som:active d=3.0 age=5 dtg=2.12 region=0_24
+ep=1569 s=97 3038ms [sel=27 cap=2568 rest=410] sg=2->2 mode=NONE win=8 obs=98 | cap=wip act=(160,180) d=3.34 a=2 | preview=view5/6 yaw=+105 render=34ms | sp=preview:active d=3.3 age=0 dtg=2.12 region=0_24
+ep=1569 s=98 1648ms [sel=4 cap=1561 rest=84] sg=2->2 mode=NONE win=8 obs=99 | cap=wip act=(320,360) d=3.34 a=2 | sp=preview:active d=3.3 age=1 dtg=2.12 region=0_24
+ep=1569 s=99 1595ms [sel=4 cap=1499 rest=92] sg=2->2 mode=NONE win=8 obs=100 | cap=wip act=(320,360) d=3.34 a=1 | sp=preview:active d=3.3 age=2 dtg=2.34 region=0_24
+ep=1569 s=100 2603ms [sel=4 cap=2507 rest=92] sg=2->2 mode=NONE win=8 obs=101 | cap=wip act=(320,360) d=3.54 a=1 | sp=preview:active d=3.5 age=3 dtg=2.58 region=0_24
+ep=1569 s=101 1448ms [sel=0 cap=1355 rest=93] sg=2->3 mode=NONE win=8 obs=102 | cap=DONE act=TURN request=+45deg execute=+15deg x1 a=3 | sp=preview:active d=3.7 age=4 door_evts=2 dtg=2.58 region=0_24
+ep=1569 s=102 1294ms [sel=0 cap=1204 rest=90] sg=3->3 mode=NONE win=8 obs=103 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=- door_evts=2 dtg=2.58 region=0_24
+ep=1569 s=103 2628ms [sel=0 cap=2543 rest=85] sg=3->3 mode=NONE win=8 obs=104 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=- door_evts=2 dtg=2.58 region=0_24
+ep=1569 s=104 1271ms [sel=0 cap=1190 rest=81] sg=3->3 mode=NONE win=8 obs=105 | cap=wip act=TURN request=+45deg execute=+15deg x1 a=3 | sp=- door_evts=2 dtg=2.58 region=0_24
+ep=1569 s=105 2257ms [sel=543 cap=1640 rest=75] sg=3->3 mode=NONE win=8 obs=106 | cap=wip act=(320,360) d=3.13 a=2 | sp=som:active d=3.1 age=0 som=1/6 dtg=2.58 region=0_24
+ep=1569 s=106 1686ms [sel=4 cap=1602 rest=80] sg=3->3 mode=NONE win=8 obs=107 | cap=wip act=(320,360) d=3.13 a=2 | sp=som:active d=3.1 age=1 dtg=2.58 region=0_24
+ep=1569 s=107 1593ms [sel=3 cap=1504 rest=86] sg=3->3 mode=NONE win=8 obs=108 | cap=wip act=(320,360) d=3.13 a=2 | sp=som:active d=3.1 age=2 dtg=2.58 region=0_24
+ep=1569 s=108 2071ms [sel=3 cap=1978 rest=90] sg=3->3 mode=NONE win=8 obs=109 | cap=wip act=(320,360) d=3.13 a=2 | sp=som:active d=3.1 age=3 dtg=2.58 region=0_24
+ep=1569 s=109 1182ms [sel=15 cap=1077 rest=91] sg=3->3 mode=NONE win=8 obs=110 | cap=wip act=(320,360) d=3.13 a=1 | sp=som:active d=3.1 age=4 dtg=2.81 region=0_24
+ep=1569 s=110 1947ms [sel=16 cap=1836 rest=95] sg=3->3 mode=NONE win=8 obs=111 | cap=wip act=(320,360) d=2.95 a=1 | sp=som:active d=2.9 age=5 dtg=3.06 region=None
+ep=1569 s=111 2076ms [sel=18 cap=1966 rest=92] sg=3->3 mode=NONE win=8 obs=112 | cap=wip act=(320,360) d=2.77 a=3 | sp=som:active d=2.8 age=6 dtg=3.06 region=None
+ep=1569 s=112 2985ms [sel=11 cap=2871 rest=103] sg=3->3 mode=NONE win=8 obs=113 | cap=wip act=(320,360) d=2.77 a=1 | sp=som:active d=2.8 age=7 dtg=3.28 region=1_5
+ep=1569 s=113 2498ms [sel=942 cap=1458 rest=98] sg=3->4 mode=NONE win=8 obs=114 | cap=DONE act=(320,360) d=2.79 a=3 | sp=frontier:active d=2.8 age=0 som=2/7 dtg=3.28 region=1_5
+ep=1569 s=114 2300ms [sel=3 cap=2198 rest=99] sg=4->4 mode=NONE win=8 obs=115 | cap=wip act=(320,360) d=2.79 a=3 | sp=frontier:active d=2.8 age=1 dtg=3.28 region=1_5
+ep=1569 s=115 8418ms [sel=452 cap=7488 rest=446] sg=4->None mode=NONE win=8 obs=116 | cap=DONE act=(320,360) d=1.75 a=1 | preview=view-/6 yaw=+0 render=33ms | sp=frontier:active d=2.8 age=2 door_evts=2 dtg=3.43 region=1_5
+ep=1569 s=116 99ms [sel=3 cap=0 rest=96] sg=None->None mode=NONE win=8 obs=117 | cap=- act=(320,360) d=1.55 a=3 | sp=endpoint:active d=1.6 age=1 door_evts=2 dtg=3.43 region=1_5
+ep=1569 s=117 99ms [sel=5 cap=0 rest=94] sg=None->None mode=NONE win=8 obs=118 | cap=- act=(320,360) d=1.55 a=1 | sp=endpoint:active d=1.6 age=2 door_evts=2 dtg=3.60 region=1_5
+ep=1569 s=118 97ms [sel=0 cap=0 rest=97] sg=None->None mode=NONE win=8 obs=119 | cap=- act=STOP | sp=endpoint:active d=1.3 age=3 door_evts=2 dtg=3.60 region=1_5
+rank=0 [6/6] id=1569 steps=119 success=0.000 spl=0.000 dtg=3.60 osr=1 path_length=10.75 ndtw=0.713 sdtw=0.000
+rank_summary={"count": 6, "rank": 0, "totals": {"distance_to_goal": 40.21640980243683, "ndtw": 2.1751249886708366, "oracle_success": 4.0, "path_length": 131.38020225574962, "sdtw": 1.4426998283123542, "spl": 1.6070067765800928, "steps": 1002.0, "success": 3.0}}

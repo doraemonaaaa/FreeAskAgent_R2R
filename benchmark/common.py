@@ -185,6 +185,47 @@ def load_run(out_dirs):
 
 
 # ---------------------------------------------------------------- variant splits
+# Optional per-step cost fields a runner may write as TOP-LEVEL keys of each trace line.
+# None of the systems emits them yet; load_costs / metrics.evaluate_cost skip runs without them.
+COST_FIELDS = ("tokens_in", "tokens_out", "model_calls", "step_time_s")
+
+
+def _field(line, key):
+    """Value of ``key`` in a raw trace line: the last occurrence, so a nested payload
+    written before the top-level fields does not shadow them."""
+    at = line.rfind('"{}": '.format(key))
+    if at < 0:
+        return None
+    try:
+        return json.JSONDecoder().raw_decode(line, at + len(key) + 4)[0]
+    except ValueError:
+        return None
+
+
+def load_costs(out_dirs):
+    """Runner output dirs -> {episode: {steps, tokens_in, tokens_out, model_calls, step_time_s}} (sums).
+
+    Only steps that carry at least one cost field count; episodes without any are absent.
+    """
+    if isinstance(out_dirs, (str, Path)):
+        out_dirs = [out_dirs]
+    costs = {}
+    for directory in out_dirs:
+        for trace in sorted(glob.glob(str(Path(directory) / "rank_*_trace.jsonl"))):
+            with open(trace, errors="replace") as handle:
+                for line in handle:
+                    values = {k: _field(line, k) for k in COST_FIELDS}
+                    values = {k: float(v) for k, v in values.items() if isinstance(v, (int, float))}
+                    episode = _field(line, "episode_id")
+                    if not values or episode is None:
+                        continue
+                    row = costs.setdefault(str(episode), dict(steps=0))
+                    row["steps"] += 1
+                    for k, v in values.items():
+                        row[k] = row.get(k, 0.0) + v
+    return costs
+
+
 def write_split(name, raw, episodes_by_id, gt, instruction_of):
     """Write ``<r2r data>/<name>/<name>.json.gz`` with new instruction texts, plus a gt copy.
 

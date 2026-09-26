@@ -91,8 +91,9 @@ def main():
     import numpy as np
     from PIL import Image
     from integrations.v3.run_habitat import (habitat, HABITAT_ROOT, HABITAT_DATA, CAMERA,
-        FORWARD_STEP_M, TURN_ANGLE_DEG, ShortestPathFollower, motion_overrides, sensor_overrides,
-        rgb_depth, camera_intrinsics, camera_to_world_matrix, render_preview_views, navigable_window)
+        FORWARD_STEP_M, TURN_ANGLE_DEG, motion_overrides, sensor_overrides,
+        rgb_depth, camera_intrinsics, camera_to_world_matrix, render_preview_views)
+    from habitat.tasks.nav.shortest_path_follower import ShortestPathFollower  # oracle replay of the GT route
     overrides = motion_overrides(FORWARD_STEP_M, TURN_ANGLE_DEG) + sensor_overrides(
         CAMERA, CAMERA.width, CAMERA.height, CAMERA.hfov_deg, 0.0, 10.0, False) + [
         "habitat.dataset.split=train",
@@ -142,13 +143,8 @@ def main():
                         preview_records.append(save_preview_snapshot(env, frame, output, render_preview_views))
                         if not np.allclose(before, camera_to_world_matrix(env), atol=1e-6, rtol=0):
                             raise ValueError("Preview rendering did not restore the real camera pose")
-                        # Same task-blind local height grid used by live Preview filtering.
-                        grid = navigable_window(env, include_heights=True)
-                        geometry_path = output / "preview_{:06d}_geometry.npz".format(frame)
-                        np.savez_compressed(geometry_path, **grid)
                         camera_height = float(before[1, 3] - env.sim.get_agent_state().position[1])
-                        preview_records[-1]["geometry"] = dict(file=geometry_path.name,
-                            sha256=sha256(geometry_path.read_bytes()).hexdigest(), camera_height_m=camera_height)
+                        preview_records[-1]["camera_height_m"] = camera_height
                     if env.episode_over or steps >= args.max_steps:
                         break
                     action, target_index = next_route_action(follower, targets, target_index)

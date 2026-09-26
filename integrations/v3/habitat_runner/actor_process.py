@@ -75,7 +75,7 @@ class WaypointActorProcess:
         """Initialize the worker's task memory before an episode starts."""
         return self._request({"operation": "prepare", "instruction": instruction})
 
-    def act(self, rgb, depth, instruction, intrinsics, camera_to_world, navigable=None, preview_views=(), preview_request_id="", previous_execution=None):
+    def act(self, rgb, depth, instruction, intrinsics, camera_to_world, preview_views=(), preview_request_id="", previous_execution=None):
         encode_started = time.perf_counter()
         request = {
             "operation": "act",
@@ -97,19 +97,6 @@ class WaypointActorProcess:
                     "camera_to_world": np.asarray(v["camera_to_world"]).tolist(),
                 } for v in preview_views
             ]
-        if navigable is not None:
-            # The controller's own traversability around the agent: what the
-            # follower can reach. Floor seen through glass or past a railing
-            # looks walkable in depth but is not, and a target there only
-            # makes the follower turn in place.
-            request["navigable"] = {
-                "origin_xz": list(navigable["origin_xz"]),
-                "resolution_m": navigable["resolution_m"],
-                "mask": self._array(navigable["mask"]),
-            }
-            if navigable.get("height_m") is not None:
-                request["navigable"]["height_m"] = self._array(navigable["height_m"])
-                request["navigable"]["height_cell_m"] = float(navigable.get("height_cell_m", 0.0))
         encode_ms = (time.perf_counter() - encode_started) * 1000
         roundtrip_started = time.perf_counter()
         result = self._request(request)

@@ -152,7 +152,7 @@ class PanoHopActor:
         pass
 
     def act(self, rgb, depth, instruction, intrinsics, camera_to_world,
-            navigable=None, oracle_goal=None, cwp_candidates=None):
+            oracle_goal=None, cwp_candidates=None):
         state = self.env.sim.get_agent_state()
         pos = np.asarray(state.position, dtype=np.float64)
         if self.start_pos is None:

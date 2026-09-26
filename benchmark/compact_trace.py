@@ -8,7 +8,8 @@ pose, prompt, VLM reply): ~11 KB per step, ~38 GB for the six 200-set runs.
 the full payload buys nothing and costs three orders of magnitude.
 
 This keeps ``episode_id``, ``step``, ``action``, ``position_before/after`` and
-``distance_to_goal_before/after`` -- the exact input of every metric -- plus the
+``distance_to_goal_before/after`` -- the exact input of every metric -- the optional
+per-step cost fields (``common.COST_FIELDS``) when a runner writes them, plus the
 ``rank_*.log`` files unchanged (they hold the per-episode result lines and the
 per-step summaries the failure analysis parses). Runs whose traces are already
 minimal (CA-Nav, AwareVLN) pass through unchanged.
@@ -17,8 +18,10 @@ import argparse
 import json
 from pathlib import Path
 
+from .common import COST_FIELDS
+
 KEEP = ("episode_id", "step", "action", "position_before", "position_after",
-        "distance_to_goal_before", "distance_to_goal_after")
+        "distance_to_goal_before", "distance_to_goal_after") + COST_FIELDS
 KEY = '"distance_to_goal_after": '
 
 
@@ -32,9 +35,10 @@ def compact_line(line):
     except ValueError:
         return None
     head = {}
-    for key in ("episode_id", "step", "action", "position_before", "distance_to_goal_before"):
+    for key in ("episode_id", "step", "action", "position_before", "distance_to_goal_before") + COST_FIELDS:
         marker = '"{}": '.format(key)
-        start = line.find(marker)
+        # cost fields are top-level and written after any nested payload: take the last one
+        start = line.rfind(marker) if key in COST_FIELDS else line.find(marker)
         if start < 0:
             continue
         try:

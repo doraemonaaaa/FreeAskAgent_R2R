@@ -200,20 +200,6 @@ def _agent_debug_state(actor, decision):
     }
 
 
-def _navigable_window(payload):
-    if not payload:
-        return None
-    window = {
-        "origin_xz": tuple(payload["origin_xz"]),
-        "resolution_m": float(payload["resolution_m"]),
-        "mask": _decode_array(payload["mask"]),
-        "height_cell_m": float(payload.get("height_cell_m", 0.0)),
-    }
-    if "height_m" in payload:
-        window["height_m"] = _decode_array(payload["height_m"])
-    return window
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model-path", required=True,
@@ -252,7 +238,6 @@ def main():
                     normalized_depth=bool(request.get("normalized_depth", False)),
                     depth_min_m=request.get("depth_min_m"),
                     depth_max_m=request.get("depth_max_m"),
-                    navigable_window=_navigable_window(request.get("navigable")),
                     preview_views=[
                         PreviewView(
                             yaw_deg=float(view["yaw_deg"]),

@@ -16,6 +16,8 @@ ORIG run            SR, SGCR = mean(c / K), SGCR@k = P(c >= k | K >= k)
 FLIP                python -m benchmark.metrics --orig <flip_orig run> --flip <flip run>:
                     turn at the start per run (follow / opposite / straight / none),
                     MeanFollow, Blind, WordEffect; see evaluate_flip
+COST                TokensIn / TokensOut / ModelCalls per episode and per step,
+                    StepTime_s, when the traces carry common.COST_FIELDS; see evaluate_cost
 --compare / GOAL-ONLY  paired agreement with ORIG (FlipRate, SuccessKept,
                     Kappa, McNemar_p, EndpointGap, |dNE|); see evaluate_paired
 All rates carry a bootstrap 95% CI over episodes.
@@ -27,7 +29,7 @@ import math
 import numpy as np
 
 from .build_flip import start_turn
-from .common import (SUCCESS_DISTANCE_M, data_path, dist_xz, dump_json, load_gt, load_json,
+from .common import (SUCCESS_DISTANCE_M, data_path, dist_xz, dump_json, load_costs, load_gt, load_json,
                       load_run, ndtw, path_walked)
 
 
@@ -239,6 +241,33 @@ def evaluate_goalonly(subgoals, orig, goal, goals, gt=None, radius=1.5, seed=0):
     return metrics, per
 
 
+# ---------------------------------------------------------------- cost
+def evaluate_cost(costs, ids=None, seed=0):
+    """Per-episode cost from the optional trace fields (common.COST_FIELDS); not a ranking criterion.
+
+    Input and output tokens are reported separately (they cost differently:
+    input is dominated by images and prompt, output drives latency).
+    Tokens are only comparable between systems whose per-step work is LLM/VLM
+    calls; a system that uses non-LLM vision models per step (e.g. CA-Nav) shows
+    its per-step cost only in StepTime_s.
+    """
+    rng = np.random.default_rng(seed)
+    eps = [e for e in costs if ids is None or e in ids]
+    metrics = {}
+    if not eps:
+        return metrics
+    for field, label in (("tokens_in", "TokensIn"), ("tokens_out", "TokensOut"), ("model_calls", "ModelCalls")):
+        have = [e for e in eps if field in costs[e]]
+        if have:
+            metrics[label + "/episode"] = rate(label + "/episode", [costs[e][field] for e in have], rng)
+            metrics[label + "/step"] = rate(label + "/step", [costs[e][field] / costs[e]["steps"] for e in have], rng)
+    have = [e for e in eps if "step_time_s" in costs[e]]
+    if have:
+        metrics["StepTime_s"] = rate("StepTime_s", [costs[e]["step_time_s"] / costs[e]["steps"] for e in have], rng)
+        metrics["EpisodeTime_s"] = rate("EpisodeTime_s", [costs[e]["step_time_s"] for e in have], rng)
+    return metrics
+
+
 # ---------------------------------------------------------------- paired agreement
 def cohen_kappa(a, b):
     """Cohen's kappa of two binary vectors; nan when chance agreement is 1."""
@@ -349,6 +378,11 @@ def main():
         ids = set(flip_meta["balanced"])
     metrics, per = evaluate(subgoals["episodes"], _load(args.orig), radius=args.radius, ids=ids)
     print(format_table(metrics))
+    cost = evaluate_cost(load_costs(args.orig.split(",")), ids=ids)
+    if cost:
+        print("--- COST (not a ranking criterion)")
+        print(format_table(cost))
+        metrics.update({"cost:" + k: v for k, v in cost.items()})
     if args.flip:
         flip_metrics, flip_per = evaluate_flip(_load(args.orig), _load(args.flip), flip_meta, ids=ids)
         print("--- FLIP (turn at the start)")
