@@ -55,6 +55,7 @@ CAPTIONER_ENV = {
     "evidence_dir": "JOYAI_EVIDENCE_DIR",
     "frame_buffer_only": "VLN_ABLATE_TEMPORAL",
     "preview_disabled": "VLN_ABLATE_PREVIEW",
+    "final_gate_context": "VLN_FINAL_GATE_CONTEXT",
 }
 # agent.<key> -> environment variable.
 AGENT_ENV = {

@@ -93,6 +93,10 @@ captioner:                                 # TemporalMemory / Captioner switches
   # Ablation: no surrounding views at all (model cannot request a Preview, the
   # final-stage gate confirms on CURRENT alone). Set opening_look_around: false too.
   preview_disabled: false                  # -> VLN_ABLATE_PREVIEW
+  # Final-stage completion gate context: isolated (active action only) |
+  # instruction (+ whole instruction and ordered actions) | memory (+ Temporal
+  # Memory summaries and the observer report at each earlier stage completion).
+  final_gate_context: isolated             # -> VLN_FINAL_GATE_CONTEXT
 
 agent:
   som: true                                # -> VLN_SOM (set-of-mark candidate selection on the occupancy map)
