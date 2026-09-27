@@ -15,7 +15,7 @@ from .metrics import evaluate
 def noisy(positions, sigma, rng):
     """Localisation-style noise: a constant per-episode offset plus a slow random
     walk, both bounded by ``sigma`` (i.i.d. per-step noise would inflate the
-    walked path length and defeat the SGCR-eff path budget)."""
+    walked path length)."""
     if sigma <= 0:
         return positions
     offset = rng.normal(0, sigma / 2, 2)

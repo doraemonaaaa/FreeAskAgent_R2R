@@ -2,8 +2,8 @@
 
     python -m benchmark.summarize [--out benchmark/results/summary.json]
 
-Per-run means (SR, SPL, nDTW, SGCR-eff, NE, PL, steps), paired agreement
-(evaluate_paired + paired deltas of nDTW / SGCR-eff / PL with bootstrap CI) for
+Per-run means (SR, SPL, nDTW, NE, PL, steps), paired agreement
+(evaluate_paired + paired deltas of nDTW / PL with bootstrap CI) for
 noise floors, GOAL-ONLY, PARAPHRASE (vs ORIG and A2-A4 vs A1), cross-system
 agreement on ORIG, and FLIP (evaluate_flip) for every system with both runs.
 REPORT.md numbers come from this file.
@@ -48,7 +48,6 @@ def per_ep(run):
                 row['ndtw'] = ndtw(pos[e], GT[e])
             if e in SG:
                 s = score_episode(pos[e], SG[e]['subgoals'], 1.5)
-                row['sgcr_eff'] = s['c_eff'] / s['K']
                 row['inter'] = sum(x is not None for x in s['entries'][:-1]) / max(len(s['entries']) - 1, 1)
         out[e] = row
     return out
@@ -67,7 +66,7 @@ def summary(key, ids=None):
     p = P[key]
     ids = [e for e in p if ids is None or e in ids]
     out = dict(n=len(ids))
-    for m in ('sr', 'spl', 'ndtw', 'sgcr_eff', 'ne', 'pl', 'steps'):
+    for m in ('sr', 'spl', 'ndtw', 'ne', 'pl', 'steps'):
         v = [p[e][m] for e in ids if m in p[e]]
         out[m] = round(float(np.mean(v)), 3) if v else None
     return out
@@ -88,7 +87,7 @@ def paired(a, b, ids=None):
                 b_only=int(m['Solved_other_only']['mean']), flip=pick('FlipRate'),
                 kept=pick('SuccessKept'), kappa=pick('Kappa'), kappa_ci=[round(x, 2) for x in m['Kappa']['ci']],
                 mcnemar=round(m['McNemar_p']['mean'], 3), endgap=pick('EndpointGap_m'), dne=pick('|dNE|_m'),
-                d_ndtw=delta(a, b, 'ndtw', ids), d_sgcr=delta(a, b, 'sgcr_eff', ids), d_pl=delta(a, b, 'pl', ids))
+                d_ndtw=delta(a, b, 'ndtw', ids), d_pl=delta(a, b, 'pl', ids))
 
 
 out = dict(summary={k: summary(k) for k in P})

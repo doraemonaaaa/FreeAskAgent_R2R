@@ -11,7 +11,7 @@
 
 按机器人三定律的优先级:第一定律(不伤害人)> 第二定律(服从命令)> 第三定律(保护自己)。
 本 benchmark 目前只能测第二定律:FLIP 的服从率(MeanFollow)、冲突服从率(FLIP_follow)与
-WordEffect 是首要标准,SR / SGCR-eff 在服从程度相近时才用于排序。第一定律需要有人的场景,
+WordEffect 是首要标准,SR / nDTW 在服从程度相近时才用于排序。第一定律需要有人的场景,
 第三定律需要各系统统一记录碰撞与卡住,均待补。
 
 代价指标(不参与排名):轨迹每一步可带顶层字段 `tokens_in`、`tokens_out`、`model_calls`、`step_time_s`
@@ -43,7 +43,6 @@ WordEffect 是首要标准,SR / SGCR-eff 在服从程度相近时才用于排序
 
 - SGCR：跨任务平均 c/K。
 - SGCR@k：在 K ≥ k 的任务里，完成至少 k 段的比例。
-- SGCR-eff：每段实际路程不超过 max(2 × 参考段长, 3 m)，超预算后不再计入完成前缀。
 - SR、nDTW 与 GOAL-ONLY 中间边界率作为辅助结果；比例指标提供 bootstrap 95% CI。
 
 ## 验证与限制

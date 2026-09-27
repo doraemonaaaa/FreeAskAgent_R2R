@@ -10,9 +10,6 @@ success radius); c = number of boundaries reached in this order, f = c + 1 is
 the first failed segment.
 
 ORIG run            SR, SGCR = mean(c / K), SGCR@k = P(c >= k | K >= k)
-                    SGCR-eff: c counted with a per-segment path budget
-                    (<= max(2 x reference segment length, 3 m)) so that a long
-                    wandering trajectory does not collect boundaries by chance
 FLIP                python -m benchmark.metrics --orig <flip_orig run> --flip <flip run>:
                     turn at the start per run (follow / opposite / straight / none),
                     MeanFollow, Blind, WordEffect; see evaluate_flip
@@ -65,30 +62,11 @@ def completed_prefix(entries):
     return sum(e is not None for e in entries)
 
 
-def score_episode(positions, subgoals, radius, budget_factor=2.0, budget_min_m=3.0):
-    """c: boundaries reached in order; c_eff: the same with a per-segment path budget.
-
-    A long wandering trajectory (CA-Nav walks ~30 m in 250 steps) passes the
-    boundaries of a small house in order by chance. c_eff only credits segment
-    k when the path walked between e_{k-1} and e_k is at most
-    max(budget_factor * reference segment length, budget_min_m); the first
-    segment that blows the budget ends the efficient prefix.
-    """
-    boundaries = [s["boundary_xyz"] for s in subgoals]
-    entries = entry_steps(positions, boundaries, radius)
+def score_episode(positions, subgoals, radius):
+    """c: boundaries reached in order (K = number of boundaries, f = first failed segment)."""
+    entries = entry_steps(positions, [s["boundary_xyz"] for s in subgoals], radius)
     c = completed_prefix(entries)
-    walked = path_walked(positions)
-    c_eff = 0
-    previous_step, previous_arc = 0, 0.0
-    for k, (entry, sub) in enumerate(zip(entries, subgoals)):
-        if entry is None:
-            break
-        budget = max(budget_factor * (sub["arc_end_m"] - previous_arc), budget_min_m)
-        if walked[entry] - walked[previous_step] > budget:
-            break
-        c_eff = k + 1
-        previous_step, previous_arc = entry, sub["arc_end_m"]
-    return dict(K=len(subgoals), c=c, c_eff=c_eff, f=None if c == len(subgoals) else c + 1, entries=entries)
+    return dict(K=len(subgoals), c=c, f=None if c == len(subgoals) else c + 1, entries=entries)
 
 
 # ---------------------------------------------------------------- aggregation
@@ -120,7 +98,6 @@ def evaluate(subgoals, orig, radius=1.5, ids=None, seed=0):
     metrics = {}
     metrics["SR"] = rate("SR", [per[e]["sr"] for e in episodes if per[e]["sr"] is not None], rng)
     metrics["SGCR"] = rate("SGCR", [per[e]["orig_c"] / per[e]["K"] for e in episodes], rng)
-    metrics["SGCR-eff"] = rate("SGCR-eff", [per[e]["orig_c_eff"] / per[e]["K"] for e in episodes], rng)
     max_k = max((per[e]["K"] for e in episodes), default=0)
     metrics["SGCR@k"] = {k: rate("SGCR@{}".format(k), [per[e]["orig_c"] >= k for e in episodes if per[e]["K"] >= k], rng)
                          for k in range(1, max_k + 1)}
@@ -210,7 +187,7 @@ def evaluate_flip(orig, flip, meta, ids=None, seed=0):
 def evaluate_goalonly(subgoals, orig, goal, goals, gt=None, radius=1.5, seed=0):
     """GOAL-ONLY (only the last sub-instruction) vs ORIG, paired.
 
-    SR / SGCR-eff / intermediate-boundary rate / nDTW / PL / steps for both runs.
+    SR / intermediate-boundary rate / nDTW / PL / steps for both runs.
     Intermediate-boundary rate = fraction of B_1..B_{K-1} reached in order: with
     no route words this measures how much of the route the agent walks anyway
     (layout prior or goal search that happens to follow the route).
@@ -227,12 +204,11 @@ def evaluate_goalonly(subgoals, orig, goal, goals, gt=None, radius=1.5, seed=0):
             inter = scored["entries"][:-1]
             row[tag + "_sr"] = run[1].get(e, {}).get("success")
             row[tag + "_steps"] = run[1].get(e, {}).get("steps")
-            row[tag + "_sgcr_eff"] = scored["c_eff"] / len(bounds)
             row[tag + "_inter"] = sum(x is not None for x in inter) / max(len(inter), 1)
             row[tag + "_pl"] = path_walked(positions)[-1]
             row[tag + "_ndtw"] = ndtw(positions, gt[e]) if gt else None
         per[e] = row
-    for key, label in (("sr", "SR"), ("sgcr_eff", "SGCR-eff"), ("inter", "IntermediateBoundaries"), ("ndtw", "nDTW"), ("pl", "PL_m"), ("steps", "Steps")):
+    for key, label in (("sr", "SR"), ("inter", "IntermediateBoundaries"), ("ndtw", "nDTW"), ("pl", "PL_m"), ("steps", "Steps")):
         for tag in ("orig", "goal"):
             vals = [per[e][tag + "_" + key] for e in ids if per[e][tag + "_" + key] is not None]
             metrics["{}_{}".format(label, tag)] = rate("{}_{}".format(label, tag), vals, rng)

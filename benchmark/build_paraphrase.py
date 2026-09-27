@@ -6,7 +6,7 @@
 Rewriting is chunk-wise on purpose: each sub-instruction is rewritten on its
 own and the K chunks are re-joined, so K, the chunk -> viewpoint alignment and
 every boundary B_k stay exactly as ``build_subgoals`` computed them. The whole
-existing metric stack (SGCR, SGCR-eff, per-hop survival, GOAL-ONLY's
+existing metric stack (SGCR, per-hop survival, GOAL-ONLY's
 intermediate-boundary rate) therefore applies unchanged, and the generator only
 ever sees one short sentence at a time.
 
